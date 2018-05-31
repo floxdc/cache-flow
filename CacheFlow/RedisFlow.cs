@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DAW.CacheFlow;
-using DAW.CacheFlow.Logging;
-using DAW.LoggingExtensions;
+using CacheFlow.Logging;
 using MessagePack;
 using MessagePack.ImmutableCollection;
 using MessagePack.Resolvers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using static DAW.LoggingExtensions.LoggingExtensions;
 
 namespace CacheFlow
 {
@@ -24,7 +23,7 @@ namespace CacheFlow
 
         public async Task<T> GetValueAsync<T>(string key)
         {
-            var bytes = await _distributedCache.GetAsync(key);
+            var bytes = await GetFromCacheAsync(key);
             if (bytes is null)
             {
                 LogMiss(key);
@@ -32,10 +31,41 @@ namespace CacheFlow
             }
 
             var value = MessagePackSerializer.Deserialize<T>(bytes);
-            await _distributedCache.RefreshAsync(key);
+            if (!await RefreshCacheAsync(key))
+                return default;
+
             LogHit(key);
-            
             return value;
+        }
+
+
+        public void Remove(string key)
+        {
+            try
+            {
+                _distributedCache.Remove(key);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
+
+            LogRemove(key);
+        }
+
+
+        public async Task RemoveAsync(string key)
+        {
+            try
+            {
+                await _distributedCache.RemoveAsync(key);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
+
+            LogRemove(key);
         }
 
 
@@ -71,7 +101,7 @@ namespace CacheFlow
         {
             value = default;
 
-            var bytes = _distributedCache.Get(key);
+            var bytes = GetFromCache(key);
             if (bytes is null)
             {
                 LogMiss(key);
@@ -79,32 +109,113 @@ namespace CacheFlow
             }
 
             value = MessagePackSerializer.Deserialize<T>(bytes);
-            _distributedCache.Refresh(key);
-            LogHit(key);
+            if (!RefreshCache(key))
+                return false;
 
+            LogHit(key);
             return true;
         }
 
 
+        private byte[] GetFromCache(string key)
+        {
+            try
+            {
+                return _distributedCache.Get(key);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return null;
+            }
+        }
+
+
+        private async Task<byte[]> GetFromCacheAsync(string key)
+        {
+            try
+            {
+                return await _distributedCache.GetAsync(key);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return null;
+            }
+        }
+
+
+        private void LogError(Exception ex)
+            => _logger.Log(LogLevel.Warning, GetEventId(CacheEvents.AnErrorHasOccured), ex.Message, ex, Formatter);
+
+
         private void LogHit(string key)
-            => _logger.Log(LogLevel.Information, LoggingExtensions.GetEventId(CacheEvents.Hitted), $"Hit|{key}", null, LoggingExtensions.Formatter);
+            => _logger.Log(LogLevel.Information, GetEventId(CacheEvents.Hit), $"{CacheEvents.Hit}|{key}", null, Formatter);
 
 
         private void LogMiss(string key)
-            => _logger.Log(LogLevel.Information, LoggingExtensions.GetEventId(CacheEvents.Missed), $"Miss|{key}", null, LoggingExtensions.Formatter);
+            => _logger.Log(LogLevel.Information, GetEventId(CacheEvents.Miss), $"{CacheEvents.Miss}|{key}", null, Formatter);
+
+
+        private void LogRemove(string key)
+            => _logger.Log(LogLevel.Information, GetEventId(CacheEvents.Remove), $"{CacheEvents.Remove}|{key}", null, Formatter);
+
+
+        private bool RefreshCache(string key)
+        {
+            try
+            {
+                _distributedCache.Refresh(key);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return false;
+            }
+        }
+
+
+        private async Task<bool> RefreshCacheAsync(string key)
+        {
+            try
+            {
+                await _distributedCache.RefreshAsync(key);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                return false;
+            }
+        }
 
 
         private void SetInternal<T>(string key, T value, DistributedCacheEntryOptions options)
         {
             var bytes = MessagePackSerializer.Serialize(value);
-            _distributedCache.Set(key, bytes, options);
+            try
+            {
+                _distributedCache.Set(key, bytes, options);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
         }
 
 
         private async Task SetInternalAsync<T>(string key, T value, DistributedCacheEntryOptions options)
         {
             var bytes = MessagePackSerializer.Serialize(value);
-            await _distributedCache.SetAsync(key, bytes, options);
+            try
+            {
+                await _distributedCache.SetAsync(key, bytes, options);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
         }
 
 

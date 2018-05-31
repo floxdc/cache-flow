@@ -7,6 +7,7 @@
     <Authors>Kirill Taran</Authors>
     <PackageId>DAW.CacheFlow</PackageId>
     <Description>Net Core distributed cache based on MessagePack serialization</Description>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

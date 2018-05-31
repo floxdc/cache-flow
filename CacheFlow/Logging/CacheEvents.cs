@@ -1,8 +1,10 @@
-﻿namespace DAW.CacheFlow.Logging
+﻿namespace CacheFlow.Logging
 {
     public enum CacheEvents
     {
-        Missed = 7776,
-        Hitted = 7777
+        AnErrorHasOccured = 7771,
+        Miss = 7776,
+        Hit = 7777,
+        Remove = 7772
     }
 }
