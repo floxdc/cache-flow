@@ -6,8 +6,8 @@
     <Company>DAW</Company>
     <Authors>Kirill Taran</Authors>
     <PackageId>DAW.CacheFlow</PackageId>
-    <Description>Net Core distributed cache based on MessagePack serialization</Description>
-    <Version>1.0.2</Version>
+    <Description>.Net Core distributed cache library based on MessagePack serialization</Description>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -24,10 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DAW.LoggingExtensions" Version="1.0.0" />
+    <PackageReference Include="DAW.LoggingExtensions" Version="1.0.1" />
     <PackageReference Include="MessagePack" Version="1.7.3.4" />
     <PackageReference Include="MessagePack.ImmutableCollection" Version="1.7.3.4" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.1.0" />
   </ItemGroup>
 
 </Project>
