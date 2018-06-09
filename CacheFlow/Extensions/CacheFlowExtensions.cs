@@ -4,7 +4,7 @@ namespace CacheFlow.Extensions
 {
     public static class CacheFlowExtensions
     {
-        public static IServiceCollection UseCacheFlow(this IServiceCollection services)
+        public static IServiceCollection AddCacheFlow(this IServiceCollection services)
         {
             services.AddSingleton<ICacheFlow, RedisFlow>();
 

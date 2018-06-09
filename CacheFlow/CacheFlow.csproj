@@ -6,8 +6,8 @@
     <Company>DAW</Company>
     <Authors>Kirill Taran</Authors>
     <PackageId>DAW.CacheFlow</PackageId>
-    <Description>.Net Core distributed cache library based on MessagePack serialization</Description>
-    <Version>1.0.3</Version>
+    <Description>.Net Core distributed cache management library based on MessagePack serialization</Description>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
