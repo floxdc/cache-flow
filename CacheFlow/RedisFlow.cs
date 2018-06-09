@@ -39,14 +39,14 @@ namespace CacheFlow
         }
 
 
-        public T GetOrSet<T>(string key, TimeSpan absoluteExpiration, Func<T> getFunction)
+        public T GetOrSet<T>(string key, TimeSpan absoluteExpirationRelativeToNow, Func<T> getFunction)
         {
             var isCached = TryGetValue(key, out T result);
             if (isCached)
                 return result;
 
             result = getFunction();
-            Set(key, result, absoluteExpiration);
+            Set(key, result, absoluteExpirationRelativeToNow);
 
             return result;
         }
@@ -65,14 +65,14 @@ namespace CacheFlow
         }
 
 
-        public async Task<T> GetOrSetAsync<T>(string key, TimeSpan absoluteExpiration, Func<Task<T>> getFunction)
+        public async Task<T> GetOrSetAsync<T>(string key, TimeSpan absoluteExpirationRelativeToNow, Func<Task<T>> getFunction)
         {
             var result = await GetValueAsync<T>(key);
             if (result != null)
                 return result;
 
             result = await getFunction();
-            await SetAsync(key, result, absoluteExpiration);
+            await SetAsync(key, result, absoluteExpirationRelativeToNow);
 
             return result;
         }

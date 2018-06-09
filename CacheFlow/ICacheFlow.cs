@@ -7,9 +7,9 @@ namespace CacheFlow
     public interface ICacheFlow
     {
         Task<T> GetValueAsync<T>(string key);
-        T GetOrSet<T>(string key, TimeSpan absoluteExpiration, Func<T> getFunction);
+        T GetOrSet<T>(string key, TimeSpan absoluteExpirationRelativeToNow, Func<T> getFunction);
         T GetOrSet<T>(string key, DistributedCacheEntryOptions options, Func<T> getFunction);
-        Task<T> GetOrSetAsync<T>(string key, TimeSpan absoluteExpiration, Func<Task<T>> getFunction);
+        Task<T> GetOrSetAsync<T>(string key, TimeSpan absoluteExpirationRelativeToNow, Func<Task<T>> getFunction);
         Task<T> GetOrSetAsync<T>(string key, DistributedCacheEntryOptions options, Func<Task<T>> getFunction);
         void Remove(string key);
         Task RemoveAsync(string key);
