@@ -11,24 +11,20 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <Optimize>true</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Logging\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="DAW.LoggingExtensions" Version="1.0.1" />
     <PackageReference Include="MessagePack" Version="1.7.3.4" />
     <PackageReference Include="MessagePack.ImmutableCollection" Version="1.7.3.4" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.0" />
   </ItemGroup>
 
 </Project>

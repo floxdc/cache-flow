@@ -6,7 +6,7 @@ using MessagePack.ImmutableCollection;
 using MessagePack.Resolvers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using static DAW.LoggingExtensions.LoggingExtensions;
+using static CacheFlow.Logging.LoggingExtensions;
 
 namespace CacheFlow
 {
