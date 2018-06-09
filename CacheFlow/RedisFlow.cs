@@ -39,6 +39,58 @@ namespace CacheFlow
         }
 
 
+        public T GetOrSet<T>(string key, TimeSpan absoluteExpiration, Func<T> getFunction)
+        {
+            var isCached = TryGetValue(key, out T result);
+            if (isCached)
+                return result;
+
+            result = getFunction();
+            Set(key, result, absoluteExpiration);
+
+            return result;
+        }
+
+
+        public T GetOrSet<T>(string key, DistributedCacheEntryOptions options, Func<T> getFunction)
+        {
+            var isCached = TryGetValue(key, out T result);
+            if (isCached)
+                return result;
+
+            result = getFunction();
+            Set(key, result, options);
+
+            return result;
+        }
+
+
+        public async Task<T> GetOrSetAsync<T>(string key, TimeSpan absoluteExpiration, Func<Task<T>> getFunction)
+        {
+            var result = await GetValueAsync<T>(key);
+            if (result != null)
+                return result;
+
+            result = await getFunction();
+            await SetAsync(key, result, absoluteExpiration);
+
+            return result;
+        }
+
+
+        public async Task<T> GetOrSetAsync<T>(string key, DistributedCacheEntryOptions options, Func<Task<T>> getFunction)
+        {
+            var result = await GetValueAsync<T>(key);
+            if (result != null)
+                return result;
+
+            result = await getFunction();
+            await SetAsync(key, result, options);
+
+            return result;
+        }
+
+
         public void Remove(string key)
         {
             try
@@ -76,11 +128,8 @@ namespace CacheFlow
         }
 
 
-        public void SetSliding<T>(string key, T value, TimeSpan slidingExpiration)
-        {
-            var options = new DistributedCacheEntryOptions { SlidingExpiration = slidingExpiration };
-            SetInternal(key, value, options);
-        }
+        public void Set<T>(string key, T value, DistributedCacheEntryOptions options) 
+            => SetInternal(key, value, options);
 
 
         public async Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow)
@@ -90,11 +139,8 @@ namespace CacheFlow
         }
 
 
-        public async Task SetSlidingAsync<T>(string key, T value, TimeSpan slidingExpiration)
-        {
-            var options = new DistributedCacheEntryOptions { SlidingExpiration = slidingExpiration };
-            await SetInternalAsync(key, value, options);
-        }
+        public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options) 
+            => await SetInternalAsync(key, value, options);
 
 
         public bool TryGetValue<T>(string key, out T value)
