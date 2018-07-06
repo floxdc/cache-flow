@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace CacheFlow
+namespace FloxDc.CacheFlow
 {
     public interface ICacheFlow
     {

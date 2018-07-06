@@ -1,4 +1,4 @@
-﻿namespace CacheFlow.Logging
+﻿namespace FloxDc.CacheFlow.Logging
 {
     public enum CacheEvents
     {

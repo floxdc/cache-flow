@@ -3,11 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Company>DAW</Company>
+    <Company>Flox DC</Company>
     <Authors>Kirill Taran</Authors>
-    <PackageId>DAW.CacheFlow</PackageId>
+    <PackageId>FloxDc.CacheFlow</PackageId>
     <Description>.Net Core distributed cache management library based on MessagePack serialization</Description>
-    <Version>1.1.1</Version>
+    <Version>1.2.0</Version>
+    <RootNamespace>FloxDc.CacheFlow</RootNamespace>
+    <AssemblyName>FloxDc.CacheFlow</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

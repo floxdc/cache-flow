@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 
-namespace CacheFlow.Logging
+namespace FloxDc.CacheFlow.Logging
 {
     public class LoggingExtensions
     {

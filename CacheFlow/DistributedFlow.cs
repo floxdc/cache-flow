@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CacheFlow.Logging;
+using FloxDc.CacheFlow.Logging;
 using MessagePack;
 using MessagePack.ImmutableCollection;
 using MessagePack.Resolvers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using static CacheFlow.Logging.LoggingExtensions;
 
-namespace CacheFlow
+namespace FloxDc.CacheFlow
 {
-    public class RedisFlow : ICacheFlow
+    public class DistributedFlow : ICacheFlow
     {
-        public RedisFlow(IDistributedCache distributedCache, ILogger<RedisFlow> logger)
+        public DistributedFlow(IDistributedCache distributedCache, ILogger<DistributedFlow> logger)
         {
             _distributedCache = distributedCache;
             _logger = logger;
@@ -192,19 +191,19 @@ namespace CacheFlow
 
 
         private void LogError(Exception ex)
-            => _logger.Log(LogLevel.Warning, GetEventId(CacheEvents.AnErrorHasOccured), ex.Message, ex, Formatter);
+            => _logger.Log(LogLevel.Warning, LoggingExtensions.GetEventId(CacheEvents.AnErrorHasOccured), ex.Message, ex, LoggingExtensions.Formatter);
 
 
         private void LogHit(string key)
-            => _logger.Log(LogLevel.Information, GetEventId(CacheEvents.Hit), $"{CacheEvents.Hit}|{key}", null, Formatter);
+            => _logger.Log(LogLevel.Information, LoggingExtensions.GetEventId(CacheEvents.Hit), $"{CacheEvents.Hit}|{key}", null, LoggingExtensions.Formatter);
 
 
         private void LogMiss(string key)
-            => _logger.Log(LogLevel.Information, GetEventId(CacheEvents.Miss), $"{CacheEvents.Miss}|{key}", null, Formatter);
+            => _logger.Log(LogLevel.Information, LoggingExtensions.GetEventId(CacheEvents.Miss), $"{CacheEvents.Miss}|{key}", null, LoggingExtensions.Formatter);
 
 
         private void LogRemove(string key)
-            => _logger.Log(LogLevel.Information, GetEventId(CacheEvents.Remove), $"{CacheEvents.Remove}|{key}", null, Formatter);
+            => _logger.Log(LogLevel.Information, LoggingExtensions.GetEventId(CacheEvents.Remove), $"{CacheEvents.Remove}|{key}", null, LoggingExtensions.Formatter);
 
 
         private bool RefreshCache(string key)
@@ -266,6 +265,6 @@ namespace CacheFlow
 
 
         private readonly IDistributedCache _distributedCache;
-        private readonly ILogger<RedisFlow> _logger;
+        private readonly ILogger<DistributedFlow> _logger;
     }
 }

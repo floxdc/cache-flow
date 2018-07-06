@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace CacheFlow.Extensions
+namespace FloxDc.CacheFlow.Extensions
 {
     public static class CacheFlowExtensions
     {
         public static IServiceCollection AddCacheFlow(this IServiceCollection services)
         {
-            services.AddSingleton<ICacheFlow, RedisFlow>();
+            services.AddSingleton<ICacheFlow, DistributedFlow>();
 
             return services;
         }
