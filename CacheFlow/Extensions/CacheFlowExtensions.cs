@@ -10,5 +10,13 @@ namespace FloxDc.CacheFlow.Extensions
 
             return services;
         }
+
+
+        public static IServiceCollection AddDistributedFlow(this IServiceCollection services)
+        {
+            services.AddSingleton<ICacheFlow, DistributedFlow>();
+
+            return services;
+        }
     }
 }
