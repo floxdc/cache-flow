@@ -6,15 +6,17 @@ using MessagePack.ImmutableCollection;
 using MessagePack.Resolvers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace FloxDc.CacheFlow
 {
     public class DistributedFlow : ICacheFlow
     {
-        public DistributedFlow(IDistributedCache distributedCache, ILogger<DistributedFlow> logger)
+        public DistributedFlow(IDistributedCache distributedCache, ILogger<DistributedFlow> logger, IOptions<FlowOptions> options)
         {
             _distributedCache = distributedCache;
             _logger = logger;
+            _options = options.Value;
 
             CompositeResolver.RegisterAndSetAsDefault(ImmutableCollectionResolver.Instance, StandardResolver.Instance);
         }
@@ -25,7 +27,7 @@ namespace FloxDc.CacheFlow
             var bytes = await GetFromCacheAsync(key);
             if (bytes is null)
             {
-                LogMiss(key);
+                _logger.Miss(key);
                 return default;
             }
 
@@ -33,25 +35,17 @@ namespace FloxDc.CacheFlow
             if (!await RefreshCacheAsync(key))
                 return default;
 
-            LogHit(key);
+            _logger.Hit(key);
             return value;
         }
 
 
-        public T GetOrSet<T>(string key, TimeSpan absoluteExpirationRelativeToNow, Func<T> getFunction)
-        {
-            var isCached = TryGetValue(key, out T result);
-            if (isCached)
-                return result;
-
-            result = getFunction();
-            Set(key, result, absoluteExpirationRelativeToNow);
-
-            return result;
-        }
+        public T GetOrSet<T>(string key, Func<T> getFunction, TimeSpan absoluteExpirationRelativeToNow)
+            => GetOrSet(key, getFunction,
+                new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
-        public T GetOrSet<T>(string key, DistributedCacheEntryOptions options, Func<T> getFunction)
+        public T GetOrSet<T>(string key, Func<T> getFunction, DistributedCacheEntryOptions options)
         {
             var isCached = TryGetValue(key, out T result);
             if (isCached)
@@ -64,20 +58,13 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public async Task<T> GetOrSetAsync<T>(string key, TimeSpan absoluteExpirationRelativeToNow, Func<Task<T>> getFunction)
-        {
-            var result = await GetValueAsync<T>(key);
-            if (result != null)
-                return result;
-
-            result = await getFunction();
-            await SetAsync(key, result, absoluteExpirationRelativeToNow);
-
-            return result;
-        }
+        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
+            TimeSpan absoluteExpirationRelativeToNow)
+            => await GetOrSetAsync(key, getFunction,
+                new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
-        public async Task<T> GetOrSetAsync<T>(string key, DistributedCacheEntryOptions options, Func<Task<T>> getFunction)
+        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction, DistributedCacheEntryOptions options)
         {
             var result = await GetValueAsync<T>(key);
             if (result != null)
@@ -98,10 +85,12 @@ namespace FloxDc.CacheFlow
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                _logger.NetworkError(ex);
+                if (!_options.SuppressNetworkExceptions)
+                    throw;
             }
 
-            LogRemove(key);
+            _logger.Remove(key);
         }
 
 
@@ -113,29 +102,26 @@ namespace FloxDc.CacheFlow
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                _logger.NetworkError(ex);
+                if (!_options.SuppressNetworkExceptions)
+                    throw;
             }
 
-            LogRemove(key);
+            _logger.Remove(key);
         }
 
 
         public void Set<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow)
-        {
-            var options = new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow};
-            SetInternal(key, value, options);
-        }
+            => SetInternal(key, value,
+                new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
         public void Set<T>(string key, T value, DistributedCacheEntryOptions options) 
             => SetInternal(key, value, options);
 
 
-        public async Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow)
-        {
-            var options = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow };
-            await SetInternalAsync(key, value, options);
-        }
+        public async Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow) 
+            => await SetInternalAsync(key, value, new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow });
 
 
         public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options) 
@@ -149,7 +135,7 @@ namespace FloxDc.CacheFlow
             var bytes = GetFromCache(key);
             if (bytes is null)
             {
-                LogMiss(key);
+                _logger.Miss(key);
                 return false;
             }
 
@@ -157,7 +143,7 @@ namespace FloxDc.CacheFlow
             if (!RefreshCache(key))
                 return false;
 
-            LogHit(key);
+            _logger.Hit(key);
             return true;
         }
 
@@ -170,7 +156,10 @@ namespace FloxDc.CacheFlow
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                _logger.NetworkError(ex);
+                if (!_options.SuppressNetworkExceptions)
+                    throw;
+
                 return null;
             }
         }
@@ -184,26 +173,13 @@ namespace FloxDc.CacheFlow
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                _logger.NetworkError(ex);
+                if (!_options.SuppressNetworkExceptions)
+                    throw;
+
                 return null;
             }
         }
-
-
-        private void LogError(Exception ex)
-            => _logger.Log(LogLevel.Warning, LoggingExtensions.GetEventId(CacheEvents.AnErrorHasOccured), ex.Message, ex, LoggingExtensions.Formatter);
-
-
-        private void LogHit(string key)
-            => _logger.Log(LogLevel.Information, LoggingExtensions.GetEventId(CacheEvents.Hit), $"{CacheEvents.Hit}|{key}", null, LoggingExtensions.Formatter);
-
-
-        private void LogMiss(string key)
-            => _logger.Log(LogLevel.Information, LoggingExtensions.GetEventId(CacheEvents.Miss), $"{CacheEvents.Miss}|{key}", null, LoggingExtensions.Formatter);
-
-
-        private void LogRemove(string key)
-            => _logger.Log(LogLevel.Information, LoggingExtensions.GetEventId(CacheEvents.Remove), $"{CacheEvents.Remove}|{key}", null, LoggingExtensions.Formatter);
 
 
         private bool RefreshCache(string key)
@@ -215,7 +191,10 @@ namespace FloxDc.CacheFlow
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                _logger.NetworkError(ex);
+                if (!_options.SuppressNetworkExceptions)
+                    throw;
+
                 return false;
             }
         }
@@ -230,7 +209,10 @@ namespace FloxDc.CacheFlow
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                _logger.NetworkError(ex);
+                if (!_options.SuppressNetworkExceptions)
+                    throw;
+
                 return false;
             }
         }
@@ -245,7 +227,9 @@ namespace FloxDc.CacheFlow
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                _logger.NetworkError(ex);
+                if (!_options.SuppressNetworkExceptions)
+                    throw;
             }
         }
 
@@ -259,12 +243,15 @@ namespace FloxDc.CacheFlow
             }
             catch (Exception ex)
             {
-                LogError(ex);
+                _logger.NetworkError(ex);
+                if (!_options.SuppressNetworkExceptions)
+                    throw;
             }
         }
 
 
         private readonly IDistributedCache _distributedCache;
         private readonly ILogger<DistributedFlow> _logger;
+        private readonly FlowOptions _options;
     }
 }
