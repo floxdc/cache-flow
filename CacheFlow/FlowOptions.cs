@@ -3,6 +3,6 @@
     public class FlowOptions
     {
         public bool SuppressCacheExceptions { get; set; } = true;
-        public bool UseBinarySerialization { get; set; } = false;
+        public bool UseBinarySerialization { get; set; } = true;
     }
 }

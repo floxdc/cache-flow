@@ -8,6 +8,7 @@ using MessagePack.Resolvers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace FloxDc.CacheFlow
 {
@@ -35,16 +36,16 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public async Task<T> GetValueAsync<T>(string key, CancellationToken cancellationToken = default)
+        public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
-            var bytes = await GetFromCacheAsync(key, cancellationToken);
-            if (bytes is null)
+            var cached = await GetFromCacheAsync(key, cancellationToken);
+            if (cached is null)
             {
                 _logger?.Miss(key);
                 return default;
             }
 
-            var value = MessagePackSerializer.Deserialize<T>(bytes);
+            var value = Deserialize<T>(cached);
             _logger?.Hit(key);
             return value;
         }
@@ -78,7 +79,7 @@ namespace FloxDc.CacheFlow
         public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
             DistributedCacheEntryOptions options, CancellationToken cancellationToken = default)
         {
-            var result = await GetValueAsync<T>(key, cancellationToken);
+            var result = await GetAsync<T>(key, cancellationToken);
             if (result != null)
                 return result;
 
@@ -89,7 +90,7 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public void RefreshCache(string key)
+        public void Refresh(string key)
         {
             try
             {
@@ -104,7 +105,7 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public async Task RefreshCacheAsync(string key, CancellationToken cancellationToken = default)
+        public async Task RefreshAsync(string key, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -178,24 +179,35 @@ namespace FloxDc.CacheFlow
         {
             value = default;
 
-            var bytes = GetFromCache(key);
-            if (bytes is null)
+            var cached = GetFromCache(key);
+            if (cached is null)
             {
                 _logger?.Miss(key);
                 return false;
             }
 
-            value = MessagePackSerializer.Deserialize<T>(bytes);
+            value = Deserialize<T>(cached);
             _logger?.Hit(key);
             return true;
         }
 
 
-        private byte[] GetFromCache(string key)
+        private T Deserialize<T>(object cached)
+        {
+            return _options.UseBinarySerialization
+                ? MessagePackSerializer.Deserialize<T>(cached as byte[])
+                : JsonConvert.DeserializeObject<T>(cached as string);
+        }
+
+
+        private object GetFromCache(string key)
         {
             try
             {
-                return _distributedCache.Get(key);
+                if (_options.UseBinarySerialization)
+                    return _distributedCache.Get(key);
+
+                return _distributedCache.GetString(key);
             }
             catch (Exception ex)
             {
@@ -208,11 +220,14 @@ namespace FloxDc.CacheFlow
         }
 
 
-        private async Task<byte[]> GetFromCacheAsync(string key, CancellationToken cancellationToken)
+        private async Task<object> GetFromCacheAsync(string key, CancellationToken cancellationToken)
         {
             try
             {
-                return await _distributedCache.GetAsync(key, cancellationToken);
+                if (_options.UseBinarySerialization)
+                    return await _distributedCache.GetAsync(key, cancellationToken);
+
+                return await _distributedCache.GetStringAsync(key, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -222,15 +237,27 @@ namespace FloxDc.CacheFlow
 
                 return null;
             }
+        }
+
+
+        private object Serialize<T>(T value)
+        {
+            if (_options.UseBinarySerialization)
+                return MessagePackSerializer.Serialize(value);
+
+            return JsonConvert.SerializeObject(value);
         }
 
 
         private void SetInternal<T>(string key, T value, DistributedCacheEntryOptions options)
         {
-            var bytes = MessagePackSerializer.Serialize(value);
+            var serialized = Serialize(value);
             try
             {
-                _distributedCache.Set(key, bytes, options);
+                if (_options.UseBinarySerialization)
+                    _distributedCache.Set(key, serialized as byte[], options);
+                else
+                    _distributedCache.SetString(key, serialized as string, options);
             }
             catch (Exception ex)
             {
@@ -244,10 +271,13 @@ namespace FloxDc.CacheFlow
         private async Task SetInternalAsync<T>(string key, T value, DistributedCacheEntryOptions options,
             CancellationToken cancellationToken)
         {
-            var bytes = MessagePackSerializer.Serialize(value);
+            var serialized = Serialize(value);
             try
             {
-                await _distributedCache.SetAsync(key, bytes, options, cancellationToken);
+                if (_options.UseBinarySerialization)
+                    await _distributedCache.SetAsync(key, serialized as byte [], options, cancellationToken);
+                else
+                    await _distributedCache.SetStringAsync(key, serialized as string, options, cancellationToken);
             }
             catch (Exception ex)
             {
