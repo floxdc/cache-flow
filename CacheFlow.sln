@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheFlow", "CacheFlow\CacheFlow.csproj", "{6175932D-33BA-4FCA-81F7-3E32850EBA8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CacheFlow", "CacheFlow\CacheFlow.csproj", "{6175932D-33BA-4FCA-81F7-3E32850EBA8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheFlowTests", "CacheFlowTests\CacheFlowTests.csproj", "{F1F7269C-A898-4B83-A3AB-BBE086A5665B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{6175932D-33BA-4FCA-81F7-3E32850EBA8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6175932D-33BA-4FCA-81F7-3E32850EBA8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6175932D-33BA-4FCA-81F7-3E32850EBA8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1F7269C-A898-4B83-A3AB-BBE086A5665B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1F7269C-A898-4B83-A3AB-BBE086A5665B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1F7269C-A898-4B83-A3AB-BBE086A5665B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1F7269C-A898-4B83-A3AB-BBE086A5665B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
