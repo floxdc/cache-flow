@@ -7,11 +7,12 @@
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow</PackageId>
     <Description>.Net Core distributed cache management library based on MessagePack serialization</Description>
-    <Version>1.3.0-alpha</Version>
+    <Version>1.3.0-beta2</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
-    <PackageReleaseNotes>New retry strategy.
-Code improvements.</PackageReleaseNotes>
+    <PackageReleaseNotes>New retry strategy. 
+Code improvements. 
+Bugfixes.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

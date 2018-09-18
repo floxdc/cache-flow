@@ -63,7 +63,7 @@ namespace FloxDc.CacheFlow
         public T GetOrSet<T>(string key, Func<T> getFunction, DistributedCacheEntryOptions options)
         {
             if (IsOffline())
-                return default;
+                return getFunction();
 
             var isCached = TryGetValue(key, out T result);
             if (isCached)
@@ -87,7 +87,7 @@ namespace FloxDc.CacheFlow
             DistributedCacheEntryOptions options, CancellationToken cancellationToken = default)
         {
             if (IsOffline())
-                return default;
+                return await getFunction();
 
             var result = await GetAsync<T>(key, cancellationToken);
             if (result != null)
@@ -264,110 +264,86 @@ namespace FloxDc.CacheFlow
 
         private void TryExecute(Action action)
         {
-            var tryCount = _options.RetryCount;
-            do
+            try
             {
-                try
-                {
-                    action();
-                }
-                catch (ArgumentNullException)
-                {
+                action();
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.NetworkError(ex);
+                if (!_options.SuppressCacheExceptions)
                     throw;
-                }
-                catch (Exception ex)
-                {
-                    _logger.NetworkError(ex);
-                    if (!_options.SuppressCacheExceptions)
-                        throw;
-                }
+            }
 
-                tryCount--;
-            } while (tryCount >= 0);
-
-            SetNextQueryTime(_options.InactivityInterval);
+            SetNextQueryTime(_options.NextQueryInterval);
         }
 
 
         private object TryExecute(Func<object> func)
         {
-            var tryCount = _options.RetryCount;
-            do
+            try
             {
-                try
-                {
-                    return func();
-                }
-                catch (ArgumentNullException)
-                {
+                return func();
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.NetworkError(ex);
+                if (!_options.SuppressCacheExceptions)
                     throw;
-                }
-                catch (Exception ex)
-                {
-                    _logger.NetworkError(ex);
-                    if (!_options.SuppressCacheExceptions)
-                        throw;
-                }
+            }
 
-                tryCount--;
-            } while (tryCount >= 0);
-
-            SetNextQueryTime(_options.InactivityInterval);
+            SetNextQueryTime(_options.NextQueryInterval);
             return null;
         }
 
 
         private async Task TryExecuteAsync(Func<Task> func)
         {
-            var tryCount = _options.RetryCount;
-            do
+            try
             {
-                try
-                {
-                    await func();
-                }
-                catch (ArgumentNullException)
-                {
+                await func();
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.NetworkError(ex);
+                if (!_options.SuppressCacheExceptions)
                     throw;
-                }
-                catch (Exception ex)
-                {
-                    _logger.NetworkError(ex);
-                    if (!_options.SuppressCacheExceptions)
-                        throw;
-                }
+            }
 
-                tryCount--;
-            } while (tryCount >= 0);
-
-            SetNextQueryTime(_options.InactivityInterval);
+            SetNextQueryTime(_options.NextQueryInterval);
         }
 
 
         private async Task<object> TryExecuteAsync(Func<Task<object>> func)
         {
-            var tryCount = _options.RetryCount;
-            do
+            try
             {
-                try
-                {
-                    return await func();
-                }
-                catch (ArgumentNullException)
-                {
+                return await func();
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.NetworkError(ex);
+                if (!_options.SuppressCacheExceptions)
                     throw;
-                }
-                catch (Exception ex)
-                {
-                    _logger.NetworkError(ex);
-                    if (!_options.SuppressCacheExceptions)
-                        throw;
-                }
+            }
 
-                tryCount--;
-            } while (tryCount >= 0);
-
-            SetNextQueryTime(_options.InactivityInterval);
+            SetNextQueryTime(_options.NextQueryInterval);
             return null;
         }
 
