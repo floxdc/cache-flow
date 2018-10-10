@@ -296,6 +296,7 @@ namespace FloxDc.CacheFlow
             try
             {
                 action();
+                return;
             }
             catch (ArgumentNullException)
             {
@@ -339,6 +340,7 @@ namespace FloxDc.CacheFlow
             try
             {
                 await func();
+                return;
             }
             catch (ArgumentNullException)
             {
