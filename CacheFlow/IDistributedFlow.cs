@@ -7,6 +7,8 @@ namespace FloxDc.CacheFlow
 {
     public interface IDistributedFlow
     {
+        IDistributedCache Instance { get; }
+
         Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default);
         T GetOrSet<T>(string key, Func<T> getFunction, TimeSpan absoluteExpirationRelativeToNow);
         T GetOrSet<T>(string key, Func<T> getFunction, DistributedCacheEntryOptions options);
