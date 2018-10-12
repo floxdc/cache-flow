@@ -17,8 +17,8 @@ namespace FloxDc.CacheFlow
         void Remove(string key);
         Task RemoveAsync(string key, CancellationToken cancellationToken = default);
         void Set<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow);
-        Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow, CancellationToken cancellationToken = default);
         void Set<T>(string key, T value, DistributedCacheEntryOptions options);
+        Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow, CancellationToken cancellationToken = default);
         Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options, CancellationToken cancellationToken = default);
         bool TryGetValue<T>(string key, out T value);
     }

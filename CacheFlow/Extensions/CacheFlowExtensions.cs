@@ -6,7 +6,7 @@ namespace FloxDc.CacheFlow.Extensions
     {
         public static IServiceCollection AddCacheFlow(this IServiceCollection services)
         {
-            services.AddSingleton<ICacheFlow, DistributedFlow>();
+            services.AddDistributedFlow();
 
             return services;
         }

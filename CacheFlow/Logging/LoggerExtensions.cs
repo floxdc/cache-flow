@@ -9,6 +9,7 @@ namespace FloxDc.CacheFlow.Logging
         {
             CacheHit = LoggerMessage.Define<string>(LogLevel.Information, new EventId((int)CacheEvents.Hit, CacheEvents.Hit.ToString()), "HIT | {Key} | CacheFlow: The cache hit occurs.");
             CacheMiss = LoggerMessage.Define<string>(LogLevel.Information, new EventId((int)CacheEvents.Miss, CacheEvents.Miss.ToString()), "MISS | {Key} | CacheFlow: The cache miss occurs.");
+            CacheSet = LoggerMessage.Define<string>(LogLevel.Information, new EventId((int)CacheEvents.Set, CacheEvents.Set.ToString()), "SET | {Key} | CacheFlow: The entry is set.");
             CacheSkipped = LoggerMessage.Define<string>(LogLevel.Information, new EventId((int) CacheEvents.Skipped, CacheEvents.Skipped.ToString()), "SKIPPED | {Key} | CacheFlow: The key has been skipped due the no-retry policy timeout.");
             ErrorOccured = LoggerMessage.Define(LogLevel.Warning, new EventId((int)CacheEvents.AnErrorHasOccured, CacheEvents.AnErrorHasOccured.ToString()), "EXCEPTION | CacheFlow: ");
             EntryRemoved = LoggerMessage.Define<string>(LogLevel.Information, new EventId((int)CacheEvents.Remove, CacheEvents.Remove.ToString()), "REMOVED | {Key} | CacheFlow: The key has been removed from a cache.");
@@ -24,7 +25,11 @@ namespace FloxDc.CacheFlow.Logging
             => CacheMiss(logger, key, null);
 
 
-        internal static void LogNetworkError(this ILogger logger, Exception exception) 
+        internal static void LogSet(this ILogger logger, string key)
+            => CacheSet(logger, key, null);
+
+
+        internal static void LogCacheError(this ILogger logger, Exception exception) 
             => ErrorOccured(logger, exception);
 
 
@@ -40,29 +45,9 @@ namespace FloxDc.CacheFlow.Logging
             => CacheSkipped(logger, key, null);
 
 
-        internal static string Formatter<TState>(TState state, Exception exception)
-        {
-            if (exception != null)
-                return exception.Message;
-
-            if (state != null)
-                return state.ToString();
-
-            return "Unable to format message.";
-        }
-
-
-        private static EventId GetEventId<TEnum>(TEnum serviceEvent) where TEnum : Enum
-        {
-            var name = Enum.GetName(typeof(TEnum), serviceEvent);
-            var value = Convert.ToInt32(serviceEvent);
-
-            return new EventId(value, name);
-        }
-
-
         private static readonly Action<ILogger, string, Exception> CacheHit;
         private static readonly Action<ILogger, string, Exception> CacheMiss;
+        private static readonly Action<ILogger, string, Exception> CacheSet;
         private static readonly Action<ILogger, string, Exception> CacheSkipped;
         private static readonly Action<ILogger, string, Exception> EntryRemoved;
         private static readonly Action<ILogger, Exception> ErrorOccured;
