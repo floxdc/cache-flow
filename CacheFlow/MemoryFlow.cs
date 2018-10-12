@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace FloxDc.CacheFlow
 {
-    public class MemoryFlow
+    public class MemoryFlow : IMemoryFlow
     {
         public MemoryFlow(IMemoryCache memoryCache, ILogger<MemoryFlow> logger, IOptionsSnapshot<FlowOptions> options)
         {
@@ -26,7 +26,6 @@ namespace FloxDc.CacheFlow
             }
 
             _executor = new Executor(_logger, innerOptions);
-
         }
 
 

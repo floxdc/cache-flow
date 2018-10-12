@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace FloxDc.CacheFlow
 {
-    public class DistributedFlow : ICacheFlow
+    public class DistributedFlow : IDistributedFlow
     {
         public DistributedFlow(IDistributedCache distributedCache, ILogger<DistributedFlow> logger,
             IOptions<FlowOptions> options)
