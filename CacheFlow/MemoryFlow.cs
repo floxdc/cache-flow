@@ -30,34 +30,34 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public T GetOrSet<T>(string key, Func<T> getFunction, TimeSpan absoluteExpirationRelativeToNow)
-            => GetOrSet(key, getFunction,
+        public T GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteExpirationRelativeToNow)
+            => GetOrSet(key, getValueFunction,
                 new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
-        public T GetOrSet<T>(string key, Func<T> getFunction, MemoryCacheEntryOptions options)
+        public T GetOrSet<T>(string key, Func<T> getValueFunction, MemoryCacheEntryOptions options)
         {
             if (TryGetValue(key, out T result))
                 return result;
 
-            result = getFunction();
+            result = getValueFunction();
             Set(key, result, options);
 
             return result;
         }
 
 
-        public Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction, TimeSpan absoluteExpirationRelativeToNow,
+        public Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, TimeSpan absoluteExpirationRelativeToNow,
             CancellationToken cancellationToken = default) 
-            => GetOrSetAsync(key, getFunction, new MemoryCacheEntryOptions{AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
+            => GetOrSetAsync(key, getValueFunction, new MemoryCacheEntryOptions{AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction, MemoryCacheEntryOptions options)
+        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, MemoryCacheEntryOptions options)
         {
             if (TryGetValue(key, out T result))
                 return result;
 
-            result = await getFunction();
+            result = await getValueFunction();
             Set(key, result, options);
 
             return result;
