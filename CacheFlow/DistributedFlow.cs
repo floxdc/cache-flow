@@ -51,39 +51,39 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public T GetOrSet<T>(string key, Func<T> getFunction, TimeSpan absoluteExpirationRelativeToNow)
-            => GetOrSet(key, getFunction,
+        public T GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteExpirationRelativeToNow)
+            => GetOrSet(key, getValueFunction,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
-        public T GetOrSet<T>(string key, Func<T> getFunction, DistributedCacheEntryOptions options)
+        public T GetOrSet<T>(string key, Func<T> getValueFunction, DistributedCacheEntryOptions options)
         {
             var isCached = TryGetValue(key, out T result);
             if (isCached)
                 return result;
 
-            result = getFunction();
+            result = getValueFunction();
             Set(key, result, options);
 
             return result;
         }
 
 
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
+        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction,
             TimeSpan absoluteExpirationRelativeToNow, CancellationToken cancellationToken = default)
-            => await GetOrSetAsync(key, getFunction,
+            => await GetOrSetAsync(key, getValueFunction,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow},
                 cancellationToken);
 
 
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
+        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction,
             DistributedCacheEntryOptions options, CancellationToken cancellationToken = default)
         {
             var result = await GetAsync<T>(key, cancellationToken);
             if (result != null)
                 return result;
 
-            result = await getFunction();
+            result = await getValueFunction();
             await SetAsync(key, result, options, cancellationToken);
 
             return result;
