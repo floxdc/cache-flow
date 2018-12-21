@@ -82,9 +82,9 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
+        public Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
             TimeSpan absoluteExpirationRelativeToNow, CancellationToken cancellationToken = default)
-            => await GetOrSetAsync(key, getFunction,
+            => GetOrSetAsync(key, getFunction,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow},
                 cancellationToken);
 
@@ -161,16 +161,16 @@ namespace FloxDc.CacheFlow
             => SetInternal(key, value, options);
 
 
-        public async Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow,
+        public Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow,
             CancellationToken cancellationToken = default)
-            => await SetInternalAsync(key, value,
+            => SetInternalAsync(key, value,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow},
                 cancellationToken);
 
 
-        public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options,
+        public Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options,
             CancellationToken cancellationToken = default)
-            => await SetInternalAsync(key, value, options, cancellationToken);
+            => SetInternalAsync(key, value, options, cancellationToken);
 
 
         public bool TryGetValue<T>(string key, out T value)
@@ -332,7 +332,6 @@ namespace FloxDc.CacheFlow
 
 
         public IDistributedCache Instance { get; }
-
 
         private readonly Executor _executor;
         private static bool _isOffline;

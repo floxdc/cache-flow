@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FloxDc.CacheFlow.Logging;
 using Microsoft.Extensions.Caching.Memory;
@@ -46,7 +47,8 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction, TimeSpan absoluteExpirationRelativeToNow) 
+        public Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction, TimeSpan absoluteExpirationRelativeToNow,
+            CancellationToken cancellationToken = default) 
             => GetOrSetAsync(key, getFunction, new MemoryCacheEntryOptions{AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
@@ -99,7 +101,6 @@ namespace FloxDc.CacheFlow
 
 
         public IMemoryCache Instance { get; }
-
 
         private readonly Executor _executor;
         private readonly ILogger<MemoryFlow> _logger;
