@@ -5,7 +5,7 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace FloxDc.CacheFlow
 {
-    public interface ICacheFlow
+    public interface IDistributedFlow
     {
         /// <summary>
         /// Gets value from cache.
