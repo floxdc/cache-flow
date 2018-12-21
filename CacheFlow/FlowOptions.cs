@@ -1,4 +1,6 @@
-﻿namespace FloxDc.CacheFlow
+﻿using System;
+
+namespace FloxDc.CacheFlow
 {
     /// <summary>
     /// Represents CacheFlow options.

@@ -22,7 +22,7 @@ namespace FloxDc.CacheFlow
 
             if (options is null)
             {
-                _logger?.NoOptionsProvided();
+                _logger?.LogNoOptionsProvided();
                 _options = new FlowOptions();
             }
             else
@@ -33,57 +33,76 @@ namespace FloxDc.CacheFlow
             if (_options.UseBinarySerialization)
                 CompositeResolver.RegisterAndSetAsDefault(ImmutableCollectionResolver.Instance,
                     StandardResolver.Instance);
+
+            _nextQueryTime = DateTime.UtcNow;
         }
 
 
         public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
-            var cached = await GetFromCacheAsync(key, cancellationToken);
-            if (cached is null)
+            if (IsOffline())
             {
-                _logger?.Miss(key);
+                _logger?.LogSkipped(key);
                 return default;
             }
 
-            var value = Deserialize<T>(cached);
-            _logger?.Hit(key);
+            var cached = await GetFromCacheAsync(key, cancellationToken);
+            if (cached is null)
+            {
+                _logger?.LogMiss(key);
+                return default;
+            }
+
+            var value = Deserialize<T>(cached, _options.UseBinarySerialization);
+            _logger?.LogHit(key);
             return value;
         }
 
 
-        public T GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteExpirationRelativeToNow)
-            => GetOrSet(key, getValueFunction,
-                new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
+        public T GetOrSet<T>(string key, Func<T> getFunction, TimeSpan absoluteExpirationRelativeToNow)
+            => GetOrSet(key, getFunction, new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
-        public T GetOrSet<T>(string key, Func<T> getValueFunction, DistributedCacheEntryOptions options)
+        public T GetOrSet<T>(string key, Func<T> getFunction, DistributedCacheEntryOptions options)
         {
+            if (IsOffline())
+            {
+                _logger?.LogSkipped(key);
+                return getFunction();
+            }
+
             var isCached = TryGetValue(key, out T result);
             if (isCached)
                 return result;
 
-            result = getValueFunction();
+            result = getFunction();
             Set(key, result, options);
 
             return result;
         }
 
 
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction,
+        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
             TimeSpan absoluteExpirationRelativeToNow, CancellationToken cancellationToken = default)
-            => await GetOrSetAsync(key, getValueFunction,
+            => await GetOrSetAsync(key, getFunction,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow},
                 cancellationToken);
 
 
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction,
+        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
             DistributedCacheEntryOptions options, CancellationToken cancellationToken = default)
         {
+            if (IsOffline())
+            {
+                _logger?.LogSkipped(key);
+                return await getFunction();
+            }
+
             var result = await GetAsync<T>(key, cancellationToken);
             if (result != null)
                 return result;
 
-            result = await getValueFunction();
+            result = await getFunction();
             await SetAsync(key, result, options, cancellationToken);
 
             return result;
@@ -92,65 +111,44 @@ namespace FloxDc.CacheFlow
 
         public void Refresh(string key)
         {
-            try
+            if (IsOffline())
             {
-                _distributedCache.Refresh(key);
+                _logger?.LogSkipped(key);
+                return;
             }
-            catch (Exception ex)
-            {
-                _logger?.NetworkError(ex);
-                if (!_options.SuppressCacheExceptions)
-                    throw;
-            }
+
+            TryExecute(() => _distributedCache.Refresh(key));
         }
 
 
-        public async Task RefreshAsync(string key, CancellationToken cancellationToken = default)
+        public Task RefreshAsync(string key, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                await _distributedCache.RefreshAsync(key, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger?.NetworkError(ex);
-                if (!_options.SuppressCacheExceptions)
-                    throw;
-            }
+            if (!IsOffline())
+                return TryExecuteAsync(async () => await _distributedCache.RefreshAsync(key, cancellationToken));
+
+            _logger?.LogSkipped(key);
+            return default;
+
         }
 
 
         public void Remove(string key)
         {
-            try
+            if (IsOffline())
             {
-                _distributedCache.Remove(key);
-            }
-            catch (Exception ex)
-            {
-                _logger?.NetworkError(ex);
-                if (!_options.SuppressCacheExceptions)
-                    throw;
+                _logger?.LogSkipped(key);
+                return;
             }
 
-            _logger?.Remove(key);
+            TryExecute(() => _distributedCache.Remove(key));
+            _logger?.LogRemoved(key);
         }
 
 
         public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                await _distributedCache.RemoveAsync(key, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger?.NetworkError(ex);
-                if (!_options.SuppressCacheExceptions)
-                    throw;
-            }
-
-            _logger?.Remove(key);
+            await TryExecuteAsync(async () => await _distributedCache.RemoveAsync(key, cancellationToken));
+            _logger?.LogRemoved(key);
         }
 
 
@@ -178,71 +176,69 @@ namespace FloxDc.CacheFlow
         public bool TryGetValue<T>(string key, out T value)
         {
             value = default;
+            if (IsOffline())
+            {
+                _logger?.LogSkipped(key);
+                return false;
+            }
 
             var cached = GetFromCache(key);
             if (cached is null)
             {
-                _logger?.Miss(key);
+                _logger?.LogMiss(key);
                 return false;
             }
 
-            value = Deserialize<T>(cached);
-            _logger?.Hit(key);
+            value = Deserialize<T>(cached, _options.UseBinarySerialization);
+            _logger?.LogHit(key);
             return true;
         }
 
 
-        private T Deserialize<T>(object cached)
+        private static bool IsOffline()
         {
-            return _options.UseBinarySerialization
+            if (!_isOffline)
+                return false;
+
+            if (DateTime.UtcNow <= _nextQueryTime)
+                return true;
+
+            _isOffline = false;
+            return _isOffline;
+        }
+
+
+        private static T Deserialize<T>(object cached, bool isBinarySerialized)
+        {
+            return isBinarySerialized
                 ? MessagePackSerializer.Deserialize<T>(cached as byte[])
                 : JsonConvert.DeserializeObject<T>(cached as string);
         }
 
 
         private object GetFromCache(string key)
-        {
-            try
+            => TryExecute(() =>
             {
                 if (_options.UseBinarySerialization)
                     return _distributedCache.Get(key);
 
                 return _distributedCache.GetString(key);
-            }
-            catch (Exception ex)
-            {
-                _logger?.NetworkError(ex);
-                if (!_options.SuppressCacheExceptions)
-                    throw;
-
-                return null;
-            }
-        }
+            });
 
 
-        private async Task<object> GetFromCacheAsync(string key, CancellationToken cancellationToken)
-        {
-            try
+        private Task<object> GetFromCacheAsync(string key, CancellationToken cancellationToken)
+            => TryExecuteAsync(async () =>
             {
                 if (_options.UseBinarySerialization)
                     return await _distributedCache.GetAsync(key, cancellationToken);
 
                 return await _distributedCache.GetStringAsync(key, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger?.NetworkError(ex);
-                if (!_options.SuppressCacheExceptions)
-                    throw;
-
-                return null;
-            }
-        }
+            });
 
 
-        private object Serialize<T>(T value)
+        private static object Serialize<T>(T value, bool isBinarySerialized)
         {
-            if (_options.UseBinarySerialization)
+            if (isBinarySerialized)
                 return MessagePackSerializer.Serialize(value);
 
             return JsonConvert.SerializeObject(value);
@@ -251,45 +247,142 @@ namespace FloxDc.CacheFlow
 
         private void SetInternal<T>(string key, T value, DistributedCacheEntryOptions options)
         {
-            var serialized = Serialize(value);
-            try
+            if (IsOffline())
+            {
+                _logger?.LogSkipped(key);
+                return;
+            }
+
+            var serialized = Serialize(value, _options.UseBinarySerialization);
+            TryExecute(() =>
             {
                 if (_options.UseBinarySerialization)
                     _distributedCache.Set(key, serialized as byte[], options);
                 else
                     _distributedCache.SetString(key, serialized as string, options);
-            }
-            catch (Exception ex)
-            {
-                _logger?.NetworkError(ex);
-                if (!_options.SuppressCacheExceptions)
-                    throw;
-            }
+            });
         }
 
 
         private async Task SetInternalAsync<T>(string key, T value, DistributedCacheEntryOptions options,
             CancellationToken cancellationToken)
         {
-            var serialized = Serialize(value);
-            try
+            if (IsOffline())
+            {
+                _logger?.LogSkipped(key);
+                return;
+            }
+
+            var serialized = Serialize(value, _options.UseBinarySerialization);
+            await TryExecuteAsync(async () =>
             {
                 if (_options.UseBinarySerialization)
-                    await _distributedCache.SetAsync(key, serialized as byte [], options, cancellationToken);
+                    await _distributedCache.SetAsync(key, serialized as byte[], options, cancellationToken);
                 else
                     await _distributedCache.SetStringAsync(key, serialized as string, options, cancellationToken);
+            });
+        }
+
+
+        private static void SetNextQueryTime(TimeSpan interval)
+        {
+            _nextQueryTime = DateTime.UtcNow.Add(interval);
+            _isOffline = true;
+        }
+
+
+        private void TryExecute(Action action)
+        {
+            try
+            {
+                action();
+                return;
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
-                _logger?.NetworkError(ex);
+                _logger.LogNetworkError(ex);
                 if (!_options.SuppressCacheExceptions)
                     throw;
             }
+
+            SetNextQueryTime(_options.NoRetryInterval);
+        }
+
+
+        private object TryExecute(Func<object> func)
+        {
+            try
+            {
+                return func();
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogNetworkError(ex);
+                if (!_options.SuppressCacheExceptions)
+                    throw;
+            }
+
+            SetNextQueryTime(_options.NoRetryInterval);
+            return null;
+        }
+
+
+        private async Task TryExecuteAsync(Func<Task> func)
+        {
+            try
+            {
+                await func();
+                return;
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogNetworkError(ex);
+                if (!_options.SuppressCacheExceptions)
+                    throw;
+            }
+
+            SetNextQueryTime(_options.NoRetryInterval);
+        }
+
+
+        private async Task<object> TryExecuteAsync(Func<Task<object>> func)
+        {
+            try
+            {
+                return await func();
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogNetworkError(ex);
+                if (!_options.SuppressCacheExceptions)
+                    throw;
+            }
+
+            SetNextQueryTime(_options.NoRetryInterval);
+            return null;
         }
 
 
         private readonly IDistributedCache _distributedCache;
+        private static bool _isOffline;
         private readonly ILogger<DistributedFlow> _logger;
+        private static DateTime _nextQueryTime;
         private readonly FlowOptions _options;
     }
 }
