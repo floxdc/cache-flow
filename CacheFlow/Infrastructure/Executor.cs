@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using FloxDc.CacheFlow.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace FloxDc.CacheFlow
+namespace FloxDc.CacheFlow.Infrastructure
 {
     internal class Executor
     {

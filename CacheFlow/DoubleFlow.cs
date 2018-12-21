@@ -113,10 +113,10 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
+        public Task RemoveAsync(string key, CancellationToken cancellationToken = default)
         {
             _memory.Remove(key);
-            await _distributed.RefreshAsync(key, cancellationToken);
+            return _distributed.RefreshAsync(key, cancellationToken);
         }
 
 
@@ -146,7 +146,7 @@ namespace FloxDc.CacheFlow
             );
 
 
-        public async Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions distributedOptions,
+        public Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions distributedOptions,
             MemoryCacheEntryOptions memoryOptions = null,
             CancellationToken cancellationToken = default)
         {
@@ -154,7 +154,7 @@ namespace FloxDc.CacheFlow
                 memoryOptions = GetDefaultMemoryOptions(distributedOptions);
 
             _memory.Set(key, value, memoryOptions);
-            await _distributed.SetAsync(key, value, distributedOptions, cancellationToken);
+            return _distributed.SetAsync(key, value, distributedOptions, cancellationToken);
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using FloxDc.CacheFlow.Infrastructure;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace FloxDc.CacheFlow

@@ -10,7 +10,7 @@ namespace FloxDc.CacheFlow.Extensions
     public static class CacheFlowExtensions
     {
         /// <summary>
-        /// Use CacheFlow with a distributed cache provider.
+        /// Use CacheFlow with default settings.
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
@@ -36,6 +36,12 @@ namespace FloxDc.CacheFlow.Extensions
         }
 
 
+        /// <summary>
+        /// Use CacheFlow with distributed and in-memory cache providers.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
         public static IServiceCollection AddDoubleFlow(this IServiceCollection services, IServiceProvider provider)
         {
             var options = provider.GetService<IOptionsSnapshot<FlowOptions>>();
@@ -57,6 +63,11 @@ namespace FloxDc.CacheFlow.Extensions
         }
 
 
+        /// <summary>
+        /// Use CacheFlow with a in-memory cache provider.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static IServiceCollection AddMemoryFlow(this IServiceCollection services)
         {
             services.AddSingleton<IMemoryFlow, MemoryFlow>();

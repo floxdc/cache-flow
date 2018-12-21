@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FloxDc.CacheFlow
+namespace FloxDc.CacheFlow.Infrastructure
 {
     public interface IFlow
     {

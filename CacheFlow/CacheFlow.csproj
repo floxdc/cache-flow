@@ -7,10 +7,13 @@
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow</PackageId>
     <Description>.Net Core distributed cache management library based on MessagePack serialization</Description>
-    <Version>1.3.2</Version>
+    <Version>1.4.0</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
-    <PackageReleaseNotes>- All methods of distributed flow have been documented</PackageReleaseNotes>
+    <PackageReleaseNotes>- New Memory flow
+- New Double flow
+- Documentation has been updated
+- Refactoring</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
