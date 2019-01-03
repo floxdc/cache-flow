@@ -3,23 +3,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using FloxDc.CacheFlow.Infrastructure;
 using FloxDc.CacheFlow.Logging;
-using MessagePack;
-using MessagePack.ImmutableCollection;
-using MessagePack.Resolvers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace FloxDc.CacheFlow
 {
     public class DistributedFlow : IDistributedFlow
     {
         public DistributedFlow(IDistributedCache distributedCache, ILogger<DistributedFlow> logger,
-            IOptions<FlowOptions> options)
+            IOptions<FlowOptions> options, ISerializer serializer)
         {
             Instance = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
             _logger = logger;
+            _serializer = serializer ?? new BinarySerializer();
 
             if (options is null)
             {
@@ -31,12 +28,8 @@ namespace FloxDc.CacheFlow
                 _options = options.Value;
             }
 
-            if (_options.UseBinarySerialization)
-                CompositeResolver.RegisterAndSetAsDefault(ImmutableCollectionResolver.Instance,
-                    StandardResolver.Instance);
-
-            _executor = new Executor(_logger, _options);
             _nextQueryTime = DateTime.UtcNow;
+            Executor.Init(_logger, _options.SuppressCacheExceptions);
         }
 
 
@@ -55,7 +48,7 @@ namespace FloxDc.CacheFlow
                 return default;
             }
 
-            var value = Deserialize<T>(cached, _options.UseBinarySerialization);
+            var value = _serializer.Deserialize<T>(cached);
             _logger?.LogHit(key);
             return value;
         }
@@ -190,7 +183,7 @@ namespace FloxDc.CacheFlow
                 return false;
             }
 
-            value = Deserialize<T>(cached, _options.UseBinarySerialization);
+            value = _serializer.Deserialize<T>(cached);
             _logger?.LogHit(key);
             return true;
         }
@@ -206,14 +199,6 @@ namespace FloxDc.CacheFlow
 
             _isOffline = false;
             return _isOffline;
-        }
-
-
-        private static T Deserialize<T>(object cached, bool isBinarySerialized)
-        {
-            return isBinarySerialized
-                ? MessagePackSerializer.Deserialize<T>(cached as byte[])
-                : JsonConvert.DeserializeObject<T>(cached as string);
         }
 
 
@@ -237,15 +222,6 @@ namespace FloxDc.CacheFlow
             });
 
 
-        private static object Serialize<T>(T value, bool isBinarySerialized)
-        {
-            if (isBinarySerialized)
-                return MessagePackSerializer.Serialize(value);
-
-            return JsonConvert.SerializeObject(value);
-        }
-
-
         private void SetInternal<T>(string key, T value, DistributedCacheEntryOptions options)
         {
             if (IsOffline())
@@ -254,7 +230,7 @@ namespace FloxDc.CacheFlow
                 return;
             }
 
-            var serialized = Serialize(value, _options.UseBinarySerialization);
+            var serialized = _serializer.Serialize(value);
             TryExecute(() =>
             {
                 if (_options.UseBinarySerialization)
@@ -274,7 +250,7 @@ namespace FloxDc.CacheFlow
                 return;
             }
 
-            var serialized = Serialize(value, _options.UseBinarySerialization);
+            var serialized = _serializer.Serialize(value);
             await TryExecuteAsync(async () =>
             {
                 if (_options.UseBinarySerialization)
@@ -296,7 +272,7 @@ namespace FloxDc.CacheFlow
 
         private void TryExecute(Action action)
         {
-            if (_executor.TryExecute(action))
+            if (Executor.TryExecute(action))
                 return;
 
             SetNextQueryTime(_options.SkipRetryInterval);
@@ -305,7 +281,7 @@ namespace FloxDc.CacheFlow
 
         private object TryExecute(Func<object> func)
         {
-            var result = _executor.TryExecute(func);
+            var result = Executor.TryExecute(func);
             if(result is null)
                 SetNextQueryTime(_options.SkipRetryInterval);
 
@@ -315,7 +291,7 @@ namespace FloxDc.CacheFlow
 
         private async Task TryExecuteAsync(Func<Task> func)
         {
-            if (await _executor.TryExecuteAsync(func))
+            if (await Executor.TryExecuteAsync(func))
                 return;
 
             SetNextQueryTime(_options.SkipRetryInterval);
@@ -324,7 +300,7 @@ namespace FloxDc.CacheFlow
 
         private async Task<object> TryExecuteAsync(Func<Task<object>> func)
         {
-            var result = await _executor.TryExecuteAsync(func);
+            var result = await Executor.TryExecuteAsync(func);
             if (result is null)
                 SetNextQueryTime(_options.SkipRetryInterval);
 
@@ -334,9 +310,9 @@ namespace FloxDc.CacheFlow
 
         public IDistributedCache Instance { get; }
 
-        private readonly Executor _executor;
         private static bool _isOffline;
         private readonly ILogger<DistributedFlow> _logger;
+        private readonly ISerializer _serializer;
         private static DateTime _nextQueryTime;
         private readonly FlowOptions _options;
     }

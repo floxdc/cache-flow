@@ -16,18 +16,18 @@ namespace FloxDc.CacheFlow
             Instance = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             _logger = logger;
 
-            FlowOptions innerOptions;
+            FlowOptions internalOptions;
             if (options is null)
             {
                 _logger?.LogNoOptionsProvided();
-                innerOptions = new FlowOptions();
+                internalOptions = new FlowOptions();
             }
             else
             {
-                innerOptions = options.Value;
+                internalOptions = options.Value;
             }
 
-            _executor = new Executor(_logger, innerOptions);
+            Executor.Init(_logger, internalOptions.SuppressCacheExceptions);
         }
 
 
@@ -66,7 +66,7 @@ namespace FloxDc.CacheFlow
 
 
         public void Remove(string key)
-            => _executor.TryExecute(() =>
+            => Executor.TryExecute(() =>
             {
                 Instance.Remove(key);
                 _logger?.LogRemoved(key);
@@ -78,7 +78,7 @@ namespace FloxDc.CacheFlow
 
 
         public void Set<T>(string key, T value, MemoryCacheEntryOptions options)
-            => _executor.TryExecute(() =>
+            => Executor.TryExecute(() =>
             {
                 Instance.Set(key, value, options);
                 _logger?.LogSet(key);
@@ -89,7 +89,7 @@ namespace FloxDc.CacheFlow
         {
             value = default;
 
-            value = _executor.TryExecute(() => Instance.Get<T>(key));
+            value = Executor.TryExecute(() => Instance.Get<T>(key));
             if (value.Equals(default(T)))
             {
                 _logger?.LogMiss(key);
@@ -103,7 +103,6 @@ namespace FloxDc.CacheFlow
 
         public IMemoryCache Instance { get; }
 
-        private readonly Executor _executor;
         private readonly ILogger<MemoryFlow> _logger;
     }
 }

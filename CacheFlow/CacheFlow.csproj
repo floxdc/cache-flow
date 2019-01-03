@@ -7,7 +7,7 @@
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow</PackageId>
     <Description>.Net Core distributed cache management library based on MessagePack serialization</Description>
-    <Version>1.4.0</Version>
+    <Version>1.4.1</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
     <PackageReleaseNotes>- New Memory flow
@@ -19,6 +19,7 @@
   <PropertyGroup>
     <RuntimeFrameworkVersion>2.1.4</RuntimeFrameworkVersion>
     <LangVersion>latest</LangVersion>
+    <Copyright></Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -31,13 +32,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="1.7.3.4" />
-    <PackageReference Include="MessagePack.ImmutableCollection" Version="1.7.3.4" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
 </Project>

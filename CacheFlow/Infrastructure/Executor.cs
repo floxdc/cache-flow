@@ -5,16 +5,16 @@ using Microsoft.Extensions.Logging;
 
 namespace FloxDc.CacheFlow.Infrastructure
 {
-    internal class Executor
+    internal static class Executor
     {
-        public Executor(ILogger logger, FlowOptions options)
+        internal static void Init(ILogger logger, bool suppressCacheExceptions)
         {
             _logger = logger;
-            _options = options;
+            _suppressCacheExceptions = suppressCacheExceptions;
         }
 
 
-        internal bool TryExecute(Action action)
+        internal static bool TryExecute(Action action)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace FloxDc.CacheFlow.Infrastructure
             catch (Exception ex)
             {
                 _logger.LogCacheError(ex);
-                if (!_options.SuppressCacheExceptions)
+                if (!_suppressCacheExceptions)
                     throw;
             }
 
@@ -36,7 +36,7 @@ namespace FloxDc.CacheFlow.Infrastructure
         }
 
 
-        internal T TryExecute<T>(Func<T> func)
+        internal static T TryExecute<T>(Func<T> func)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace FloxDc.CacheFlow.Infrastructure
             catch (Exception ex)
             {
                 _logger.LogCacheError(ex);
-                if (!_options.SuppressCacheExceptions)
+                if (!_suppressCacheExceptions)
                     throw;
             }
 
@@ -57,7 +57,7 @@ namespace FloxDc.CacheFlow.Infrastructure
         }
 
 
-        internal async Task<bool> TryExecuteAsync(Func<Task> func)
+        internal static async Task<bool> TryExecuteAsync(Func<Task> func)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace FloxDc.CacheFlow.Infrastructure
             catch (Exception ex)
             {
                 _logger.LogCacheError(ex);
-                if (!_options.SuppressCacheExceptions)
+                if (!_suppressCacheExceptions)
                     throw;
             }
 
@@ -79,7 +79,7 @@ namespace FloxDc.CacheFlow.Infrastructure
         }
 
 
-        internal async Task<object> TryExecuteAsync(Func<Task<object>> func)
+        internal static async Task<object> TryExecuteAsync(Func<Task<object>> func)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace FloxDc.CacheFlow.Infrastructure
             catch (Exception ex)
             {
                 _logger.LogCacheError(ex);
-                if (!_options.SuppressCacheExceptions)
+                if (!_suppressCacheExceptions)
                     throw;
             }
 
@@ -100,7 +100,7 @@ namespace FloxDc.CacheFlow.Infrastructure
         }
 
 
-        private readonly ILogger _logger;
-        private readonly FlowOptions _options;
+        private static ILogger _logger;
+        private static bool _suppressCacheExceptions;
     }
 }
