@@ -11,7 +11,7 @@ namespace FloxDc.CacheFlow
 {
     public class MemoryFlow : IMemoryFlow
     {
-        public MemoryFlow(IMemoryCache memoryCache, ILogger<MemoryFlow> logger, IOptionsSnapshot<FlowOptions> options)
+        public MemoryFlow(IMemoryCache memoryCache, ILogger<MemoryFlow> logger, IOptions<FlowOptions> options)
         {
             Instance = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             _logger = logger;

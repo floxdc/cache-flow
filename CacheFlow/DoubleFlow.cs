@@ -11,7 +11,7 @@ namespace FloxDc.CacheFlow
 {
     public class DoubleFlow : IDoubleFlow
     {
-        public DoubleFlow(IDistributedFlow distributed, IMemoryFlow memory, ILogger<DoubleFlow> logger, IOptionsSnapshot<FlowOptions> options)
+        public DoubleFlow(IDistributedFlow distributed, IMemoryFlow memory, ILogger<DoubleFlow> logger, IOptions<FlowOptions> options)
         {
             _distributed = distributed;
             _memory = memory;
