@@ -29,7 +29,7 @@ namespace FloxDc.CacheFlow
             }
 
             _nextQueryTime = DateTime.UtcNow;
-            Executor.Init(_logger, _options.SuppressCacheExceptions);
+            _executor = new Executor(_logger, _options.SuppressCacheExceptions);
         }
 
 
@@ -272,7 +272,7 @@ namespace FloxDc.CacheFlow
 
         private void TryExecute(Action action)
         {
-            if (Executor.TryExecute(action))
+            if (_executor.TryExecute(action))
                 return;
 
             SetNextQueryTime(_options.SkipRetryInterval);
@@ -281,7 +281,7 @@ namespace FloxDc.CacheFlow
 
         private object TryExecute(Func<object> func)
         {
-            var result = Executor.TryExecute(func);
+            var result = _executor.TryExecute(func);
             if(result is null)
                 SetNextQueryTime(_options.SkipRetryInterval);
 
@@ -291,7 +291,7 @@ namespace FloxDc.CacheFlow
 
         private async Task TryExecuteAsync(Func<Task> func)
         {
-            if (await Executor.TryExecuteAsync(func))
+            if (await _executor.TryExecuteAsync(func))
                 return;
 
             SetNextQueryTime(_options.SkipRetryInterval);
@@ -300,7 +300,7 @@ namespace FloxDc.CacheFlow
 
         private async Task<object> TryExecuteAsync(Func<Task<object>> func)
         {
-            var result = await Executor.TryExecuteAsync(func);
+            var result = await _executor.TryExecuteAsync(func);
             if (result is null)
                 SetNextQueryTime(_options.SkipRetryInterval);
 
@@ -310,6 +310,7 @@ namespace FloxDc.CacheFlow
 
         public IDistributedCache Instance { get; }
 
+        private readonly Executor _executor;
         private static bool _isOffline;
         private readonly ILogger<DistributedFlow> _logger;
         private readonly ISerializer _serializer;

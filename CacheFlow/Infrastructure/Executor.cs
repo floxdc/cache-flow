@@ -5,16 +5,16 @@ using Microsoft.Extensions.Logging;
 
 namespace FloxDc.CacheFlow.Infrastructure
 {
-    internal static class Executor
+    internal class Executor
     {
-        internal static void Init(ILogger logger, bool suppressCacheExceptions)
+        internal Executor(ILogger logger, bool suppressCacheExceptions)
         {
             _logger = logger;
             _suppressCacheExceptions = suppressCacheExceptions;
         }
 
 
-        internal static bool TryExecute(Action action)
+        internal bool TryExecute(Action action)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace FloxDc.CacheFlow.Infrastructure
         }
 
 
-        internal static T TryExecute<T>(Func<T> func)
+        internal T TryExecute<T>(Func<T> func)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace FloxDc.CacheFlow.Infrastructure
         }
 
 
-        internal static async Task<bool> TryExecuteAsync(Func<Task> func)
+        internal async Task<bool> TryExecuteAsync(Func<Task> func)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace FloxDc.CacheFlow.Infrastructure
         }
 
 
-        internal static async Task<object> TryExecuteAsync(Func<Task<object>> func)
+        internal async Task<object> TryExecuteAsync(Func<Task<object>> func)
         {
             try
             {
@@ -100,7 +100,7 @@ namespace FloxDc.CacheFlow.Infrastructure
         }
 
 
-        private static ILogger _logger;
-        private static bool _suppressCacheExceptions;
+        private readonly ILogger _logger;
+        private readonly bool _suppressCacheExceptions;
     }
 }
