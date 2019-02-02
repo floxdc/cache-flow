@@ -78,11 +78,19 @@ namespace FloxDc.CacheFlow
 
 
         public void Set<T>(string key, T value, MemoryCacheEntryOptions options)
-            => _executor.TryExecute(() =>
+        {
+            if (Utils.IsDefaultStruct(typeof(T)))
+            {
+                _logger.LogNotSetted(key);
+                return;
+            }
+
+            _executor.TryExecute(() =>
             {
                 Instance.Set(key, value, options);
-                _logger?.LogSet(key);
+                _logger?.LogSetted(key);
             });
+        }
 
 
         public bool TryGetValue<T>(string key, out T value)
@@ -90,13 +98,13 @@ namespace FloxDc.CacheFlow
             value = default;
 
             value = _executor.TryExecute(() => Instance.Get<T>(key));
-            if (value == null || value.Equals(default(T)))
+            if (value == null)
             {
-                _logger?.LogMiss(key);
+                _logger?.LogMissed(key);
                 return false;
             }
 
-            _logger?.LogHit(key);
+            _logger?.LogHitted(key);
             return true;
         }
 

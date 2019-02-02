@@ -7,12 +7,10 @@
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow</PackageId>
     <Description>.Net Core distributed cache management library based on MessagePack serialization</Description>
-    <Version>1.4.2-beta1-3</Version>
+    <Version>1.4.2</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
-    <PackageReleaseNotes>- Serializers moved to separate packages
-- New service registration mechanism
-- Bugfixes</PackageReleaseNotes>
+    <PackageReleaseNotes>- Fixed #6 Default struct values can be cached</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -44,12 +44,12 @@ namespace FloxDc.CacheFlow
             var cached = await GetFromCacheAsync(key, cancellationToken);
             if (cached is null)
             {
-                _logger?.LogMiss(key);
+                _logger?.LogMissed(key);
                 return default;
             }
 
             var value = _serializer.Deserialize<T>(cached);
-            _logger?.LogHit(key);
+            _logger?.LogHitted(key);
             return value;
         }
 
@@ -179,12 +179,12 @@ namespace FloxDc.CacheFlow
             var cached = GetFromCache(key);
             if (cached is null)
             {
-                _logger?.LogMiss(key);
+                _logger?.LogMissed(key);
                 return false;
             }
 
             value = _serializer.Deserialize<T>(cached);
-            _logger?.LogHit(key);
+            _logger?.LogHitted(key);
             return true;
         }
 
@@ -230,6 +230,12 @@ namespace FloxDc.CacheFlow
                 return;
             }
 
+            if (Utils.IsDefaultStruct(value))
+            {
+                _logger.LogNotSetted(key);
+                return;
+            }
+
             var serialized = _serializer.Serialize(value);
             TryExecute(() =>
             {
@@ -250,6 +256,12 @@ namespace FloxDc.CacheFlow
                 return;
             }
 
+            if (Utils.IsDefaultStruct(value))
+            {
+                _logger.LogNotSetted(key);
+                return;
+            }
+
             var serialized = _serializer.Serialize(value);
             await TryExecuteAsync(async () =>
             {
@@ -259,7 +271,7 @@ namespace FloxDc.CacheFlow
                     await Instance.SetStringAsync(key, serialized as string, options, cancellationToken);
             });
 
-            _logger?.LogSet(key);
+            _logger?.LogSetted(key);
         }
 
 
