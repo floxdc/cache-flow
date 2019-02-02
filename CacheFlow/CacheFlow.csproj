@@ -10,7 +10,8 @@
     <Version>1.4.2</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
-    <PackageReleaseNotes>- Fixed #6 Default struct values can be cached</PackageReleaseNotes>
+    <PackageReleaseNotes>- Fixed #4 Serialization method picks on ISerializer settings
+- Fixed #6 Default struct values can be cached</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

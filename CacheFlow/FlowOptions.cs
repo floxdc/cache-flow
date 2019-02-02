@@ -17,10 +17,5 @@ namespace FloxDc.CacheFlow
         /// Enables suppression of throwing exceptions, caused by caching service itself. Default: true.
         /// </summary>
         public bool SuppressCacheExceptions { get; set; } = true;
-
-        /// <summary>
-        /// Enables binary serialization to MsgPack format. Overwise, data will be serialized to JSON. Default: true.
-        /// </summary>
-        public bool UseBinarySerialization { get; set; } = true;
     }
 }

@@ -39,6 +39,11 @@ namespace FloxDc.CacheFlow.Infrastructure
         }
 
 
+        public bool IsBinarySerializer { get; } = IsBinary;
+        public bool IsStringSerializer { get; } = !IsBinary;
+
+
         private readonly BinaryFormatter _formatter;
+        private const bool IsBinary = true;
     }
 }

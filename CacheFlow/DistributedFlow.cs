@@ -205,7 +205,7 @@ namespace FloxDc.CacheFlow
         private object GetFromCache(string key)
             => TryExecute(() =>
             {
-                if (_options.UseBinarySerialization)
+                if (_serializer.IsBinarySerializer)
                     return Instance.Get(key);
 
                 return Instance.GetString(key);
@@ -215,7 +215,7 @@ namespace FloxDc.CacheFlow
         private Task<object> GetFromCacheAsync(string key, CancellationToken cancellationToken)
             => TryExecuteAsync(async () =>
             {
-                if (_options.UseBinarySerialization)
+                if (_serializer.IsBinarySerializer)
                     return await Instance.GetAsync(key, cancellationToken);
 
                 return await Instance.GetStringAsync(key, cancellationToken);
@@ -239,7 +239,7 @@ namespace FloxDc.CacheFlow
             var serialized = _serializer.Serialize(value);
             TryExecute(() =>
             {
-                if (_options.UseBinarySerialization)
+                if (_serializer.IsBinarySerializer)
                     Instance.Set(key, serialized as byte[], options);
                 else
                     Instance.SetString(key, serialized as string, options);
@@ -265,7 +265,7 @@ namespace FloxDc.CacheFlow
             var serialized = _serializer.Serialize(value);
             await TryExecuteAsync(async () =>
             {
-                if (_options.UseBinarySerialization)
+                if (_serializer.IsBinarySerializer)
                     await Instance.SetAsync(key, serialized as byte[], options, cancellationToken);
                 else
                     await Instance.SetStringAsync(key, serialized as string, options, cancellationToken);
