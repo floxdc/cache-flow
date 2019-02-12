@@ -11,6 +11,17 @@ namespace FloxDc.CacheFlow
         /// The ratio between caching times in a memory and in a distributed cache when DoubleFlow is used.
         /// </summary>
         public double DistributedToMemoryExpirationRatio { get; set; } = 10.0;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string CacheKeyDelimiter { get; set; } = "::";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string CacheKeyPrefix { get; set; } = string.Empty;
+
         /// <summary>
         /// Cache will be skipped for that time span if any error occurs in the request process.
         /// </summary>

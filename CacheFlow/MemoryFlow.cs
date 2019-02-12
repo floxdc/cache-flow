@@ -11,7 +11,7 @@ namespace FloxDc.CacheFlow
 {
     public class MemoryFlow : IMemoryFlow
     {
-        public MemoryFlow(IMemoryCache memoryCache, ILogger<MemoryFlow> logger, IOptions<FlowOptions> options)
+        public MemoryFlow(IMemoryCache memoryCache, ILogger<MemoryFlow> logger = default, IOptions<FlowOptions> options = default)
         {
             Instance = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             _logger = logger;
@@ -28,6 +28,7 @@ namespace FloxDc.CacheFlow
             }
 
             _executor = new Executor(_logger, internalOptions.SuppressCacheExceptions);
+            _prefix = GetFullCacheKeyPrefix(internalOptions.CacheKeyPrefix, internalOptions.CacheKeyDelimiter);
         }
 
 
@@ -53,7 +54,8 @@ namespace FloxDc.CacheFlow
             => GetOrSetAsync(key, getValueFunction, new MemoryCacheEntryOptions{AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, MemoryCacheEntryOptions options)
+        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction,
+            MemoryCacheEntryOptions options, CancellationToken cancellationToken = default)
         {
             if (TryGetValue(key, out T result))
                 return result;
@@ -66,11 +68,15 @@ namespace FloxDc.CacheFlow
 
 
         public void Remove(string key)
-            => _executor.TryExecute(() =>
+        {
+            var fullKey = GetFullKey(_prefix, key);
+
+            _executor.TryExecute(() =>
             {
-                Instance.Remove(key);
-                _logger?.LogRemoved(key);
+                Instance.Remove(fullKey);
+                _logger?.LogRemoved(fullKey);
             });
+        }
 
 
         public void Set<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow) 
@@ -79,16 +85,17 @@ namespace FloxDc.CacheFlow
 
         public void Set<T>(string key, T value, MemoryCacheEntryOptions options)
         {
+            var fullKey = GetFullKey(_prefix, key);
             if (Utils.IsDefaultStruct(typeof(T)))
             {
-                _logger.LogNotSetted(key);
+                _logger.LogNotSetted(fullKey);
                 return;
             }
 
             _executor.TryExecute(() =>
             {
-                Instance.Set(key, value, options);
-                _logger?.LogSetted(key);
+                Instance.Set(fullKey, value, options);
+                _logger?.LogSetted(fullKey);
             });
         }
 
@@ -96,22 +103,33 @@ namespace FloxDc.CacheFlow
         public bool TryGetValue<T>(string key, out T value)
         {
             value = default;
+            var fullKey = GetFullKey(_prefix, key);
 
-            value = _executor.TryExecute(() => Instance.Get<T>(key));
+            value = _executor.TryExecute(() => Instance.Get<T>(fullKey));
             if (value == null)
             {
-                _logger?.LogMissed(key);
+                _logger?.LogMissed(fullKey);
                 return false;
             }
 
-            _logger?.LogHitted(key);
+            _logger?.LogHitted(fullKey);
             return true;
         }
 
 
         public IMemoryCache Instance { get; }
 
+
+        private static string GetFullCacheKeyPrefix(string prefix, string delimiter) 
+            => string.IsNullOrWhiteSpace(prefix) ? string.Empty : string.Concat(prefix, delimiter);
+
+
+        private string GetFullKey(string prefix, string key)
+            => prefix == string.Empty ? key : string.Concat(_prefix, key);
+
+
         private readonly Executor _executor;
         private readonly ILogger<MemoryFlow> _logger;
+        private readonly string _prefix;
     }
 }

@@ -50,7 +50,8 @@ namespace FloxDc.CacheFlow.Extensions
         /// <returns></returns>
         public static IServiceCollection AddMemoryFlow(this IServiceCollection services, Action<FlowOptions> options = null) 
             => services.RegisterOptions(options)
-                .AddSingleton<IMemoryFlow, MemoryFlow>();
+                .AddSingleton<IMemoryFlow, MemoryFlow>()
+                .AddSingleton(typeof(IMemoryFlow<>), typeof(MemoryFlow<>));
 
 
         private static IServiceCollection RegisterOptions(this IServiceCollection services, Action<FlowOptions> options)

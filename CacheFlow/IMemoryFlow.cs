@@ -5,7 +5,9 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace FloxDc.CacheFlow
 {
-    public interface IMemoryFlow
+    public interface IMemoryFlow : IMemoryFlow<string> { }
+
+    public interface IMemoryFlow<TClass> where TClass : class
     {
         IMemoryCache Instance { get; }
 
@@ -47,8 +49,9 @@ namespace FloxDc.CacheFlow
         /// <param name="key">Target cache key.</param>
         /// <param name="getValueFunction">Function what gets value to set to cache. Executes if provided key wasn't found.</param>
         /// <param name="options">Cache options.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, MemoryCacheEntryOptions options);
+        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, MemoryCacheEntryOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Removes specific cache entry.
