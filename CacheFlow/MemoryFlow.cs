@@ -5,6 +5,7 @@ using FloxDc.CacheFlow.Infrastructure;
 using FloxDc.CacheFlow.Logging;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace FloxDc.CacheFlow
@@ -14,12 +15,12 @@ namespace FloxDc.CacheFlow
         public MemoryFlow(IMemoryCache memoryCache, ILogger<MemoryFlow> logger = default, IOptions<FlowOptions> options = default)
         {
             Instance = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-            _logger = logger;
+            _logger = logger ?? new NullLogger<MemoryFlow>();
 
             FlowOptions internalOptions;
             if (options is null)
             {
-                _logger?.LogNoOptionsProvided();
+                _logger.LogNoOptionsProvided();
                 internalOptions = new FlowOptions();
             }
             else
@@ -74,7 +75,7 @@ namespace FloxDc.CacheFlow
             _executor.TryExecute(() =>
             {
                 Instance.Remove(fullKey);
-                _logger?.LogRemoved(fullKey);
+                _logger.LogRemoved(fullKey);
             });
         }
 
@@ -86,7 +87,7 @@ namespace FloxDc.CacheFlow
         public void Set<T>(string key, T value, MemoryCacheEntryOptions options)
         {
             var fullKey = GetFullKey(_prefix, key);
-            if (Utils.IsDefaultStruct(typeof(T)))
+            if (Utils.IsDefaultStruct(value))
             {
                 _logger.LogNotSetted(fullKey);
                 return;
@@ -94,25 +95,35 @@ namespace FloxDc.CacheFlow
 
             _executor.TryExecute(() =>
             {
-                Instance.Set(fullKey, value, options);
-                _logger?.LogSetted(fullKey);
+                using (var entry = Instance.CreateEntry(fullKey))
+                {
+                    entry.SetOptions(options);
+                    entry.Value = value;
+                }
+
+                _logger.LogSetted(fullKey);
             });
         }
 
 
         public bool TryGetValue<T>(string key, out T value)
         {
-            value = default;
             var fullKey = GetFullKey(_prefix, key);
 
-            value = _executor.TryExecute(() => Instance.Get<T>(fullKey));
-            if (value == null)
+            bool isCached;
+            (isCached, value) = _executor.TryExecute(() =>
             {
-                _logger?.LogMissed(fullKey);
+                var result = Instance.TryGetValue(key, out T obj);
+                return (result, obj);
+            });
+
+            if (!isCached)
+            {
+                _logger.LogMissed(fullKey);
                 return false;
             }
 
-            _logger?.LogHitted(fullKey);
+            _logger.LogHitted(fullKey);
             return true;
         }
 

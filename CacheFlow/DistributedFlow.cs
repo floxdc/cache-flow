@@ -232,7 +232,7 @@ namespace FloxDc.CacheFlow
 
             if (Utils.IsDefaultStruct(value))
             {
-                _logger.LogNotSetted(key);
+                _logger?.LogNotSetted(key);
                 return;
             }
 
@@ -258,7 +258,7 @@ namespace FloxDc.CacheFlow
 
             if (Utils.IsDefaultStruct(value))
             {
-                _logger.LogNotSetted(key);
+                _logger?.LogNotSetted(key);
                 return;
             }
 
