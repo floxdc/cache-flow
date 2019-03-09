@@ -1,26 +1,28 @@
 ﻿using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FloxDc.CacheFlow.Infrastructure;
 using FloxDc.CacheFlow.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace FloxDc.CacheFlow
 {
     public class DistributedFlow : IDistributedFlow
     {
-        public DistributedFlow(IDistributedCache distributedCache, ILogger<DistributedFlow> logger,
-            IOptions<FlowOptions> options, ISerializer serializer)
+        public DistributedFlow(IDistributedCache distributedCache, ILogger<DistributedFlow> logger = default,
+            IOptions<FlowOptions> options = default, ISerializer serializer = default)
         {
             Instance = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
-            _logger = logger;
+            _logger = logger ?? new NullLogger<DistributedFlow>();
             _serializer = serializer ?? new BinarySerializer();
 
             if (options is null)
             {
-                _logger?.LogNoOptionsProvided();
+                _logger.LogNoOptionsProvided();
                 _options = new FlowOptions();
             }
             else
@@ -30,6 +32,7 @@ namespace FloxDc.CacheFlow
 
             _nextQueryTime = DateTime.UtcNow;
             _executor = new Executor(_logger, _options.SuppressCacheExceptions);
+            _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(_options.CacheKeyPrefix, _options.CacheKeyDelimiter);
         }
 
 
@@ -37,19 +40,19 @@ namespace FloxDc.CacheFlow
         {
             if (IsOffline())
             {
-                _logger?.LogSkipped(key);
+                _logger.LogSkipped(key);
                 return default;
             }
 
-            var cached = await GetFromCacheAsync(key, cancellationToken);
+            var cached = await GetInternalAsync(key, cancellationToken);
             if (cached is null)
             {
-                _logger?.LogMissed(key);
+                _logger.LogMissed(key);
                 return default;
             }
 
             var value = _serializer.Deserialize<T>(cached);
-            _logger?.LogHitted(key);
+            _logger.LogHitted(key);
             return value;
         }
 
@@ -62,7 +65,7 @@ namespace FloxDc.CacheFlow
         {
             if (IsOffline())
             {
-                _logger?.LogSkipped(key);
+                _logger.LogSkipped(key);
                 return getFunction();
             }
 
@@ -88,7 +91,7 @@ namespace FloxDc.CacheFlow
         {
             if (IsOffline())
             {
-                _logger?.LogSkipped(key);
+                _logger.LogSkipped(key);
                 return await getFunction();
             }
 
@@ -107,22 +110,29 @@ namespace FloxDc.CacheFlow
         {
             if (IsOffline())
             {
-                _logger?.LogSkipped(key);
+                _logger.LogSkipped(key);
                 return;
             }
 
-            TryExecute(() => Instance.Refresh(key));
+            TryExecute(() =>
+            {
+                var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+                Instance.Refresh(fullKey);
+            });
         }
 
 
         public Task RefreshAsync(string key, CancellationToken cancellationToken = default)
         {
             if (!IsOffline())
-                return TryExecuteAsync(async () => await Instance.RefreshAsync(key, cancellationToken));
+                return TryExecuteAsync(async () =>
+                {
+                    var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+                    await Instance.RefreshAsync(fullKey, cancellationToken);
+                });
 
-            _logger?.LogSkipped(key);
+            _logger.LogSkipped(key);
             return default;
-
         }
 
 
@@ -130,19 +140,29 @@ namespace FloxDc.CacheFlow
         {
             if (IsOffline())
             {
-                _logger?.LogSkipped(key);
+                _logger.LogSkipped(key);
                 return;
             }
 
-            TryExecute(() => Instance.Remove(key));
-            _logger?.LogRemoved(key);
+            TryExecute(() =>
+            {
+                var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+                Instance.Remove(fullKey);
+            });
+
+            _logger.LogRemoved(key);
         }
 
 
         public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
         {
-            await TryExecuteAsync(async () => await Instance.RemoveAsync(key, cancellationToken));
-            _logger?.LogRemoved(key);
+            await TryExecuteAsync(async () => 
+            {
+                var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+                await Instance.RemoveAsync(fullKey, cancellationToken);
+            });
+
+            _logger.LogRemoved(key);
         }
 
 
@@ -172,20 +192,36 @@ namespace FloxDc.CacheFlow
             value = default;
             if (IsOffline())
             {
-                _logger?.LogSkipped(key);
+                _logger.LogSkipped(key);
                 return false;
             }
 
-            var cached = GetFromCache(key);
+            var cached = GetInteernal(key);
             if (cached is null)
             {
-                _logger?.LogMissed(key);
+                _logger.LogMissed(key);
                 return false;
             }
 
             value = _serializer.Deserialize<T>(cached);
-            _logger?.LogHitted(key);
+            _logger.LogHitted(key);
             return true;
+        }
+
+
+        private static bool CanSet<T>(ILogger<DistributedFlow> logger, string key, T value)
+        {
+            if (IsOffline())
+            {
+                logger.LogSkipped(key);
+                return false;
+            }
+
+            if (!Utils.IsDefaultStruct(value))
+                return true;
+
+            logger.LogNotSetted(key);
+            return false;
         }
 
 
@@ -202,76 +238,66 @@ namespace FloxDc.CacheFlow
         }
 
 
-        private object GetFromCache(string key)
+        private object GetInteernal(string key)
             => TryExecute(() =>
             {
+                var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
                 if (_serializer.IsBinarySerializer)
-                    return Instance.Get(key);
+                    return Instance.Get(fullKey);
 
-                return Instance.GetString(key);
+                return Instance.GetString(fullKey);
             });
 
 
-        private Task<object> GetFromCacheAsync(string key, CancellationToken cancellationToken)
+        private Task<object> GetInternalAsync(string key, CancellationToken cancellationToken)
             => TryExecuteAsync(async () =>
             {
+                var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
                 if (_serializer.IsBinarySerializer)
-                    return await Instance.GetAsync(key, cancellationToken);
+                    return await Instance.GetAsync(fullKey, cancellationToken);
 
-                return await Instance.GetStringAsync(key, cancellationToken);
+                return await Instance.GetStringAsync(fullKey, cancellationToken);
             });
+
+
+        private static byte[] SerializeAndEncode<T>(ISerializer serializer, T value)
+        {
+            var serialized = serializer.Serialize(value);
+            return serializer.IsBinarySerializer
+                ? serialized as byte[]
+                : Encoding.UTF8.GetBytes(serialized as string);
+        }
 
 
         private void SetInternal<T>(string key, T value, DistributedCacheEntryOptions options)
         {
-            if (IsOffline())
-            {
-                _logger?.LogSkipped(key);
+            if (!CanSet(_logger, key, value))
                 return;
-            }
 
-            if (Utils.IsDefaultStruct(value))
-            {
-                _logger?.LogNotSetted(key);
-                return;
-            }
-
-            var serialized = _serializer.Serialize(value);
             TryExecute(() =>
             {
-                if (_serializer.IsBinarySerializer)
-                    Instance.Set(key, serialized as byte[], options);
-                else
-                    Instance.SetString(key, serialized as string, options);
+                var encoded = SerializeAndEncode(_serializer, value);
+                var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+                Instance.Set(fullKey, encoded, options);
             });
+
+            _logger.LogSetted(key);
         }
 
 
-        private async Task SetInternalAsync<T>(string key, T value, DistributedCacheEntryOptions options,
-            CancellationToken cancellationToken)
+        private async Task SetInternalAsync<T>(string key, T value, DistributedCacheEntryOptions options, CancellationToken cancellationToken)
         {
-            if (IsOffline())
-            {
-                _logger?.LogSkipped(key);
+            if (!CanSet(_logger, key, value))
                 return;
-            }
 
-            if (Utils.IsDefaultStruct(value))
-            {
-                _logger?.LogNotSetted(key);
-                return;
-            }
-
-            var serialized = _serializer.Serialize(value);
             await TryExecuteAsync(async () =>
             {
-                if (_serializer.IsBinarySerializer)
-                    await Instance.SetAsync(key, serialized as byte[], options, cancellationToken);
-                else
-                    await Instance.SetStringAsync(key, serialized as string, options, cancellationToken);
+                var encoded = SerializeAndEncode(_serializer, value);
+                var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+                await Instance.SetAsync(fullKey, encoded, options, cancellationToken);
             });
 
-            _logger?.LogSetted(key);
+            _logger.LogSetted(key);
         }
 
 
@@ -325,8 +351,9 @@ namespace FloxDc.CacheFlow
         private readonly Executor _executor;
         private static bool _isOffline;
         private readonly ILogger<DistributedFlow> _logger;
-        private readonly ISerializer _serializer;
         private static DateTime _nextQueryTime;
         private readonly FlowOptions _options;
+        private readonly string _prefix;
+        private readonly ISerializer _serializer;
     }
 }

@@ -29,7 +29,7 @@ namespace FloxDc.CacheFlow
             }
 
             _executor = new Executor(_logger, internalOptions.SuppressCacheExceptions);
-            _prefix = GetFullCacheKeyPrefix(internalOptions.CacheKeyPrefix, internalOptions.CacheKeyDelimiter);
+            _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(internalOptions.CacheKeyPrefix, internalOptions.CacheKeyDelimiter);
         }
 
 
@@ -70,7 +70,7 @@ namespace FloxDc.CacheFlow
 
         public void Remove(string key)
         {
-            var fullKey = GetFullKey(_prefix, key);
+            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
 
             _executor.TryExecute(() =>
             {
@@ -86,7 +86,7 @@ namespace FloxDc.CacheFlow
 
         public void Set<T>(string key, T value, MemoryCacheEntryOptions options)
         {
-            var fullKey = GetFullKey(_prefix, key);
+            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             if (Utils.IsDefaultStruct(value))
             {
                 _logger.LogNotSetted(fullKey);
@@ -108,12 +108,12 @@ namespace FloxDc.CacheFlow
 
         public bool TryGetValue<T>(string key, out T value)
         {
-            var fullKey = GetFullKey(_prefix, key);
+            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
 
             bool isCached;
             (isCached, value) = _executor.TryExecute(() =>
             {
-                var result = Instance.TryGetValue(key, out T obj);
+                var result = Instance.TryGetValue(fullKey, out T obj);
                 return (result, obj);
             });
 
@@ -129,14 +129,6 @@ namespace FloxDc.CacheFlow
 
 
         public IMemoryCache Instance { get; }
-
-
-        private static string GetFullCacheKeyPrefix(string prefix, string delimiter) 
-            => string.IsNullOrWhiteSpace(prefix) ? string.Empty : string.Concat(prefix, delimiter);
-
-
-        private string GetFullKey(string prefix, string key)
-            => prefix == string.Empty ? key : string.Concat(_prefix, key);
 
 
         private readonly Executor _executor;

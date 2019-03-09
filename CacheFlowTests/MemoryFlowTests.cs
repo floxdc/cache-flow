@@ -1,6 +1,7 @@
 ﻿using System;
 using FloxDc.CacheFlow;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -155,6 +156,28 @@ namespace CacheFlowTests
             Assert.True(expected);
             Assert.Equal(storedValue, value);
             memoryCacheMock.Verify(c => c.TryGetValue(It.IsAny<object>(), out temp), Times.Once);
+        }
+
+
+        [Fact]
+        public void ShouldFindKeyWithPredefinedPrefix()
+        {
+            const string prefix = "Prefix";
+            const string delimiter = "-";
+            const string key = "Key";
+            var obj = new object();
+            var memoryCacheMock = new Mock<IMemoryCache>();
+            memoryCacheMock.Setup(c => c.TryGetValue(prefix + delimiter + key, out obj))
+                .Returns(true);
+            var optionsMock = new Mock<IOptions<FlowOptions>>();
+            optionsMock.Setup(o => o.Value)
+                .Returns(new FlowOptions{CacheKeyDelimiter = delimiter, CacheKeyPrefix = prefix});
+
+            var cache = new MemoryFlow(memoryCacheMock.Object, options: optionsMock.Object);
+            var expected = cache.TryGetValue(key, out object value);
+
+            Assert.True(expected);
+            Assert.Equal(obj, value);
         }
     }
 }
