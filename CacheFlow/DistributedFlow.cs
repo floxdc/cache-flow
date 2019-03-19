@@ -51,7 +51,7 @@ namespace FloxDc.CacheFlow
                 return default;
             }
 
-            var value = _serializer.Deserialize<T>(cached);
+            var value = DeserializeAndDecode<T>(_serializer, cached);
             _logger.LogHitted(key);
             return value;
         }
@@ -203,7 +203,7 @@ namespace FloxDc.CacheFlow
                 return false;
             }
 
-            value = _serializer.Deserialize<T>(cached);
+            value = DeserializeAndDecode<T>(_serializer, cached);
             _logger.LogHitted(key);
             return true;
         }
@@ -225,6 +225,12 @@ namespace FloxDc.CacheFlow
         }
 
 
+        private static T DeserializeAndDecode<T>(ISerializer serializer, byte[] value)
+            => serializer.IsBinarySerializer
+                ? serializer.Deserialize<T>(value)
+                : serializer.Deserialize<T>(Encoding.UTF8.GetString(value, 0, value.Length));
+
+
         private static bool IsOffline()
         {
             if (!_isOffline)
@@ -238,25 +244,19 @@ namespace FloxDc.CacheFlow
         }
 
 
-        private object GetInteernal(string key)
+        private byte[] GetInteernal(string key)
             => TryExecute(() =>
             {
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-                if (_serializer.IsBinarySerializer)
-                    return Instance.Get(fullKey);
-
-                return Instance.GetString(fullKey);
+                return Instance.Get(fullKey);
             });
 
 
-        private Task<object> GetInternalAsync(string key, CancellationToken cancellationToken)
+        private Task<byte[]> GetInternalAsync(string key, CancellationToken cancellationToken)
             => TryExecuteAsync(async () =>
             {
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-                if (_serializer.IsBinarySerializer)
-                    return await Instance.GetAsync(fullKey, cancellationToken);
-
-                return await Instance.GetStringAsync(fullKey, cancellationToken);
+                return await Instance.GetAsync(fullKey, cancellationToken);
             });
 
 
@@ -317,7 +317,7 @@ namespace FloxDc.CacheFlow
         }
 
 
-        private object TryExecute(Func<object> func)
+        private byte[] TryExecute(Func<byte[]> func)
         {
             var result = _executor.TryExecute(func);
             if(result is null)
@@ -336,13 +336,13 @@ namespace FloxDc.CacheFlow
         }
 
 
-        private async Task<object> TryExecuteAsync(Func<Task<object>> func)
+        private async Task<byte[]> TryExecuteAsync(Func<Task<byte[]>> func)
         {
             var result = await _executor.TryExecuteAsync(func);
             if (result is null)
                 SetNextQueryTime(_options.SkipRetryInterval);
 
-            return null;
+            return result;
         }
 
 

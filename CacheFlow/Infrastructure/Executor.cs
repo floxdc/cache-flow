@@ -79,7 +79,7 @@ namespace FloxDc.CacheFlow.Infrastructure
         }
 
 
-        internal async Task<object> TryExecuteAsync(Func<Task<object>> func)
+        internal async Task<T> TryExecuteAsync<T>(Func<Task<T>> func)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace FloxDc.CacheFlow.Infrastructure
                     throw;
             }
 
-            return null;
+            return default;
         }
 
 
