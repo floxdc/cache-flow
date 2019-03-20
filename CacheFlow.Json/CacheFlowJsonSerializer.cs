@@ -11,5 +11,12 @@ namespace CacheFlow.Json
 
         public object Serialize<T>(T value) 
             => JsonConvert.SerializeObject(value);
+
+
+        public bool IsBinarySerializer { get; } = IsBinary;
+        public bool IsStringSerializer { get; } = !IsBinary;
+
+
+        private const bool IsBinary = false;
     }
 }

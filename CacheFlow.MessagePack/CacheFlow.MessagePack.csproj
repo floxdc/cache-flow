@@ -1,14 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp2.2</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Flox DC</Company>
     <Authors>Kirill Taran</Authors>
+    <PackageId>FloxDc.CacheFlow.MessagePack</PackageId>
+    <Version>1.5.0</Version>
+    <Product>FloxDc.CacheFlow.MessagePack</Product>
+    <Description>MessagePack serializer for CacheFlow</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FloxDc.CacheFlow" Version="1.4.1" />
+    <PackageReference Include="FloxDc.CacheFlow" Version="1.5.1" />
     <PackageReference Include="MessagePack" Version="1.7.3.4" />
     <PackageReference Include="MessagePack.ImmutableCollection" Version="1.7.3.4" />
   </ItemGroup>

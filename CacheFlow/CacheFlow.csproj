@@ -1,16 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp2.2</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Flox DC</Company>
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow</PackageId>
-    <Description>.Net Core distributed cache management library based on MessagePack serialization</Description>
-    <Version>1.4.2</Version>
+    <Description>.Net Core distributed cache management library based on IDistributedCache and IMemoryCache interfaces</Description>
+    <Version>1.5.1</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
-    <PackageReleaseNotes>- Fixed #4 Serialization method picks on ISerializer settings
+    <PackageReleaseNotes>- Added #5 Auto-prefixed keys support
+- Fixed #4 Serialization method picks on ISerializer settings
 - Fixed #6 Default struct values can be cached</PackageReleaseNotes>
   </PropertyGroup>
 

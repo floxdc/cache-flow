@@ -16,7 +16,15 @@ namespace CacheFlow.MessagePack
         public T Deserialize<T>(object value) 
             => MessagePackSerializer.Deserialize<T>(value as byte[]);
 
+
         public object Serialize<T>(T value) 
             => MessagePackSerializer.Serialize(value);
+
+
+        public bool IsBinarySerializer { get; } = IsBinary;
+        public bool IsStringSerializer { get; } = !IsBinary;
+
+
+        private const bool IsBinary = true;
     }
 }
