@@ -20,6 +20,10 @@
     <LangVersion>latest</LangVersion>
     <Copyright></Copyright>
     <AssemblyVersion>1.4.2.0</AssemblyVersion>
+    <RepositoryUrl>https://bitbucket.org/floxdc/cache-flow</RepositoryUrl>
+    <RepositoryType></RepositoryType>
+    <PackageLicenseUrl>https://bitbucket.org/floxdc/cache-flow/src/f221ca309ac644f1b9b25aa6cec9480c084d261f/LICENSE.MD</PackageLicenseUrl>
+    <PackageTags>IDistributedCache; IMemoryCache; CacheFlow</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

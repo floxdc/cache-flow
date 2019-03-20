@@ -9,6 +9,9 @@
     <Version>1.5.0</Version>
     <Product>FloxDc.CacheFlow.Json</Product>
     <Description>Json serializer for CacheFlow</Description>
+    <PackageLicenseUrl>https://bitbucket.org/floxdc/cache-flow/src/f221ca309ac644f1b9b25aa6cec9480c084d261f/LICENSE.MD</PackageLicenseUrl>
+    <RepositoryUrl>https://bitbucket.org/floxdc/cache-flow</RepositoryUrl>
+    <PackageTags>CacheFlow Json</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
