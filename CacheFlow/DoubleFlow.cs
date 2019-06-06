@@ -19,11 +19,11 @@ namespace FloxDc.CacheFlow
             if (options is null)
             {
                 logger?.LogNoOptionsProvided();
-                _options = new FlowOptions();
+                Options = new FlowOptions();
             }
             else
             {
-                _options = options.Value;
+                Options = options.Value;
             }
         }
 
@@ -189,15 +189,15 @@ namespace FloxDc.CacheFlow
 
 
         private TimeSpan GetMemoryExpirationTime(TimeSpan? distributedExpirationTime) 
-            => distributedExpirationTime?.Divide(_options.DistributedToMemoryExpirationRatio) ?? TimeSpan.Zero;
+            => distributedExpirationTime?.Divide(Options.DistributedToMemoryExpirationRatio) ?? TimeSpan.Zero;
 
 
         public IDistributedCache DistributedInstance => _distributed.Instance;
         public IMemoryCache MemoryInstance => _memory.Instance;
+        public FlowOptions Options { get; }
 
 
         private readonly IDistributedFlow _distributed;
         private readonly IMemoryFlow _memory;
-        private readonly FlowOptions _options;
     }
 }

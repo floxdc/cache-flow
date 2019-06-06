@@ -10,6 +10,7 @@ namespace FloxDc.CacheFlow
     public interface IMemoryFlow<TClass> where TClass : class
     {
         IMemoryCache Instance { get; }
+        FlowOptions Options { get; }
 
         /// <summary>
         /// Tries to get value from cache, and sets it if no entry was found.
@@ -40,7 +41,7 @@ namespace FloxDc.CacheFlow
         /// <param name="absoluteExpirationRelativeToNow">Absolute amount of time relative to now which should pass to expire cache.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, TimeSpan absoluteExpirationRelativeToNow, CancellationToken cancellationToken = default);
+        ValueTask<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, TimeSpan absoluteExpirationRelativeToNow, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Tries to get value from cache, and sets it if no entry was found.
@@ -51,7 +52,7 @@ namespace FloxDc.CacheFlow
         /// <param name="options">Cache options.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, MemoryCacheEntryOptions options, CancellationToken cancellationToken = default);
+        ValueTask<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, MemoryCacheEntryOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Removes specific cache entry.

@@ -30,6 +30,8 @@ namespace FloxDc.CacheFlow
 
             _executor = new Executor(_logger, internalOptions.SuppressCacheExceptions);
             _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(internalOptions.CacheKeyPrefix, internalOptions.CacheKeyDelimiter);
+
+            Options = internalOptions;
         }
 
 
@@ -50,12 +52,12 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, TimeSpan absoluteExpirationRelativeToNow,
+        public ValueTask<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, TimeSpan absoluteExpirationRelativeToNow,
             CancellationToken cancellationToken = default) 
             => GetOrSetAsync(key, getValueFunction, new MemoryCacheEntryOptions{AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction,
+        public async ValueTask<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction,
             MemoryCacheEntryOptions options, CancellationToken cancellationToken = default)
         {
             if (TryGetValue(key, out T result))
@@ -71,12 +73,8 @@ namespace FloxDc.CacheFlow
         public void Remove(string key)
         {
             var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-
-            _executor.TryExecute(() =>
-            {
-                Instance.Remove(fullKey);
-                _logger.LogRemoved(fullKey);
-            });
+            _executor.TryExecute(() => Instance.Remove(fullKey));
+            _logger.LogRemoved(fullKey);
         }
 
 
@@ -129,6 +127,7 @@ namespace FloxDc.CacheFlow
 
 
         public IMemoryCache Instance { get; }
+        public FlowOptions Options { get; }
 
 
         private readonly Executor _executor;

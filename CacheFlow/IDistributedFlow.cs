@@ -5,9 +5,12 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace FloxDc.CacheFlow
 {
-    public interface IDistributedFlow
+    public interface IDistributedFlow : IDistributedFlow<string> { }
+
+    public interface IDistributedFlow<TClass> where  TClass: class
     {
         IDistributedCache Instance { get; }
+        FlowOptions Options { get; }
 
         /// <summary>
         /// Gets value from cache.
@@ -95,17 +98,6 @@ namespace FloxDc.CacheFlow
         /// <param name="key">Target cache key.</param>
         /// <param name="value">Value of the cache entry.</param>
         /// <param name="absoluteExpirationRelativeToNow">Absolute amount of time relative to now which should pass to expire cache.</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Sets cache entry with provided value.
-        /// </summary>
-        /// <typeparam name="T">Type of setted value.</typeparam>
-        /// <param name="key">Target cache key.</param>
-        /// <param name="value">Value of the cache entry.</param>
-        /// <param name="absoluteExpirationRelativeToNow">Absolute amount of time relative to now which should pass to expire cache.</param>
         void Set<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow);
 
         /// <summary>
@@ -116,6 +108,17 @@ namespace FloxDc.CacheFlow
         /// <param name="value">Value of the cache entry.</param>
         /// <param name="options">Cache options.</param>
         void Set<T>(string key, T value, DistributedCacheEntryOptions options);
+
+        /// <summary>
+        /// Sets cache entry with provided value.
+        /// </summary>
+        /// <typeparam name="T">Type of setted value.</typeparam>
+        /// <param name="key">Target cache key.</param>
+        /// <param name="value">Value of the cache entry.</param>
+        /// <param name="absoluteExpirationRelativeToNow">Absolute amount of time relative to now which should pass to expire cache.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sets cache entry with provided value.

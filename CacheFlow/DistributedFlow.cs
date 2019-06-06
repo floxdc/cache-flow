@@ -23,16 +23,16 @@ namespace FloxDc.CacheFlow
             if (options is null)
             {
                 _logger.LogNoOptionsProvided();
-                _options = new FlowOptions();
+                Options = new FlowOptions();
             }
             else
             {
-                _options = options.Value;
+                Options = options.Value;
             }
 
             _nextQueryTime = DateTime.UtcNow;
-            _executor = new Executor(_logger, _options.SuppressCacheExceptions);
-            _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(_options.CacheKeyPrefix, _options.CacheKeyDelimiter);
+            _executor = new Executor(_logger, Options.SuppressCacheExceptions);
+            _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(Options.CacheKeyPrefix, Options.CacheKeyDelimiter);
         }
 
 
@@ -144,12 +144,9 @@ namespace FloxDc.CacheFlow
                 return;
             }
 
-            TryExecute(() =>
-            {
-                var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-                Instance.Remove(fullKey);
-            });
-
+            
+            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+            TryExecute(() => Instance.Remove(fullKey));
             _logger.LogRemoved(key);
         }
 
@@ -313,7 +310,7 @@ namespace FloxDc.CacheFlow
             if (_executor.TryExecute(action))
                 return;
 
-            SetNextQueryTime(_options.SkipRetryInterval);
+            SetNextQueryTime(Options.SkipRetryInterval);
         }
 
 
@@ -321,7 +318,7 @@ namespace FloxDc.CacheFlow
         {
             var result = _executor.TryExecute(func);
             if(result is null)
-                SetNextQueryTime(_options.SkipRetryInterval);
+                SetNextQueryTime(Options.SkipRetryInterval);
 
             return result;
         }
@@ -332,7 +329,7 @@ namespace FloxDc.CacheFlow
             if (await _executor.TryExecuteAsync(func))
                 return;
 
-            SetNextQueryTime(_options.SkipRetryInterval);
+            SetNextQueryTime(Options.SkipRetryInterval);
         }
 
 
@@ -340,7 +337,7 @@ namespace FloxDc.CacheFlow
         {
             var result = await _executor.TryExecuteAsync(func);
             if (result is null)
-                SetNextQueryTime(_options.SkipRetryInterval);
+                SetNextQueryTime(Options.SkipRetryInterval);
 
             return result;
         }
@@ -348,11 +345,13 @@ namespace FloxDc.CacheFlow
 
         public IDistributedCache Instance { get; }
 
+        public FlowOptions Options { get; }
+
+
         private readonly Executor _executor;
         private static bool _isOffline;
         private readonly ILogger<DistributedFlow> _logger;
         private static DateTime _nextQueryTime;
-        private readonly FlowOptions _options;
         private readonly string _prefix;
         private readonly ISerializer _serializer;
     }

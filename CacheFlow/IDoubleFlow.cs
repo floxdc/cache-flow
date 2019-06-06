@@ -10,6 +10,7 @@ namespace FloxDc.CacheFlow
     {
         IDistributedCache DistributedInstance { get; }
         IMemoryCache MemoryInstance { get; }
+        FlowOptions Options { get; }
 
         /// <summary>
         /// Gets value from cache.
