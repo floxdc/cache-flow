@@ -32,7 +32,7 @@
 
         public static string BuildKey<T>(this IMemoryFlow<T> cache, params string[] keyComponents) where T: class
         {
-            var delimiter = ((MemoryFlow<T>) cache).Options.CacheKeyDelimiter;
+            var delimiter = cache.Options.CacheKeyDelimiter;
             return BuildInternal(delimiter, keyComponents);
         }
 

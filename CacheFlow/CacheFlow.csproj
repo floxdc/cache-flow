@@ -11,8 +11,7 @@
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
     <PackageReleaseNotes>- Added #5 Auto-prefixed keys support
-- Fixed #4 Serialization method picks on ISerializer settings
-- Fixed #6 Default struct values can be cached</PackageReleaseNotes>
+- Added #9 Cache key builder</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
