@@ -23,6 +23,13 @@
         }
 
 
+        public static string BuildKey<T>(this IDoubleFlow<T> cache, params string[] keyComponents) where T: class
+        {
+            var delimiter = cache.Options.CacheKeyDelimiter;
+            return BuildInternal(delimiter, keyComponents);
+        }
+
+
         public static string BuildKey(this IMemoryFlow cache, params string[] keyComponents)
         {
             var delimiter = cache.Options.CacheKeyDelimiter;

@@ -172,7 +172,7 @@ namespace CacheFlowTests
             var isSuccess = cache.TryGetValue("key", out DefaultStruct result);
 
             Assert.False(isSuccess);
-            Assert.Equal(default(DefaultStruct), result);
+            Assert.Equal(default, result);
             distributedCacheMock.Verify(c => c.Get(It.IsAny<string>()), Times.Once);
         }
 
@@ -262,7 +262,7 @@ namespace CacheFlowTests
             var cache = new DistributedFlow(distributedCacheMock.Object);
             var result = await cache.GetAsync<DefaultStruct>("key");
 
-            Assert.Equal(default(DefaultStruct), result);
+            Assert.Equal(default, result);
             distributedCacheMock.Verify(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 

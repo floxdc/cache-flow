@@ -6,7 +6,9 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace FloxDc.CacheFlow
 {
-    public interface IDoubleFlow
+    public interface IDoubleFlow : IDoubleFlow<string> {}
+
+    public interface IDoubleFlow<TClass> where TClass: class
     {
         IDistributedCache DistributedInstance { get; }
         IMemoryCache MemoryInstance { get; }

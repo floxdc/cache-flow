@@ -96,7 +96,7 @@ namespace CacheFlowTests
             var expected = cache.TryGetValue("key", out DefaultStruct value);
 
             Assert.False(expected);
-            Assert.Equal(default(DefaultStruct), value);
+            Assert.Equal(default, value);
             memoryCacheMock.Verify(c => c.TryGetValue(It.IsAny<object>(), out storedValue), Times.Once);
         }
 

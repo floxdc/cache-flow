@@ -7,11 +7,12 @@
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow</PackageId>
     <Description>.Net Core distributed cache management library based on IDistributedCache and IMemoryCache interfaces</Description>
-    <Version>1.6.0-beta1</Version>
+    <Version>1.6.0-beta2</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
     <PackageReleaseNotes>- Added #5 Auto-prefixed keys support
-- Added #9 Cache key builder</PackageReleaseNotes>
+- Added #9 Cache key builder
+- Added a gemeric implementation of DoubleFlow</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
