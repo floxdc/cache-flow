@@ -11,7 +11,7 @@ namespace FloxDc.CacheFlow
 {
     public class DoubleFlow : IDoubleFlow
     {
-        public DoubleFlow(IDistributedFlow distributed, IMemoryFlow memory, ILogger<DoubleFlow> logger, IOptions<FlowOptions> options)
+        public DoubleFlow(IDistributedFlow distributed, IMemoryFlow memory, ILogger<DoubleFlow> logger = default, IOptions<FlowOptions> options = default)
         {
             _distributed = distributed;
             _memory = memory;
@@ -34,7 +34,7 @@ namespace FloxDc.CacheFlow
                 return value;
 
             value = await _distributed.GetAsync<T>(key, cancellationToken);
-            if (value.Equals(default))
+            if (value is null || value.Equals(default))
                 return default;
 
             _memory.Set(key, value, GetMemoryExpirationTime(absoluteDistributedExpirationRelativeToNow));
