@@ -1,22 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp2.2;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Flox DC</Company>
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow.Json</PackageId>
-    <Version>1.5.0</Version>
+    <Version>1.6.1</Version>
     <Product>FloxDc.CacheFlow.Json</Product>
     <Description>Json serializer for CacheFlow</Description>
-    <PackageLicenseUrl>https://bitbucket.org/floxdc/cache-flow/src/f221ca309ac644f1b9b25aa6cec9480c084d261f/LICENSE.MD</PackageLicenseUrl>
     <RepositoryUrl>https://bitbucket.org/floxdc/cache-flow</RepositoryUrl>
     <PackageTags>CacheFlow Json</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReleaseNotes>Updated to NetCore 3.1</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FloxDc.CacheFlow" Version="1.5.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="FloxDc.CacheFlow" Version="1.6.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
 </Project>

@@ -9,7 +9,7 @@ namespace CacheFlow.MessagePack
     {
         public CacheFlowMessagePackSerializer()
         {
-            CompositeResolver.RegisterAndSetAsDefault(ImmutableCollectionResolver.Instance, StandardResolver.Instance);
+            CompositeResolver.Create(ImmutableCollectionResolver.Instance, StandardResolver.Instance);
         }
 
 
