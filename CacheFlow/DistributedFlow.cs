@@ -96,7 +96,7 @@ namespace FloxDc.CacheFlow
             }
 
             var result = await GetAsync<T>(key, cancellationToken);
-            if (result != null)
+            if (result != null && !result.Equals(default(T)))
                 return result;
 
             result = await getFunction();
@@ -193,7 +193,7 @@ namespace FloxDc.CacheFlow
                 return false;
             }
 
-            var cached = GetInteernal(key);
+            var cached = GetInternal(key);
             if (cached is null)
             {
                 _logger.LogMissed(key);
@@ -241,7 +241,7 @@ namespace FloxDc.CacheFlow
         }
 
 
-        private byte[] GetInteernal(string key)
+        private byte[] GetInternal(string key)
             => TryExecute(() =>
             {
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
@@ -317,7 +317,7 @@ namespace FloxDc.CacheFlow
         private byte[] TryExecute(Func<byte[]> func)
         {
             var result = _executor.TryExecute(func);
-            if(result is null)
+            if(result is null || result.Equals(default))
                 SetNextQueryTime(Options.SkipRetryInterval);
 
             return result;
@@ -336,7 +336,7 @@ namespace FloxDc.CacheFlow
         private async Task<byte[]> TryExecuteAsync(Func<Task<byte[]>> func)
         {
             var result = await _executor.TryExecuteAsync(func);
-            if (result is null)
+            if (result is null || result.Equals(default))
                 SetNextQueryTime(Options.SkipRetryInterval);
 
             return result;

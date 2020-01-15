@@ -6,7 +6,7 @@
     <Company>Flox DC</Company>
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow.MessagePack</PackageId>
-    <Version>1.6.1</Version>
+    <Version>1.6.2</Version>
     <Product>FloxDc.CacheFlow.MessagePack</Product>
     <Description>MessagePack serializer for CacheFlow</Description>
     <RepositoryUrl>https://bitbucket.org/floxdc/cache-flow</RepositoryUrl>
@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FloxDc.CacheFlow" Version="1.6.1" />
+    <PackageReference Include="FloxDc.CacheFlow" Version="1.6.2" />
     <PackageReference Include="MessagePack" Version="2.0.335" />
     <PackageReference Include="MessagePack.ImmutableCollection" Version="2.0.335" />
   </ItemGroup>

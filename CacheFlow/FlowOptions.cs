@@ -25,7 +25,7 @@ namespace FloxDc.CacheFlow
         /// <summary>
         /// Cache will be skipped for that time span if any error occurs in the request process.
         /// </summary>
-        public TimeSpan SkipRetryInterval { get; set; } = TimeSpan.FromMinutes(1);
+        public TimeSpan SkipRetryInterval { get; set; } = TimeSpan.FromMilliseconds(500);
 
         /// <summary>
         /// Enables suppression of throwing exceptions, caused by caching service itself. Default: true.

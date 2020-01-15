@@ -323,6 +323,56 @@ namespace CacheFlowTests
 
 
         [Fact]
+        public async Task GetOrSetAsync_ShouldExecutesFunctionWhenGetAsyncReturnsDefaultStruct()
+        {
+            var storedValue = default(DefaultStruct);
+            var temp = (object) storedValue;
+            var returnedValue = new DefaultStruct(42);
+            var distributedCacheMock = new Mock<IDistributedCache>();
+            distributedCacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ObjectToByteArray(temp))
+                .Verifiable();
+            distributedCacheMock.Setup(c =>
+                    c.SetAsync(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(),
+                        It.IsAny<CancellationToken>()))
+                .Verifiable();
+
+            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var result = await cache.GetOrSetAsync("key", async () => await Task.FromResult(returnedValue),
+                TimeSpan.FromMilliseconds(1));
+
+            Assert.Equal(returnedValue, result);
+            distributedCacheMock.Verify(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            distributedCacheMock.Verify(
+                c => c.SetAsync(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+
+        [Fact]
+        public async Task GetOrSetAsync_ShouldExecutesFunctionWhenGetAsyncReturnsDefaultClass()
+        {
+            var returnedValue = new DefaultClass(42);
+            var distributedCacheMock = new Mock<IDistributedCache>();
+            distributedCacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(ObjectToByteArray(null))
+                .Verifiable();
+            distributedCacheMock.Setup(c =>
+                    c.SetAsync(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(),
+                        It.IsAny<CancellationToken>()))
+                .Verifiable();
+
+            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var result = await cache.GetOrSetAsync("key", async () => await Task.FromResult(returnedValue),
+                TimeSpan.FromMilliseconds(1));
+
+            Assert.Equal(returnedValue, result);
+            distributedCacheMock.Verify(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            distributedCacheMock.Verify(c => c.SetAsync(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(),
+                        It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+
+        [Fact]
         public void ShouldFindKeyWithPredefinedPrefix()
         {
             const string prefix = "Prefix";
