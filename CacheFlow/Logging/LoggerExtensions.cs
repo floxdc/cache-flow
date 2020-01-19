@@ -9,7 +9,7 @@ namespace FloxDc.CacheFlow.Logging
         {
             CacheHitted = LoggerMessage.Define<string>(LogLevel.Information, new EventId((int)CacheEvents.Hit, CacheEvents.Hit.ToString()), "HIT | {Key} | CacheFlow: The cache hit occurs.");
             CacheMissed = LoggerMessage.Define<string>(LogLevel.Information, new EventId((int)CacheEvents.Miss, CacheEvents.Miss.ToString()), "MISS | {Key} | CacheFlow: The cache miss occurs.");
-            CacheNotSetted = LoggerMessage.Define<string>(LogLevel.Information, new EventId((int) CacheEvents.Skipped, CacheEvents.Skipped.ToString()), "SKIPPED | {Key} | CacheFlow: The key has not been setted, because the entry is a default struct value.");
+            CacheNotSetted = LoggerMessage.Define<string>(LogLevel.Information, new EventId((int) CacheEvents.Skipped, CacheEvents.Skipped.ToString()), "SKIPPED | {Key} | CacheFlow: The key has not been set, because the entry is a default struct value.");
             CacheSeted = LoggerMessage.Define<string>(LogLevel.Information, new EventId((int)CacheEvents.Set, CacheEvents.Set.ToString()), "SET | {Key} | CacheFlow: The entry is set.");
             CacheSkipped = LoggerMessage.Define<string>(LogLevel.Information, new EventId((int) CacheEvents.Skipped, CacheEvents.Skipped.ToString()), "SKIPPED | {Key} | CacheFlow: The key has been skipped due the no-retry policy timeout.");
             ErrorOccured = LoggerMessage.Define(LogLevel.Warning, new EventId((int)CacheEvents.AnErrorHasOccured, CacheEvents.AnErrorHasOccured.ToString()), "EXCEPTION | CacheFlow: ");
