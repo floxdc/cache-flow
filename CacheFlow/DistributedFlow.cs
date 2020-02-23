@@ -52,7 +52,7 @@ namespace FloxDc.CacheFlow
             }
 
             var value = DeserializeAndDecode<T>(_serializer, cached);
-            _logger.LogHitted(key);
+            _logger.LogHit(key);
             return value;
         }
 
@@ -201,7 +201,7 @@ namespace FloxDc.CacheFlow
             }
 
             value = DeserializeAndDecode<T>(_serializer, cached);
-            _logger.LogHitted(key);
+            _logger.LogHit(key);
             return true;
         }
 
@@ -217,7 +217,7 @@ namespace FloxDc.CacheFlow
             if (!Utils.IsDefaultStruct(value))
                 return true;
 
-            logger.LogNotSetted(key);
+            logger.LogNotSet(key);
             return false;
         }
 
@@ -278,7 +278,7 @@ namespace FloxDc.CacheFlow
                 Instance.Set(fullKey, encoded, options);
             });
 
-            _logger.LogSetted(key);
+            _logger.LogSet(key);
         }
 
 
@@ -294,7 +294,7 @@ namespace FloxDc.CacheFlow
                 await Instance.SetAsync(fullKey, encoded, options, cancellationToken);
             });
 
-            _logger.LogSetted(key);
+            _logger.LogSet(key);
         }
 
 

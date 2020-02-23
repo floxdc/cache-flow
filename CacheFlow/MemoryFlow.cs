@@ -54,7 +54,7 @@ namespace FloxDc.CacheFlow
 
         public ValueTask<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, TimeSpan absoluteExpirationRelativeToNow,
             CancellationToken cancellationToken = default) 
-            => GetOrSetAsync(key, getValueFunction, new MemoryCacheEntryOptions{AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
+            => GetOrSetAsync(key, getValueFunction, new MemoryCacheEntryOptions{AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow}, cancellationToken);
 
 
         public async ValueTask<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction,
@@ -87,7 +87,7 @@ namespace FloxDc.CacheFlow
             var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             if (Utils.IsDefaultStruct(value))
             {
-                _logger.LogNotSetted(fullKey);
+                _logger.LogNotSet(fullKey);
                 return;
             }
 
@@ -99,7 +99,7 @@ namespace FloxDc.CacheFlow
                     entry.Value = value;
                 }
 
-                _logger.LogSetted(fullKey);
+                _logger.LogSet(fullKey);
             });
         }
 
@@ -121,7 +121,7 @@ namespace FloxDc.CacheFlow
                 return false;
             }
 
-            _logger.LogHitted(fullKey);
+            _logger.LogHit(fullKey);
             return true;
         }
 
