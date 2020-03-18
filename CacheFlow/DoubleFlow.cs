@@ -18,7 +18,7 @@ namespace FloxDc.CacheFlow
 
             if (options is null)
             {
-                logger?.LogNoOptionsProvided();
+                logger?.LogNoOptionsProvided(nameof(DoubleFlow));
                 Options = new FlowOptions();
             }
             else
@@ -37,7 +37,6 @@ namespace FloxDc.CacheFlow
             if (value is null || value.Equals(default))
                 return default;
 
-            _memory.Set(key, value, GetMemoryExpirationTime(absoluteDistributedExpirationRelativeToNow));
             return value;
         }
 
@@ -45,7 +44,7 @@ namespace FloxDc.CacheFlow
         public T GetOrSet<T>(string key, Func<T> getFunction, TimeSpan absoluteDistributedExpirationRelativeToNow)
             => GetOrSet(key, getFunction,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
-                new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = GetMemoryExpirationTime(absoluteDistributedExpirationRelativeToNow)}
+                new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow}
             );
         
 
@@ -73,7 +72,7 @@ namespace FloxDc.CacheFlow
             CancellationToken cancellationToken = default)
             => GetOrSetAsync(key, getFunction,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
-                new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = GetMemoryExpirationTime(absoluteDistributedExpirationRelativeToNow)},
+                new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
                 cancellationToken
             );
 
@@ -123,7 +122,7 @@ namespace FloxDc.CacheFlow
         public void Set<T>(string key, T value, TimeSpan absoluteDistributedExpirationRelativeToNow)
             => Set(key, value,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
-                new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = GetMemoryExpirationTime(absoluteDistributedExpirationRelativeToNow)}
+                new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow}
             );
 
 
@@ -141,7 +140,7 @@ namespace FloxDc.CacheFlow
             CancellationToken cancellationToken = default)
             => SetAsync(key, value,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
-                new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = GetMemoryExpirationTime(absoluteDistributedExpirationRelativeToNow)},
+                new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
                 cancellationToken
             );
 
@@ -162,8 +161,7 @@ namespace FloxDc.CacheFlow
             => TryGetValue(key, out value,
                 new MemoryCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow =
-                        GetMemoryExpirationTime(absoluteDistributedExpirationRelativeToNow)
+                    AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow
                 });
 
 
@@ -175,7 +173,6 @@ namespace FloxDc.CacheFlow
             if (!_distributed.TryGetValue(key, out value))
                 return false;
 
-            _memory.Set(key, value, memoryOptions);
             return true;
         }
 
@@ -183,13 +180,8 @@ namespace FloxDc.CacheFlow
         private MemoryCacheEntryOptions GetDefaultMemoryOptions(DistributedCacheEntryOptions distributedOptions)
             => new MemoryCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow =
-                    GetMemoryExpirationTime(distributedOptions.AbsoluteExpirationRelativeToNow)
+                AbsoluteExpirationRelativeToNow = distributedOptions.AbsoluteExpirationRelativeToNow
             };
-
-
-        private TimeSpan GetMemoryExpirationTime(TimeSpan? distributedExpirationTime) 
-            => distributedExpirationTime?.Divide(Options.DistributedToMemoryExpirationRatio) ?? TimeSpan.Zero;
 
 
         public IDistributedCache DistributedInstance => _distributed.Instance;

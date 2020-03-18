@@ -22,7 +22,7 @@ namespace FloxDc.CacheFlow
 
             if (options is null)
             {
-                _logger.LogNoOptionsProvided();
+                _logger.LogNoOptionsProvided(nameof(DistributedFlow));
                 Options = new FlowOptions();
             }
             else
@@ -30,29 +30,30 @@ namespace FloxDc.CacheFlow
                 Options = options.Value;
             }
 
-            _nextQueryTime = DateTime.UtcNow;
-            _executor = new Executor(_logger, Options.SuppressCacheExceptions);
+            _executor = new Executor(_logger, Options.SuppressCacheExceptions, Options.EnableSensitiveDataLogging);
             _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(Options.CacheKeyPrefix, Options.CacheKeyDelimiter);
         }
 
 
         public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
-            if (IsOffline())
-            {
-                _logger.LogSkipped(key);
-                return default;
-            }
-
             var cached = await GetInternalAsync(key, cancellationToken);
             if (cached is null)
             {
-                _logger.LogMissed(key);
+                if (Options.EnableSensitiveDataLogging)
+                    _logger.LogMissed(nameof(DistributedFlow) + ":" + nameof(GetAsync), key);
+                else
+                    _logger.LogMissedInsensitive(key);
+
                 return default;
             }
 
             var value = DeserializeAndDecode<T>(_serializer, cached);
-            _logger.LogHit(key);
+            if (Options.EnableSensitiveDataLogging)
+                _logger.LogHit(nameof(DistributedFlow) + ":" + nameof(GetAsync), key, value);
+            else
+                _logger.LogHitInsensitive(key);
+
             return value;
         }
 
@@ -63,12 +64,6 @@ namespace FloxDc.CacheFlow
 
         public T GetOrSet<T>(string key, Func<T> getFunction, DistributedCacheEntryOptions options)
         {
-            if (IsOffline())
-            {
-                _logger.LogSkipped(key);
-                return getFunction();
-            }
-
             if (TryGetValue(key, out T result))
                 return result;
 
@@ -89,12 +84,6 @@ namespace FloxDc.CacheFlow
         public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
             DistributedCacheEntryOptions options, CancellationToken cancellationToken = default)
         {
-            if (IsOffline())
-            {
-                _logger.LogSkipped(key);
-                return await getFunction();
-            }
-
             var result = await GetAsync<T>(key, cancellationToken);
             if (result != null && !result.Equals(default(T)))
                 return result;
@@ -107,47 +96,30 @@ namespace FloxDc.CacheFlow
 
 
         public void Refresh(string key)
-        {
-            if (IsOffline())
-            {
-                _logger.LogSkipped(key);
-                return;
-            }
-
-            TryExecute(() =>
+            => TryExecute(() =>
             {
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
                 Instance.Refresh(fullKey);
             });
-        }
 
 
         public Task RefreshAsync(string key, CancellationToken cancellationToken = default)
-        {
-            if (!IsOffline())
-                return TryExecuteAsync(async () =>
-                {
-                    var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-                    await Instance.RefreshAsync(fullKey, cancellationToken);
-                });
-
-            _logger.LogSkipped(key);
-            return default;
-        }
+            => TryExecuteAsync(async () =>
+            {
+                var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+                await Instance.RefreshAsync(fullKey, cancellationToken);
+            });
 
 
         public void Remove(string key)
         {
-            if (IsOffline())
-            {
-                _logger.LogSkipped(key);
-                return;
-            }
-
-            
             var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             TryExecute(() => Instance.Remove(fullKey));
-            _logger.LogRemoved(key);
+
+            if (Options.EnableSensitiveDataLogging)
+                _logger.LogRemoved(nameof(DistributedFlow) + ":" + nameof(Remove), key);
+            else
+                _logger.LogRemovedInsensitive(key);
         }
 
 
@@ -159,7 +131,10 @@ namespace FloxDc.CacheFlow
                 await Instance.RemoveAsync(fullKey, cancellationToken);
             });
 
-            _logger.LogRemoved(key);
+            if (Options.EnableSensitiveDataLogging)
+                _logger.LogRemoved(nameof(DistributedFlow) + ":" + nameof(RemoveAsync), key);
+            else
+                _logger.LogRemovedInsensitive(key);
         }
 
 
@@ -187,37 +162,39 @@ namespace FloxDc.CacheFlow
         public bool TryGetValue<T>(string key, out T value)
         {
             value = default;
-            if (IsOffline())
-            {
-                _logger.LogSkipped(key);
-                return false;
-            }
-
+            
             var cached = GetInternal(key);
             if (cached is null)
             {
-                _logger.LogMissed(key);
+                if (Options.EnableSensitiveDataLogging)
+                    _logger.LogMissed(nameof(DistributedFlow) + ":" + nameof(TryGetValue), key);
+                else
+                    _logger.LogMissedInsensitive(key);
+
                 return false;
             }
 
             value = DeserializeAndDecode<T>(_serializer, cached);
-            _logger.LogHit(key);
+
+            if (Options.EnableSensitiveDataLogging)
+                _logger.LogHit(nameof(DistributedFlow) + ":" + nameof(TryGetValue), key, value);
+            else
+                _logger.LogHitInsensitive(key);
+
             return true;
         }
 
 
-        private static bool CanSet<T>(ILogger<DistributedFlow> logger, string key, T value)
+        private bool CanSet<T>(string key, T value)
         {
-            if (IsOffline())
-            {
-                logger.LogSkipped(key);
-                return false;
-            }
-
             if (!Utils.IsDefaultStruct(value))
                 return true;
 
-            logger.LogNotSet(key);
+            if (Options.EnableSensitiveDataLogging)
+                _logger.LogNotSet(nameof(DistributedFlow) + ":" + nameof(CanSet), key, value);
+            else
+                _logger.LogNotSetInsensitive(key);
+
             return false;
         }
 
@@ -226,19 +203,6 @@ namespace FloxDc.CacheFlow
             => serializer.IsBinarySerializer
                 ? serializer.Deserialize<T>(value)
                 : serializer.Deserialize<T>(Encoding.UTF8.GetString(value, 0, value.Length));
-
-
-        private static bool IsOffline()
-        {
-            if (!_isOffline)
-                return false;
-
-            if (DateTime.UtcNow <= _nextQueryTime)
-                return true;
-
-            _isOffline = false;
-            return _isOffline;
-        }
 
 
         private byte[] GetInternal(string key)
@@ -268,7 +232,7 @@ namespace FloxDc.CacheFlow
 
         private void SetInternal<T>(string key, T value, DistributedCacheEntryOptions options)
         {
-            if (!CanSet(_logger, key, value))
+            if (!CanSet(key, value))
                 return;
 
             TryExecute(() =>
@@ -278,13 +242,16 @@ namespace FloxDc.CacheFlow
                 Instance.Set(fullKey, encoded, options);
             });
 
-            _logger.LogSet(key);
+            if (Options.EnableSensitiveDataLogging)
+                _logger.LogSet(nameof(DistributedFlow) + ":" + nameof(SetInternal), key, value);
+            else
+                _logger.LogSetInsensitive(key);
         }
 
 
         private async Task SetInternalAsync<T>(string key, T value, DistributedCacheEntryOptions options, CancellationToken cancellationToken)
         {
-            if (!CanSet(_logger, key, value))
+            if (!CanSet(key, value))
                 return;
 
             await TryExecuteAsync(async () =>
@@ -294,53 +261,27 @@ namespace FloxDc.CacheFlow
                 await Instance.SetAsync(fullKey, encoded, options, cancellationToken);
             });
 
-            _logger.LogSet(key);
+            if (Options.EnableSensitiveDataLogging)
+                _logger.LogSet(nameof(DistributedFlow) + ":" + nameof(SetInternalAsync), key, value);
+            else
+                _logger.LogSetInsensitive(key);
         }
 
 
-        private static void SetNextQueryTime(TimeSpan interval)
-        {
-            _nextQueryTime = DateTime.UtcNow.Add(interval);
-            _isOffline = true;
-        }
+        private void TryExecute(Action action) 
+            => _executor.TryExecute(action);
 
 
-        private void TryExecute(Action action)
-        {
-            if (_executor.TryExecute(action))
-                return;
-
-            SetNextQueryTime(Options.SkipRetryInterval);
-        }
+        private byte[] TryExecute(Func<byte[]> func) 
+            => _executor.TryExecute(func);
 
 
-        private byte[] TryExecute(Func<byte[]> func)
-        {
-            var result = _executor.TryExecute(func);
-            if(result is null || result.Equals(default))
-                SetNextQueryTime(Options.SkipRetryInterval);
-
-            return result;
-        }
+        private Task TryExecuteAsync(Func<Task> func) 
+            => _executor.TryExecuteAsync(func);
 
 
-        private async Task TryExecuteAsync(Func<Task> func)
-        {
-            if (await _executor.TryExecuteAsync(func))
-                return;
-
-            SetNextQueryTime(Options.SkipRetryInterval);
-        }
-
-
-        private async Task<byte[]> TryExecuteAsync(Func<Task<byte[]>> func)
-        {
-            var result = await _executor.TryExecuteAsync(func);
-            if (result is null || result.Equals(default))
-                SetNextQueryTime(Options.SkipRetryInterval);
-
-            return result;
-        }
+        private Task<byte[]> TryExecuteAsync(Func<Task<byte[]>> func) 
+            => _executor.TryExecuteAsync(func);
 
 
         public IDistributedCache Instance { get; }
@@ -349,9 +290,7 @@ namespace FloxDc.CacheFlow
 
 
         private readonly Executor _executor;
-        private static bool _isOffline;
         private readonly ILogger<DistributedFlow> _logger;
-        private static DateTime _nextQueryTime;
         private readonly string _prefix;
         private readonly ISerializer _serializer;
     }

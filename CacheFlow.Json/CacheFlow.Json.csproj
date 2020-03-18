@@ -6,7 +6,7 @@
     <Company>Flox DC</Company>
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow.Json</PackageId>
-    <Version>1.6.3</Version>
+    <Version>1.6.4</Version>
     <Product>FloxDc.CacheFlow.Json</Product>
     <Description>Json serializer for CacheFlow</Description>
     <RepositoryUrl>https://bitbucket.org/floxdc/cache-flow</RepositoryUrl>
@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FloxDc.CacheFlow" Version="1.6.3" />
+    <PackageReference Include="FloxDc.CacheFlow" Version="1.6.4" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 

@@ -86,7 +86,7 @@ namespace CacheFlowTests
 
             Assert.Equal(storedValue, result);
             memoryFlowMock.Verify(f => f.TryGetValue(It.IsAny<string>(), out storedValue), Times.Once);
-            memoryFlowMock.Verify(f => f.Set(It.IsAny<string>(), It.IsAny<DefaultClass>(), It.IsAny<TimeSpan>()), Times.Once);
+            memoryFlowMock.Verify(f => f.Set(It.IsAny<string>(), It.IsAny<DefaultClass>(), It.IsAny<TimeSpan>()), Times.Never);
             distributedFlowMock.Verify(f => f.GetAsync<DefaultClass>(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -290,7 +290,7 @@ namespace CacheFlowTests
             Assert.True(isFound);
             Assert.Equal(storedValue, result);
             memoryFlowMock.Verify(f => f.TryGetValue(It.IsAny<string>(), out storedValue), Times.Once);
-            memoryFlowMock.Verify(f => f.Set(It.IsAny<string>(), It.IsAny<DefaultClass>(), It.IsAny<MemoryCacheEntryOptions>()), Times.Once);
+            memoryFlowMock.Verify(f => f.Set(It.IsAny<string>(), It.IsAny<DefaultClass>(), It.IsAny<MemoryCacheEntryOptions>()), Times.Never);
             distributedFlowMock.Verify(f => f.TryGetValue(It.IsAny<string>(), out storedValue), Times.Once);
         }
     }

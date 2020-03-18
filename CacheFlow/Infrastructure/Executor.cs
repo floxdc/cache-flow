@@ -7,8 +7,9 @@ namespace FloxDc.CacheFlow.Infrastructure
 {
     internal class Executor
     {
-        internal Executor(ILogger logger, bool suppressCacheExceptions)
+        internal Executor(ILogger logger, bool suppressCacheExceptions, bool isSensitive)
         {
+            _isSensitive = isSensitive;
             _logger = logger;
             _suppressCacheExceptions = suppressCacheExceptions;
         }
@@ -27,7 +28,11 @@ namespace FloxDc.CacheFlow.Infrastructure
             }
             catch (Exception ex)
             {
-                _logger.LogCacheError(ex);
+                if (_isSensitive)
+                    _logger.LogCacheError(nameof(Executor) + ":" + nameof(TryExecute), ex);
+                else
+                    _logger.LogCacheErrorInsensitive(ex);
+
                 if (!_suppressCacheExceptions)
                     throw;
             }
@@ -48,7 +53,11 @@ namespace FloxDc.CacheFlow.Infrastructure
             }
             catch (Exception ex)
             {
-                _logger.LogCacheError(ex);
+                if (_isSensitive)
+                    _logger.LogCacheError(nameof(Executor) + ":" + nameof(TryExecute), ex);
+                else
+                    _logger.LogCacheErrorInsensitive(ex);
+                
                 if (!_suppressCacheExceptions)
                     throw;
             }
@@ -70,7 +79,11 @@ namespace FloxDc.CacheFlow.Infrastructure
             }
             catch (Exception ex)
             {
-                _logger.LogCacheError(ex);
+                if (_isSensitive)
+                    _logger.LogCacheError(nameof(Executor) + ":" + nameof(TryExecuteAsync), ex);
+                else
+                    _logger.LogCacheErrorInsensitive(ex);
+                
                 if (!_suppressCacheExceptions)
                     throw;
             }
@@ -91,7 +104,11 @@ namespace FloxDc.CacheFlow.Infrastructure
             }
             catch (Exception ex)
             {
-                _logger.LogCacheError(ex);
+                if (_isSensitive)
+                    _logger.LogCacheError(nameof(Executor) + ":" + nameof(TryExecuteAsync), ex);
+                else
+                    _logger.LogCacheErrorInsensitive(ex);
+                
                 if (!_suppressCacheExceptions)
                     throw;
             }
@@ -102,5 +119,6 @@ namespace FloxDc.CacheFlow.Infrastructure
 
         private readonly ILogger _logger;
         private readonly bool _suppressCacheExceptions;
+        private readonly bool _isSensitive;
     }
 }

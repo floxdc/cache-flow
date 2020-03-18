@@ -17,21 +17,18 @@ namespace FloxDc.CacheFlow
             Instance = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             _logger = logger ?? new NullLogger<MemoryFlow>();
 
-            FlowOptions internalOptions;
             if (options is null)
             {
-                _logger.LogNoOptionsProvided();
-                internalOptions = new FlowOptions();
+                _logger.LogNoOptionsProvided(nameof(MemoryFlow));
+                Options = new FlowOptions();
             }
             else
             {
-                internalOptions = options.Value;
+                Options = options.Value;
             }
 
-            _executor = new Executor(_logger, internalOptions.SuppressCacheExceptions);
-            _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(internalOptions.CacheKeyPrefix, internalOptions.CacheKeyDelimiter);
-
-            Options = internalOptions;
+            _executor = new Executor(_logger, Options.SuppressCacheExceptions, Options.EnableSensitiveDataLogging);
+            _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(Options.CacheKeyPrefix, Options.CacheKeyDelimiter);
         }
 
 
@@ -74,7 +71,11 @@ namespace FloxDc.CacheFlow
         {
             var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             _executor.TryExecute(() => Instance.Remove(fullKey));
-            _logger.LogRemoved(fullKey);
+
+            if (Options.EnableSensitiveDataLogging)
+                _logger.LogRemoved(nameof(MemoryFlow) + ":" + nameof(Remove), fullKey);
+            else
+                _logger.LogRemovedInsensitive(key);
         }
 
 
@@ -87,7 +88,11 @@ namespace FloxDc.CacheFlow
             var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             if (Utils.IsDefaultStruct(value))
             {
-                _logger.LogNotSet(fullKey);
+                if (Options.EnableSensitiveDataLogging)
+                    _logger.LogNotSet(nameof(MemoryFlow) + ":" + nameof(Set), fullKey, value);
+                else
+                    _logger.LogNotSetInsensitive(key);
+
                 return;
             }
 
@@ -99,7 +104,10 @@ namespace FloxDc.CacheFlow
                     entry.Value = value;
                 }
 
-                _logger.LogSet(fullKey);
+                if (Options.EnableSensitiveDataLogging)
+                    _logger.LogSet(nameof(MemoryFlow) + ":" + nameof(Set), fullKey, value);
+                else
+                    _logger.LogSetInsensitive(key);
             });
         }
 
@@ -117,11 +125,19 @@ namespace FloxDc.CacheFlow
 
             if (!isCached)
             {
-                _logger.LogMissed(fullKey);
+                if (Options.EnableSensitiveDataLogging)
+                    _logger.LogMissed(nameof(MemoryFlow) + ":" + nameof(TryGetValue), fullKey);
+                else
+                    _logger.LogMissedInsensitive(key);
+
                 return false;
             }
 
-            _logger.LogHit(fullKey);
+            if (Options.EnableSensitiveDataLogging)
+                _logger.LogHit(nameof(MemoryFlow) + ":" + nameof(TryGetValue), fullKey, value);
+            else
+                _logger.LogHitInsensitive(key);
+
             return true;
         }
 
