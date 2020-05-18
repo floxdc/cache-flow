@@ -37,8 +37,9 @@ namespace FloxDc.CacheFlow
 
         public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
+
             var cached = await GetInternalAsync(key, cancellationToken);
-            if (cached is null)
+            if (cached.IsEmpty)
             {
                 if (Options.EnableSensitiveDataLogging)
                     _logger.LogMissed(nameof(DistributedFlow) + ":" + nameof(GetAsync), key);
@@ -164,7 +165,7 @@ namespace FloxDc.CacheFlow
             value = default;
             
             var cached = GetInternal(key);
-            if (cached is null)
+            if (cached.IsEmpty)
             {
                 if (Options.EnableSensitiveDataLogging)
                     _logger.LogMissed(nameof(DistributedFlow) + ":" + nameof(TryGetValue), key);
@@ -199,35 +200,35 @@ namespace FloxDc.CacheFlow
         }
 
 
-        private static T DeserializeAndDecode<T>(ISerializer serializer, byte[] value)
+        private static T DeserializeAndDecode<T>(ISerializer serializer, in ReadOnlyMemory<byte> value)
             => serializer.IsBinarySerializer
                 ? serializer.Deserialize<T>(value)
-                : serializer.Deserialize<T>(Encoding.UTF8.GetString(value, 0, value.Length));
+                : serializer.Deserialize<T>(Encoding.UTF8.GetString(value.Span));
 
 
-        private byte[] GetInternal(string key)
+        private ReadOnlyMemory<byte> GetInternal(string key)
             => TryExecute(() =>
             {
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-                return Instance.Get(fullKey);
+                return Instance.Get(fullKey).AsMemory();
             });
 
 
-        private Task<byte[]> GetInternalAsync(string key, CancellationToken cancellationToken)
+        private Task<ReadOnlyMemory<byte>> GetInternalAsync(string key, CancellationToken cancellationToken)
             => TryExecuteAsync(async () =>
             {
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-                return await Instance.GetAsync(fullKey, cancellationToken);
+                return (await Instance.GetAsync(fullKey, cancellationToken)).AsMemory();
             });
 
 
-        private static byte[] SerializeAndEncode<T>(ISerializer serializer, T value)
+        /*private static byte[] SerializeAndEncode<T>(ISerializer serializer, T value)
         {
             var serialized = serializer.Serialize(value);
             return serializer.IsBinarySerializer
                 ? serialized as byte[]
                 : Encoding.UTF8.GetBytes(serialized as string);
-        }
+        }*/
 
 
         private void SetInternal<T>(string key, T value, DistributedCacheEntryOptions options)
@@ -237,7 +238,7 @@ namespace FloxDc.CacheFlow
 
             TryExecute(() =>
             {
-                var encoded = SerializeAndEncode(_serializer, value);
+                var encoded = _serializer.Serialize(value);
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
                 Instance.Set(fullKey, encoded, options);
             });
@@ -256,7 +257,7 @@ namespace FloxDc.CacheFlow
 
             await TryExecuteAsync(async () =>
             {
-                var encoded = SerializeAndEncode(_serializer, value);
+                var encoded = _serializer.Serialize(value);
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
                 await Instance.SetAsync(fullKey, encoded, options, cancellationToken);
             });
@@ -272,7 +273,7 @@ namespace FloxDc.CacheFlow
             => _executor.TryExecute(action);
 
 
-        private byte[] TryExecute(Func<byte[]> func) 
+        private ReadOnlyMemory<byte> TryExecute(Func<ReadOnlyMemory<byte>> func) 
             => _executor.TryExecute(func);
 
 
@@ -280,7 +281,7 @@ namespace FloxDc.CacheFlow
             => _executor.TryExecuteAsync(func);
 
 
-        private Task<byte[]> TryExecuteAsync(Func<Task<byte[]>> func) 
+        private Task<ReadOnlyMemory<byte>> TryExecuteAsync(Func<Task<ReadOnlyMemory<byte>>> func) 
             => _executor.TryExecuteAsync(func);
 
 
