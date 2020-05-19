@@ -6,7 +6,7 @@ namespace CacheFlow.MessagePack.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddCashFlowMessagePackSerialization(this IServiceCollection services, MessagePackSerializerOptions options = null,
+        public static IServiceCollection AddCacheFlowMessagePackSerialization(this IServiceCollection services, MessagePackSerializerOptions options = null,
             params IFormatterResolver[] resolvers)
             => services.AddSingleton<ISerializer, CacheFlowMessagePackSerializer>(serviceProvider => new CacheFlowMessagePackSerializer(options, resolvers));
     }
