@@ -37,7 +37,6 @@ namespace FloxDc.CacheFlow
 
         public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
-
             var cached = await GetInternalAsync(key, cancellationToken);
             if (cached.IsEmpty)
             {

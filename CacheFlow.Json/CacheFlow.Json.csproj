@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+    <LangVersion>8.0</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Flox DC</Company>
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow.Json</PackageId>
-    <Version>1.6.4</Version>
+    <Version>1.7.0-alpha2</Version>
     <Product>FloxDc.CacheFlow.Json</Product>
     <Description>Json serializer for CacheFlow</Description>
     <RepositoryUrl>https://bitbucket.org/floxdc/cache-flow</RepositoryUrl>
@@ -16,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FloxDc.CacheFlow" Version="1.6.4" />
+    <PackageReference Include="FloxDc.CacheFlow" Version="1.7.0-alpha2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
