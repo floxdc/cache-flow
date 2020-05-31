@@ -8,7 +8,7 @@
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow</PackageId>
     <Description>.Net Core distributed cache management library based on IDistributedCache and IMemoryCache interfaces</Description>
-    <Version>1.7.0-alpha2</Version>
+    <Version>1.7.0</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
     <PackageReleaseNotes>- Better logging
@@ -20,10 +20,10 @@
     <LangVersion>latest</LangVersion>
     <Copyright></Copyright>
     <AssemblyVersion>1.4.2.0</AssemblyVersion>
-    <RepositoryUrl>https://github.com/kirillta/cache-flow</RepositoryUrl>
+    <RepositoryUrl>https://github.com/floxdc/cache-flow</RepositoryUrl>
     <PackageTags>IDistributedCache; IMemoryCache; CacheFlow</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/kirillta/cache-flow</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/floxdc/cache-flow</PackageProjectUrl>
 
   </PropertyGroup>
 
@@ -43,6 +43,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.4" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.4" />
     <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.7.1" />
   </ItemGroup>
 
 </Project>

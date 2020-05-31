@@ -20,7 +20,7 @@ namespace CacheFlowTests
             distributedCacheMock.Setup(c => c.Refresh(It.IsAny<string>()))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             cache.Refresh("Key");
 
             distributedCacheMock.Verify(c => c.Refresh(It.IsAny<string>()), Times.Once);
@@ -34,7 +34,7 @@ namespace CacheFlowTests
             distributedCacheMock.Setup(c => c.RefreshAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             await cache.RefreshAsync("Key");
 
             distributedCacheMock.Verify(c => c.RefreshAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
@@ -49,7 +49,7 @@ namespace CacheFlowTests
             distributedCacheMock.Setup(c => c.Remove(It.IsAny<string>()))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             cache.Remove("Key");
 
             distributedCacheMock.Verify(c => c.Remove(It.IsAny<string>()), Times.Once);
@@ -63,7 +63,7 @@ namespace CacheFlowTests
             distributedCacheMock.Setup(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             await cache.RemoveAsync("Key");
 
             distributedCacheMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
@@ -79,7 +79,7 @@ namespace CacheFlowTests
                     c.Set(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>()))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             cache.Set("Key", new DefaultStruct(0), TimeSpan.MaxValue);
 
             distributedCacheMock.Verify(
@@ -96,7 +96,7 @@ namespace CacheFlowTests
                     c.Set(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>()))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             cache.Set("Key", default(int), TimeSpan.MaxValue);
 
             distributedCacheMock
@@ -114,7 +114,7 @@ namespace CacheFlowTests
                         It.IsAny<CancellationToken>()))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             await cache.SetAsync("Key", new DefaultStruct(0), TimeSpan.MaxValue);
 
             distributedCacheMock
@@ -134,7 +134,7 @@ namespace CacheFlowTests
                         It.IsAny<CancellationToken>()))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             await cache.SetAsync("Key", default(int), TimeSpan.MaxValue);
 
             distributedCacheMock
@@ -152,7 +152,7 @@ namespace CacheFlowTests
                 .Returns((byte[]) null)
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             var result = cache.TryGetValue<object>("key", out _);
 
             Assert.False(result);
@@ -168,7 +168,7 @@ namespace CacheFlowTests
                 .Returns((byte[])null)
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             var isSuccess = cache.TryGetValue("key", out DefaultStruct result);
 
             Assert.False(isSuccess);
@@ -188,7 +188,7 @@ namespace CacheFlowTests
                 .Returns(ObjectToByteArray(temp))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             var isSuccess = cache.TryGetValue("key", out int result);
 
             Assert.True(isSuccess);
@@ -207,7 +207,7 @@ namespace CacheFlowTests
                 .Returns(ObjectToByteArray(temp))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             var isSuccess = cache.TryGetValue("key", out DefaultStruct result);
 
             Assert.True(isSuccess);
@@ -226,7 +226,7 @@ namespace CacheFlowTests
                 .Returns(ObjectToByteArray(temp))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             var isSuccess = cache.TryGetValue("key", out DefaultClass result);
 
             Assert.True(isSuccess);
@@ -243,7 +243,7 @@ namespace CacheFlowTests
                 .ReturnsAsync((byte[])null)
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             var result = await cache.GetAsync<object>("key");
 
             Assert.Null(result);
@@ -259,7 +259,7 @@ namespace CacheFlowTests
                 .ReturnsAsync((byte[])null)
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             var result = await cache.GetAsync<DefaultStruct>("key");
 
             Assert.Equal(default, result);
@@ -278,7 +278,7 @@ namespace CacheFlowTests
                 .ReturnsAsync(ObjectToByteArray(temp))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             var result = await cache.GetAsync<int>("key");
 
             Assert.Equal(storedValue, result);
@@ -296,7 +296,7 @@ namespace CacheFlowTests
                 .ReturnsAsync(ObjectToByteArray(temp))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             var result = await cache.GetAsync<DefaultStruct>("key");
 
             Assert.Equal(storedValue, result);
@@ -314,7 +314,7 @@ namespace CacheFlowTests
                 .ReturnsAsync(ObjectToByteArray(temp))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             var result = await cache.GetAsync<DefaultClass>("key");
 
             Assert.Equal(storedValue, result);
@@ -337,7 +337,7 @@ namespace CacheFlowTests
                         It.IsAny<CancellationToken>()))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             var result = await cache.GetOrSetAsync("key", async () => await Task.FromResult(returnedValue),
                 TimeSpan.FromMilliseconds(1));
 
@@ -361,7 +361,7 @@ namespace CacheFlowTests
                         It.IsAny<CancellationToken>()))
                 .Verifiable();
 
-            var cache = new DistributedFlow(distributedCacheMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             var result = await cache.GetOrSetAsync("key", async () => await Task.FromResult(returnedValue),
                 TimeSpan.FromMilliseconds(1));
 
@@ -386,7 +386,7 @@ namespace CacheFlowTests
             optionsMock.Setup(o => o.Value)
                 .Returns(new FlowOptions { CacheKeyDelimiter = delimiter, CacheKeyPrefix = prefix });
 
-            var cache = new DistributedFlow(distributedCacheMock.Object, options: optionsMock.Object);
+            var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object, options: optionsMock.Object);
             var expected = cache.TryGetValue(key, out object value);
 
             Assert.True(expected);
