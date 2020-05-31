@@ -2,23 +2,23 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+    <LangVersion>8.0</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Flox DC</Company>
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow.MessagePack</PackageId>
-    <Version>1.6.4</Version>
+    <Version>1.7.0</Version>
     <Product>FloxDc.CacheFlow.MessagePack</Product>
     <Description>MessagePack serializer for CacheFlow</Description>
-    <RepositoryUrl>https://bitbucket.org/floxdc/cache-flow</RepositoryUrl>
+    <RepositoryUrl>https://github.com/floxdc/cache-flow</RepositoryUrl>
     <PackageTags>CacheFlow MessagePack</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FloxDc.CacheFlow" Version="1.6.4" />
-    <PackageReference Include="MessagePack" Version="2.1.90" />
-    <PackageReference Include="MessagePack.ImmutableCollection" Version="2.1.90" />
+    <PackageReference Include="FloxDc.CacheFlow" Version="1.7.0" />
+    <PackageReference Include="MessagePack" Version="2.1.115" />
   </ItemGroup>
 
 </Project>

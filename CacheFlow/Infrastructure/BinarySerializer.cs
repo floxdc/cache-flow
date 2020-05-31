@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace FloxDc.CacheFlow.Infrastructure
@@ -11,31 +12,25 @@ namespace FloxDc.CacheFlow.Infrastructure
         }
 
 
-        public T Deserialize<T>(object value)
-        {
-            T result;
+        public T Deserialize<T>(string _) => 
+            throw new NotImplementedException("The string overload is disabled for binary formatters");
 
-            using (var stream = new MemoryStream(value as byte[]))
-            {
-                stream.Seek(0, SeekOrigin.Begin);
-                result = (T) _formatter.Deserialize(stream);
-            }
-            
+
+        public T Deserialize<T>(in ReadOnlyMemory<byte> value)
+        {
+            using var stream = new MemoryStream(value.ToArray());
+            stream.Seek(0, SeekOrigin.Begin);
+            var result = (T) _formatter.Deserialize(stream);
+
             return result;
         }
 
 
-        public object Serialize<T>(T value)
+        public byte[] Serialize<T>(T value)
         {
-            object result;
-
-            using (var stream = new MemoryStream())
-            {
-                _formatter.Serialize(stream, value);
-                result = stream.ToArray();
-            }
-
-            return result;
+            using var stream = new MemoryStream();
+            _formatter.Serialize(stream, value);
+            return stream.ToArray();
         }
 
 

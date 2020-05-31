@@ -1,16 +1,25 @@
-﻿using FloxDc.CacheFlow.Infrastructure;
+﻿using System;
+using System.Text;
+using FloxDc.CacheFlow.Infrastructure;
 using Newtonsoft.Json;
 
 namespace CacheFlow.Json
 {
     public class CacheFlowJsonSerializer : ISerializer
     {
-        public T Deserialize<T>(object value) 
-            => JsonConvert.DeserializeObject<T>(value as string);
+        public T Deserialize<T>(string value) 
+            => JsonConvert.DeserializeObject<T>(value);
 
 
-        public object Serialize<T>(T value) 
-            => JsonConvert.SerializeObject(value);
+        public T Deserialize<T>(in ReadOnlyMemory<byte> _) 
+            => throw new NotImplementedException("The ReadOnlyMemory<byte> overload is disabled for string formatters");
+
+
+        byte[] ISerializer.Serialize<T>(T value)
+        {
+            var serialized = JsonConvert.SerializeObject(value);
+            return Encoding.UTF8.GetBytes(serialized);
+        }
 
 
         public bool IsBinarySerializer { get; } = IsBinary;

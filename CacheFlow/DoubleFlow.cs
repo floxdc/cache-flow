@@ -57,10 +57,9 @@ namespace FloxDc.CacheFlow
                 return value;
             }
 
-            if (memoryOptions is null)
-                memoryOptions = GetDefaultMemoryOptions(distributedOptions);
-
             value = _distributed.GetOrSet(key, getFunction, distributedOptions);
+            
+            memoryOptions ??= GetDefaultMemoryOptions(distributedOptions);
             _memory.Set(key, value, memoryOptions);
 
             return value;
@@ -87,10 +86,9 @@ namespace FloxDc.CacheFlow
                 return value;
             }
 
-            if (memoryOptions is null)
-                memoryOptions = GetDefaultMemoryOptions(distributedOptions);
-
             value = await _distributed.GetOrSetAsync(key, getFunction, distributedOptions, cancellationToken);
+            
+            memoryOptions ??= GetDefaultMemoryOptions(distributedOptions);
             _memory.Set(key, value, memoryOptions);
 
             return value;
@@ -115,7 +113,7 @@ namespace FloxDc.CacheFlow
         public Task RemoveAsync(string key, CancellationToken cancellationToken = default)
         {
             _memory.Remove(key);
-            return _distributed.RefreshAsync(key, cancellationToken);
+            return _distributed.RemoveAsync(key, cancellationToken);
         }
 
 
@@ -128,9 +126,7 @@ namespace FloxDc.CacheFlow
 
         public void Set<T>(string key, T value, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions memoryOptions = null)
         {
-            if (memoryOptions is null)
-                memoryOptions = GetDefaultMemoryOptions(distributedOptions);
-
+            memoryOptions ??= GetDefaultMemoryOptions(distributedOptions);
             _memory.Set(key, value, memoryOptions);
             _distributed.Set(key, value, distributedOptions);
         }
@@ -149,9 +145,7 @@ namespace FloxDc.CacheFlow
             MemoryCacheEntryOptions memoryOptions = null,
             CancellationToken cancellationToken = default)
         {
-            if (memoryOptions is null)
-                memoryOptions = GetDefaultMemoryOptions(distributedOptions);
-
+            memoryOptions ??= GetDefaultMemoryOptions(distributedOptions);
             _memory.Set(key, value, memoryOptions);
             return _distributed.SetAsync(key, value, distributedOptions, cancellationToken);
         }
@@ -165,19 +159,11 @@ namespace FloxDc.CacheFlow
                 });
 
 
-        public bool TryGetValue<T>(string key, out T value, MemoryCacheEntryOptions memoryOptions)
-        {
-            if (_memory.TryGetValue(key, out value))
-                return true;
-
-            if (!_distributed.TryGetValue(key, out value))
-                return false;
-
-            return true;
-        }
+        public bool TryGetValue<T>(string key, out T value, MemoryCacheEntryOptions memoryOptions) 
+            => _memory.TryGetValue(key, out value) || _distributed.TryGetValue(key, out value);
 
 
-        private MemoryCacheEntryOptions GetDefaultMemoryOptions(DistributedCacheEntryOptions distributedOptions)
+        private static MemoryCacheEntryOptions GetDefaultMemoryOptions(DistributedCacheEntryOptions distributedOptions)
             => new MemoryCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = distributedOptions.AbsoluteExpirationRelativeToNow

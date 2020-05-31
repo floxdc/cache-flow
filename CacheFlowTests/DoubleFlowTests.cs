@@ -293,5 +293,24 @@ namespace CacheFlowTests
             memoryFlowMock.Verify(f => f.Set(It.IsAny<string>(), It.IsAny<DefaultClass>(), It.IsAny<MemoryCacheEntryOptions>()), Times.Never);
             distributedFlowMock.Verify(f => f.TryGetValue(It.IsAny<string>(), out storedValue), Times.Once);
         }
+
+
+        [Fact]
+        public async Task RemoveAsync_ShouldRemoveValuesFromBothCaches()
+        {
+            var memoryFlowMock = new Mock<IMemoryFlow>();
+            memoryFlowMock.Setup(f => f.Remove(It.IsAny<string>()))
+                .Verifiable();
+            
+            var distributedFlowMock = new Mock<IDistributedFlow>();
+            distributedFlowMock.Setup(f => f.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Verifiable();
+            
+            var cache = new DoubleFlow(distributedFlowMock.Object, memoryFlowMock.Object);
+            await cache.RemoveAsync("key");
+
+            memoryFlowMock.Verify(f => f.Remove(It.IsAny<string>()), Times.Once);
+            distributedFlowMock.Verify(f => f.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
     }
 }

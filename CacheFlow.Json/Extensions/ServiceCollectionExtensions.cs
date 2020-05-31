@@ -5,7 +5,7 @@ namespace CacheFlow.Json.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddCashFlowJsonSerialization(this IServiceCollection services)
+        public static IServiceCollection AddCacheFlowJsonSerialization(this IServiceCollection services)
             => services.AddSingleton<ISerializer, CacheFlowJsonSerializer>();
     }
 }

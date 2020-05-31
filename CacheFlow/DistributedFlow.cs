@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,11 +14,12 @@ namespace FloxDc.CacheFlow
 {
     public class DistributedFlow : IDistributedFlow
     {
-        public DistributedFlow(IDistributedCache distributedCache, ILogger<DistributedFlow> logger = default,
+        public DistributedFlow(DiagnosticSource diagnosticSource, IDistributedCache distributedCache, ILogger<DistributedFlow> logger = default,
             IOptions<FlowOptions> options = default, ISerializer serializer = default)
         {
             Instance = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
             _logger = logger ?? new NullLogger<DistributedFlow>();
+            _diagnosticSource = diagnosticSource ?? throw new ArgumentNullException(nameof(diagnosticSource));
             _serializer = serializer ?? new BinarySerializer();
 
             if (options is null)
@@ -30,30 +32,36 @@ namespace FloxDc.CacheFlow
                 Options = options.Value;
             }
 
-            _executor = new Executor(_logger, Options.SuppressCacheExceptions, Options.EnableSensitiveDataLogging);
+            if (Options.DataLoggingLevel == DataLogLevel.Disabled)
+                _logger = new NullLogger<DistributedFlow>();
+
+            _executor = new Executor(_logger, Options.SuppressCacheExceptions, Options.DataLoggingLevel);
             _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(Options.CacheKeyPrefix, Options.CacheKeyDelimiter);
         }
 
 
         public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
+            var activity = _diagnosticSource.GetStartedActivity(nameof(GetAsync));
             var cached = await GetInternalAsync(key, cancellationToken);
-            if (cached is null)
+            if (cached.IsEmpty)
             {
-                if (Options.EnableSensitiveDataLogging)
+                if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
                     _logger.LogMissed(nameof(DistributedFlow) + ":" + nameof(GetAsync), key);
                 else
                     _logger.LogMissedInsensitive(key);
 
+                _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Miss, key));
                 return default;
             }
 
             var value = DeserializeAndDecode<T>(_serializer, cached);
-            if (Options.EnableSensitiveDataLogging)
+            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
                 _logger.LogHit(nameof(DistributedFlow) + ":" + nameof(GetAsync), key, value);
             else
                 _logger.LogHitInsensitive(key);
-
+            
+            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Hit, key));
             return value;
         }
 
@@ -67,7 +75,10 @@ namespace FloxDc.CacheFlow
             if (TryGetValue(key, out T result))
                 return result;
 
+            var activity = _diagnosticSource.GetStartedActivity("Value calculations");
             result = getFunction();
+            _diagnosticSource.StopStartedActivity(activity);
+
             Set(key, result, options);
 
             return result;
@@ -87,8 +98,11 @@ namespace FloxDc.CacheFlow
             var result = await GetAsync<T>(key, cancellationToken);
             if (result != null && !result.Equals(default(T)))
                 return result;
-
+            
+            var activity = _diagnosticSource.GetStartedActivity("Async value calculations");
             result = await getFunction();
+            _diagnosticSource.StopStartedActivity(activity);
+
             await SetAsync(key, result, options, cancellationToken);
 
             return result;
@@ -96,45 +110,64 @@ namespace FloxDc.CacheFlow
 
 
         public void Refresh(string key)
-            => TryExecute(() =>
+        {
+            var activity = _diagnosticSource.GetStartedActivity(nameof(Refresh));
+
+            TryExecute(() =>
             {
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
                 Instance.Refresh(fullKey);
             });
 
+            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Set, key));
+        }
 
-        public Task RefreshAsync(string key, CancellationToken cancellationToken = default)
-            => TryExecuteAsync(async () =>
+
+        public async Task RefreshAsync(string key, CancellationToken cancellationToken = default)
+        {
+            var activity = _diagnosticSource.GetStartedActivity(nameof(RefreshAsync));
+
+            await TryExecuteAsync(async () =>
             {
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
                 await Instance.RefreshAsync(fullKey, cancellationToken);
             });
 
+            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Set, key));
+        }
+
 
         public void Remove(string key)
         {
+            var activity = _diagnosticSource.GetStartedActivity(nameof(Remove));
             var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             TryExecute(() => Instance.Remove(fullKey));
 
-            if (Options.EnableSensitiveDataLogging)
+            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
                 _logger.LogRemoved(nameof(DistributedFlow) + ":" + nameof(Remove), key);
             else
                 _logger.LogRemovedInsensitive(key);
+
+            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Remove, key));
         }
 
 
         public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
         {
+            var activity = _diagnosticSource.GetStartedActivity(nameof(RemoveAsync));
+            
             await TryExecuteAsync(async () => 
             {
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
                 await Instance.RemoveAsync(fullKey, cancellationToken);
             });
 
-            if (Options.EnableSensitiveDataLogging)
+            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
                 _logger.LogRemoved(nameof(DistributedFlow) + ":" + nameof(RemoveAsync), key);
             else
                 _logger.LogRemovedInsensitive(key);
+
+            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Remove, key));
         }
 
 
@@ -161,110 +194,115 @@ namespace FloxDc.CacheFlow
 
         public bool TryGetValue<T>(string key, out T value)
         {
+            var activity = _diagnosticSource.GetStartedActivity(nameof(TryGetValue));
+
             value = default;
-            
             var cached = GetInternal(key);
-            if (cached is null)
+            if (cached.IsEmpty)
             {
-                if (Options.EnableSensitiveDataLogging)
+                if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
                     _logger.LogMissed(nameof(DistributedFlow) + ":" + nameof(TryGetValue), key);
                 else
                     _logger.LogMissedInsensitive(key);
-
+                
+                _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Miss, key));
                 return false;
             }
 
             value = DeserializeAndDecode<T>(_serializer, cached);
 
-            if (Options.EnableSensitiveDataLogging)
+            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
                 _logger.LogHit(nameof(DistributedFlow) + ":" + nameof(TryGetValue), key, value);
             else
                 _logger.LogHitInsensitive(key);
 
+            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Hit, key));
             return true;
         }
 
 
-        private bool CanSet<T>(string key, T value)
+        private static DiagnosticPayload BuildArgs(CacheEvents @event, string key) 
+            => new DiagnosticPayload(@event, key, nameof(DistributedFlow));
+
+
+        private bool CanSet<T>(string key, T value, Activity activity)
         {
             if (!Utils.IsDefaultStruct(value))
                 return true;
 
-            if (Options.EnableSensitiveDataLogging)
+            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
                 _logger.LogNotSet(nameof(DistributedFlow) + ":" + nameof(CanSet), key, value);
             else
                 _logger.LogNotSetInsensitive(key);
 
+            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Skipped, key));
             return false;
         }
 
 
-        private static T DeserializeAndDecode<T>(ISerializer serializer, byte[] value)
+        private static T DeserializeAndDecode<T>(ISerializer serializer, in ReadOnlyMemory<byte> value)
             => serializer.IsBinarySerializer
                 ? serializer.Deserialize<T>(value)
-                : serializer.Deserialize<T>(Encoding.UTF8.GetString(value, 0, value.Length));
+                : serializer.Deserialize<T>(Encoding.UTF8.GetString(value.Span));
 
 
-        private byte[] GetInternal(string key)
+        private ReadOnlyMemory<byte> GetInternal(string key)
             => TryExecute(() =>
             {
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-                return Instance.Get(fullKey);
+                return Instance.Get(fullKey).AsMemory();
             });
 
 
-        private Task<byte[]> GetInternalAsync(string key, CancellationToken cancellationToken)
+        private Task<ReadOnlyMemory<byte>> GetInternalAsync(string key, CancellationToken cancellationToken)
             => TryExecuteAsync(async () =>
             {
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-                return await Instance.GetAsync(fullKey, cancellationToken);
+                return (await Instance.GetAsync(fullKey, cancellationToken)).AsMemory();
             });
-
-
-        private static byte[] SerializeAndEncode<T>(ISerializer serializer, T value)
-        {
-            var serialized = serializer.Serialize(value);
-            return serializer.IsBinarySerializer
-                ? serialized as byte[]
-                : Encoding.UTF8.GetBytes(serialized as string);
-        }
 
 
         private void SetInternal<T>(string key, T value, DistributedCacheEntryOptions options)
         {
-            if (!CanSet(key, value))
+            var activity = _diagnosticSource.GetStartedActivity(nameof(Set));
+            if (!CanSet(key, value, activity))
                 return;
 
             TryExecute(() =>
             {
-                var encoded = SerializeAndEncode(_serializer, value);
+                var encoded = _serializer.Serialize(value);
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
                 Instance.Set(fullKey, encoded, options);
             });
 
-            if (Options.EnableSensitiveDataLogging)
+            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
                 _logger.LogSet(nameof(DistributedFlow) + ":" + nameof(SetInternal), key, value);
             else
                 _logger.LogSetInsensitive(key);
+
+            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Set, key));
         }
 
 
         private async Task SetInternalAsync<T>(string key, T value, DistributedCacheEntryOptions options, CancellationToken cancellationToken)
         {
-            if (!CanSet(key, value))
+            var activity = _diagnosticSource.GetStartedActivity(nameof(SetAsync));
+            if (!CanSet(key, value, activity))
                 return;
 
             await TryExecuteAsync(async () =>
             {
-                var encoded = SerializeAndEncode(_serializer, value);
+                var encoded = _serializer.Serialize(value);
                 var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
                 await Instance.SetAsync(fullKey, encoded, options, cancellationToken);
             });
 
-            if (Options.EnableSensitiveDataLogging)
+            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
                 _logger.LogSet(nameof(DistributedFlow) + ":" + nameof(SetInternalAsync), key, value);
             else
                 _logger.LogSetInsensitive(key);
+
+            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Set, key));
         }
 
 
@@ -272,7 +310,7 @@ namespace FloxDc.CacheFlow
             => _executor.TryExecute(action);
 
 
-        private byte[] TryExecute(Func<byte[]> func) 
+        private ReadOnlyMemory<byte> TryExecute(Func<ReadOnlyMemory<byte>> func) 
             => _executor.TryExecute(func);
 
 
@@ -280,7 +318,7 @@ namespace FloxDc.CacheFlow
             => _executor.TryExecuteAsync(func);
 
 
-        private Task<byte[]> TryExecuteAsync(Func<Task<byte[]>> func) 
+        private Task<ReadOnlyMemory<byte>> TryExecuteAsync(Func<Task<ReadOnlyMemory<byte>>> func) 
             => _executor.TryExecuteAsync(func);
 
 
@@ -289,6 +327,7 @@ namespace FloxDc.CacheFlow
         public FlowOptions Options { get; }
 
 
+        private readonly DiagnosticSource _diagnosticSource;
         private readonly Executor _executor;
         private readonly ILogger<DistributedFlow> _logger;
         private readonly string _prefix;
