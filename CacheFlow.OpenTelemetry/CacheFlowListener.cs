@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using FloxDc.CacheFlow.Infrastructure;
-using OpenTelemetry.Adapter;
+using OpenTelemetry.Instrumentation;
 using OpenTelemetry.Trace;
 
+// ReSharper disable once CheckNamespace
 namespace FloxDc.CacheFlow
 {
     public class CacheFlowListener : ListenerHandler
