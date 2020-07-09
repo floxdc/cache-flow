@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using FloxDc.CacheFlow.Infrastructure;
 using OpenTelemetry.Instrumentation;
 using OpenTelemetry.Trace;
@@ -17,36 +16,35 @@ namespace FloxDc.CacheFlow
 
         public override void OnStartActivity(Activity activity, object payload)
         {
+            if (activity is null)
+            {
+                InstrumentationEventSource.Log.NullActivity(DiagnosticSourceHelper.SourceName);
+                return;
+            }
+
             if (!activity.OperationName.StartsWith(SourceName))
                 return;
             
             _activitySource.Start(activity);
-
-            var span = Tracer.StartSpanFromActivity(activity.OperationName, activity);
-            if (!span.IsRecording)
-                return;
-
-            foreach (var (key, value) in activity.Tags)
-                span.SetAttribute(key, value);
         }
 
 
         public override void OnStopActivity(Activity activity, object payload)
         {
+            if (activity is null)
+            {
+                InstrumentationEventSource.Log.NullActivity(DiagnosticSourceHelper.SourceName);
+                return;
+            }
+
             if (!activity.OperationName.StartsWith(SourceName))
                 return;
             
-            var span = Tracer.CurrentSpan;
-
-            if (span.IsRecording && payload is DiagnosticPayload data)
+            if (activity.IsAllDataRequested && payload is DiagnosticPayload data)
             {
-                span.SetAttribute(CacheEventAttribute, data.Event.ToString());
-                span.SetAttribute(CacheKeyAttribute, data.Key);
+                activity.AddTag(CacheEventAttribute, data.Event.ToString());
+                activity.AddTag(CacheKeyAttribute, data.Key);
             }
-
-            span.End();
-            if (span is IDisposable disposable)
-                disposable.Dispose();
 
             _activitySource.Stop(activity);
         }
