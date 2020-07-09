@@ -183,7 +183,7 @@ CacheFlow emits `DiagnosticSource` events and execution state logs. There is an 
 
 Install a package via NuGet
 ```
-PM> Install-Package FloxDc.CacheFlow.OpenTelemerty -Version 1.7.0
+PM> Install-Package FloxDc.CacheFlow.OpenTelemerty -Version 1.7.1
 ``` 
 
 ```csharp
