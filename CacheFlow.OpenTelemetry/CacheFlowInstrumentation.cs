@@ -7,9 +7,9 @@ namespace FloxDc.CacheFlow
 {
     public class CacheFlowInstrumentation : IDisposable
     {
-        public CacheFlowInstrumentation(Tracer tracer, string diagnosticsListenerName)
+        public CacheFlowInstrumentation(ActivitySourceAdapter activitySource, string diagnosticsListenerName)
         {
-            _diagnosticSourceSubscriber = new DiagnosticSourceSubscriber(name => new CacheFlowListener(diagnosticsListenerName, tracer),
+            _diagnosticSourceSubscriber = new DiagnosticSourceSubscriber(name => new CacheFlowListener(diagnosticsListenerName, activitySource),
                 filter => true, (_, __, ___) => true);
             _diagnosticSourceSubscriber.Subscribe();
         }

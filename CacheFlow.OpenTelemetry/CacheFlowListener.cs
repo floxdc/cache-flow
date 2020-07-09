@@ -9,14 +9,18 @@ namespace FloxDc.CacheFlow
 {
     public class CacheFlowListener : ListenerHandler
     {
-        public CacheFlowListener(string sourceName, Tracer tracer) : base(sourceName, tracer)
-        { }
+        public CacheFlowListener(string sourceName, ActivitySourceAdapter activitySource) : base(sourceName, null)
+        {
+            _activitySource = activitySource;
+        }
 
 
         public override void OnStartActivity(Activity activity, object payload)
         {
             if (!activity.OperationName.StartsWith(SourceName))
                 return;
+            
+            _activitySource.Start(activity);
 
             var span = Tracer.StartSpanFromActivity(activity.OperationName, activity);
             if (!span.IsRecording)
@@ -43,10 +47,15 @@ namespace FloxDc.CacheFlow
             span.End();
             if (span is IDisposable disposable)
                 disposable.Dispose();
+
+            _activitySource.Stop(activity);
         }
 
 
         private static readonly string CacheEventAttribute = DiagnosticSourceHelper.SourceName + '.' + "event";
         private static readonly string CacheKeyAttribute = DiagnosticSourceHelper.SourceName + '.' + "key";
+
+
+        private readonly ActivitySourceAdapter _activitySource;
     }
 }
