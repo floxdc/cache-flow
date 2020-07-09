@@ -179,6 +179,10 @@ Keep in mind `MessagePack` requires to specify a structured map of serialized da
 
 ### Telemetry
 
+|Warning!|
+|--------|
+OpenTelemerty is currently in alpha, a version of the package and it's usage may change dramatically over time.
+
 CacheFlow emits `DiagnosticSource` events and execution state logs. There is an integration with `OpenTelemerty` already in the place.
 
 Install a package via NuGet
@@ -187,16 +191,17 @@ PM> Install-Package FloxDc.CacheFlow.OpenTelemerty -Version 1.7.1
 ``` 
 
 ```csharp
-services.AddOpenTelemetry(builder =>
+services.AddOpenTelemetrySdk(builder =>
     {
-        builder.UseJaeger(options =>
+        builder
+            .AddCacheFlowInstrumentation()
+            .UseJaegerActivityExporter(options =>
             {
                 options.ServiceName = serviceName;
                 options.AgentHost = agentHost;
                 options.AgentPort = agentPort;
             })
-            .AddCacheFlowInstrumentation()
             .SetResource(Resources.CreateServiceResource(serviceName))
-            .SetSampler(new AlwaysOnSampler());
+            .SetSampler(new AlwaysOnActivitySampler());
     });
 ```
