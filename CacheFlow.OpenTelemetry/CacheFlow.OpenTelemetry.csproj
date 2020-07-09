@@ -5,7 +5,7 @@
     <RepositoryUrl>https://github.com/floxdc/cache-flow</RepositoryUrl>
     <RepositoryType>https://github.com/floxdc/cache-flow</RepositoryType>
     <Authors>Kirill Taran</Authors>
-    <Version>1.7.1-354</Version>
+    <Version>1.7.1.354</Version>
     <PackageId>FloxDc.CacheFlow.OpenTelemetry</PackageId>
     <Product>FloxDc.CacheFlow.OpenTelemetry</Product>
     <Company>FloxDc</Company>
