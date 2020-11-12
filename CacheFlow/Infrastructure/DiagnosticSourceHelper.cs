@@ -1,20 +1,23 @@
 ﻿using System.Diagnostics;
-using FloxDc.CacheFlow.Logging;
 
 namespace FloxDc.CacheFlow.Infrastructure
 {
     public static class DiagnosticSourceHelper
     {
-        internal static DiagnosticPayload BuildArguments(CacheEvents @event, string key, string serviceType) 
-            => new DiagnosticPayload(@event, key, serviceType);
-
-
         internal static Activity GetStartedActivity(this DiagnosticSource source, string activityName, object args = null)
         {
             if (!source.IsEnabled(SourceName))
                 return null;
 
+            var current = Activity.Current;
+            
             var activity = new Activity(BuildName(activityName));
+            if (current != null)
+            {
+                activity.SetParentId(current.TraceId, current.SpanId, current.ActivityTraceFlags);
+                activity.TraceStateString = current.TraceStateString;
+            }
+
             source.StartActivity(activity, args);
 
             return activity;

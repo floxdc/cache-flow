@@ -1,24 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
-    <LangVersion>8.0</LangVersion>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1;net5.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Flox DC</Company>
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow.Json</PackageId>
-    <Version>1.7.0</Version>
+    <Version>1.8.0</Version>
     <Product>FloxDc.CacheFlow.Json</Product>
     <Description>Json serializer for CacheFlow</Description>
     <RepositoryUrl>https://github.com/floxdc/cache-flow</RepositoryUrl>
     <PackageTags>CacheFlow Json</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageReleaseNotes>- Updated to .Net 5</PackageReleaseNotes>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.1|AnyCPU'">
+    <NoWarn>1701;1702</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FloxDc.CacheFlow" Version="1.7.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.4" />
+    <PackageReference Include="FloxDc.CacheFlow" Version="1.8.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
