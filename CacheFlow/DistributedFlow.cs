@@ -20,7 +20,7 @@ namespace FloxDc.CacheFlow
             Instance = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
             _logger = logger ?? new NullLogger<DistributedFlow>();
             _diagnosticSource = diagnosticSource ?? throw new ArgumentNullException(nameof(diagnosticSource));
-            _serializer = serializer ?? new BinarySerializer();
+            _serializer = serializer ?? new TextJsonSerializer();
 
             if (options is null)
             {
