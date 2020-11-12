@@ -7,10 +7,10 @@
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow</PackageId>
     <Description>.Net Core distributed cache management library based on IDistributedCache and IMemoryCache interfaces</Description>
-    <Version>1.8.0</Version>
+    <Version>1.9.0</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
-    <PackageReleaseNotes>- Updated to .Net 5</PackageReleaseNotes>
+    <PackageReleaseNotes>- Default serializer replaced fron ByteFormatter to a UTF8 form of System.Text.Json, because ByteFormatter has been depricated</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
