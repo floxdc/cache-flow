@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace CacheFlowTests
 {
     [Serializable]
     public class DefaultClass
     {
+        [JsonConstructor]
         public DefaultClass(int id)
         {
             Id = id;

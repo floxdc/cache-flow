@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 using FloxDc.CacheFlow;
@@ -185,7 +183,7 @@ namespace CacheFlowTests
             var temp = (object)storedValue;
             var distributedCacheMock = new Mock<IDistributedCache>();
             distributedCacheMock.Setup(c => c.Get(It.IsAny<string>()))
-                .Returns(ObjectToByteArray(temp))
+                .Returns(ObjectToDefaultTextJson(temp))
                 .Verifiable();
 
             var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
@@ -204,14 +202,14 @@ namespace CacheFlowTests
             var temp = (object)storedValue;
             var distributedCacheMock = new Mock<IDistributedCache>();
             distributedCacheMock.Setup(c => c.Get(It.IsAny<string>()))
-                .Returns(ObjectToByteArray(temp))
+                .Returns(ObjectToDefaultTextJson(temp))
                 .Verifiable();
 
             var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
             var isSuccess = cache.TryGetValue("key", out DefaultStruct result);
 
             Assert.True(isSuccess);
-            Assert.Equal(storedValue, result);
+            Assert.Equal(storedValue.Id, result.Id);
             distributedCacheMock.Verify(c => c.Get(It.IsAny<string>()), Times.Once);
         }
 
@@ -223,7 +221,7 @@ namespace CacheFlowTests
             var temp = (object)storedValue;
             var distributedCacheMock = new Mock<IDistributedCache>();
             distributedCacheMock.Setup(c => c.Get(It.IsAny<string>()))
-                .Returns(ObjectToByteArray(temp))
+                .Returns(ObjectToDefaultTextJson(temp))
                 .Verifiable();
 
             var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
@@ -275,7 +273,7 @@ namespace CacheFlowTests
             var temp = (object)storedValue;
             var distributedCacheMock = new Mock<IDistributedCache>();
             distributedCacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(ObjectToByteArray(temp))
+                .ReturnsAsync(ObjectToDefaultTextJson(temp))
                 .Verifiable();
 
             var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
@@ -293,7 +291,7 @@ namespace CacheFlowTests
             var temp = (object)storedValue;
             var distributedCacheMock = new Mock<IDistributedCache>();
             distributedCacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(ObjectToByteArray(temp))
+                .ReturnsAsync(ObjectToDefaultTextJson(temp))
                 .Verifiable();
 
             var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
@@ -311,7 +309,7 @@ namespace CacheFlowTests
             var temp = (object)storedValue;
             var distributedCacheMock = new Mock<IDistributedCache>();
             distributedCacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(ObjectToByteArray(temp))
+                .ReturnsAsync(ObjectToDefaultTextJson(temp))
                 .Verifiable();
 
             var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object);
@@ -330,7 +328,7 @@ namespace CacheFlowTests
             var returnedValue = new DefaultStruct(42);
             var distributedCacheMock = new Mock<IDistributedCache>();
             distributedCacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(ObjectToByteArray(temp))
+                .ReturnsAsync(ObjectToDefaultTextJson(temp))
                 .Verifiable();
             distributedCacheMock.Setup(c =>
                     c.SetAsync(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(),
@@ -354,7 +352,7 @@ namespace CacheFlowTests
             var returnedValue = new DefaultClass(42);
             var distributedCacheMock = new Mock<IDistributedCache>();
             distributedCacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(ObjectToByteArray(null))
+                .ReturnsAsync(ObjectToDefaultTextJson(null))
                 .Verifiable();
             distributedCacheMock.Setup(c =>
                     c.SetAsync(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(),
@@ -381,29 +379,25 @@ namespace CacheFlowTests
             var obj = new DefaultClass(42);
             var distributedCacheMock = new Mock<IDistributedCache>();
             distributedCacheMock.Setup(c => c.Get(prefix + delimiter + key))
-                .Returns(ObjectToByteArray(obj));
+                .Returns(ObjectToDefaultTextJson(obj));
             var optionsMock = new Mock<IOptions<FlowOptions>>();
             optionsMock.Setup(o => o.Value)
                 .Returns(new FlowOptions { CacheKeyDelimiter = delimiter, CacheKeyPrefix = prefix });
 
             var cache = new DistributedFlow(new TestDiagnosticSource(), distributedCacheMock.Object, options: optionsMock.Object);
-            var expected = cache.TryGetValue(key, out object value);
+            var expected = cache.TryGetValue(key, out DefaultClass value);
 
             Assert.True(expected);
             Assert.Equal(obj, value);
         }
 
 
-        private static byte[] ObjectToByteArray(object obj)
+        private static byte[] ObjectToDefaultTextJson(object obj)
         {
-            if (obj == null)
+            if (obj is null)
                 return null;
-            var bf = new BinaryFormatter();
-            using (var ms = new MemoryStream())
-            {
-                bf.Serialize(ms, obj);
-                return ms.ToArray();
-            }
+
+            return System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(obj);
         }
     }
 }
