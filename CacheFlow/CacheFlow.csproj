@@ -7,17 +7,15 @@
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow</PackageId>
     <Description>.Net Core distributed cache management library based on IDistributedCache and IMemoryCache interfaces</Description>
-    <Version>1.9.0</Version>
+    <Version>1.9.1</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
-    <PackageReleaseNotes>- Default serializer replaced fron ByteFormatter to a UTF8 form of System.Text.Json, because ByteFormatter has been depricated</PackageReleaseNotes>
+    <PackageReleaseNotes>- Time span extension added</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
-    <RuntimeFrameworkVersion>2.1.4</RuntimeFrameworkVersion>
     <LangVersion>default</LangVersion>
     <Copyright></Copyright>
-    <AssemblyVersion>1.4.2.0</AssemblyVersion>
     <RepositoryUrl>https://github.com/floxdc/cache-flow</RepositoryUrl>
     <PackageTags>IDistributedCache; IMemoryCache; CacheFlow</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
