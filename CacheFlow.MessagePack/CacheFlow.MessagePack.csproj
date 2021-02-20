@@ -6,7 +6,7 @@
     <Company>Flox DC</Company>
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow.MessagePack</PackageId>
-    <Version>1.8.0</Version>
+    <Version>1.9.1</Version>
     <Product>FloxDc.CacheFlow.MessagePack</Product>
     <Description>MessagePack serializer for CacheFlow</Description>
     <RepositoryUrl>https://github.com/floxdc/cache-flow</RepositoryUrl>
@@ -21,8 +21,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FloxDc.CacheFlow" Version="1.8.0" />
-    <PackageReference Include="MessagePack" Version="2.2.60" />
+    <PackageReference Include="FloxDc.CacheFlow" Version="1.9.1" />
+    <PackageReference Include="MessagePack" Version="2.2.85" />
   </ItemGroup>
 
 </Project>
