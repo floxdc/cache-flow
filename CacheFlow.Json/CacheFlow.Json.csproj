@@ -6,9 +6,9 @@
     <Company>Flox DC</Company>
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow.Json</PackageId>
-    <Version>1.8.0</Version>
+    <Version>1.9.1</Version>
     <Product>FloxDc.CacheFlow.Json</Product>
-    <Description>Json serializer for CacheFlow</Description>
+    <Description>NewtonsoftJson serializer for CacheFlow</Description>
     <RepositoryUrl>https://github.com/floxdc/cache-flow</RepositoryUrl>
     <PackageTags>CacheFlow Json</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -21,13 +21,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FloxDc.CacheFlow" Version="1.8.0" />
+    <PackageReference Include="FloxDc.CacheFlow" Version="1.9.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\CacheFlow\CacheFlow.csproj" />
   </ItemGroup>
 
 </Project>
