@@ -18,13 +18,14 @@ CacheFlow is a cache management system for .Net Core. It ables you not only use 
     * [JSON](#json)
     * [MessagePack](#messagepack)
   * [Telemetry](#telemetry)
+  * [Time Spans](#time-spans)
 
 
 ## Quick Start
 
-Install a package via NuGet
+Install a package via [NuGet](https://www.nuget.org/packages/FloxDc.CacheFlow/)
 ```
-PM> Install-Package FloxDc.CacheFlow -Version 1.7.0
+PM> Install-Package FloxDc.CacheFlow -Version 1.9.1
 ``` 
 
 And add following lines to your `Startup.cs` file:
@@ -205,3 +206,19 @@ services.AddOpenTelemetrySdk(builder =>
             .SetSampler(new AlwaysOnActivitySampler());
     });
 ```
+
+
+### Time Spans
+
+If you want to avoid overlaps in caching, you may use following `TimeSpan` extensions:
+
+|Method Name          |Time Frame|
+|---------------------|----------|
+|BeforeMinuteEnds     |up to 1 minute
+|BeforeTwoMinutesEnd  |up to 2 minutes
+|BeforeFiveMinutesEnd |up to 5 minutes
+|BeforeTenMinutesEnd  |up to 10 minutes
+|BeforeQuarterHourEnds|up to 15 minutes
+|BeforeHalfHourEnds   |up to 30 minutes
+|BeforeHourEnds       |up to 60 minutes
+|BeforeDayEnds        |up to 24 hours
