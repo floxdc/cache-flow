@@ -20,13 +20,13 @@ namespace FloxDc.CacheFlow.Logging
             CacheSet = LoggerMessage.Define<string, string, string>(LogLevel.Debug, new EventId((int)CacheEvents.Set, CacheEvents.Set.ToString()), "SET | {target} | {Key} | {value} | CacheFlow: The entry is set.");
             CacheSetInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvents.Set, CacheEvents.Set.ToString()), "SET | {Key} | CacheFlow: The entry is set.");
             
-            ErrorOccured = LoggerMessage.Define<string>(LogLevel.Error, new EventId((int)CacheEvents.AnErrorHasOccured, CacheEvents.AnErrorHasOccured.ToString()), "EXCEPTION | {target} | CacheFlow: ");
-            ErrorOccuredInsensitive = LoggerMessage.Define(LogLevel.Error, new EventId((int)CacheEvents.AnErrorHasOccured, CacheEvents.AnErrorHasOccured.ToString()), "EXCEPTION | CacheFlow: ");
+            ErrorOccured = LoggerMessage.Define<string>(LogLevel.Error, new EventId((int)CacheEvents.AnErrorHasOccurred, CacheEvents.AnErrorHasOccurred.ToString()), "EXCEPTION | {target} | CacheFlow: ");
+            ErrorOccuredInsensitive = LoggerMessage.Define(LogLevel.Error, new EventId((int)CacheEvents.AnErrorHasOccurred, CacheEvents.AnErrorHasOccurred.ToString()), "EXCEPTION | CacheFlow: ");
             
             EntryRemoved = LoggerMessage.Define<string, string>(LogLevel.Debug, new EventId((int)CacheEvents.Remove, CacheEvents.Remove.ToString()), "REMOVED | {target} | {Key} | CacheFlow: The key has been removed from a cache.");
             EntryRemovedInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvents.Remove, CacheEvents.Remove.ToString()), "REMOVED | {Key} | CacheFlow: The key has been removed from a cache.");
             
-            NoOptions = LoggerMessage.Define<string>(LogLevel.Warning, new EventId((int)CacheEvents.AnErrorHasOccured, CacheEvents.AnErrorHasOccured.ToString()), "NO OPTIONS | {target} | CacheFlow: No options has been provided. The defaults are used.");
+            NoOptions = LoggerMessage.Define<string>(LogLevel.Warning, new EventId((int)CacheEvents.AnErrorHasOccurred, CacheEvents.AnErrorHasOccurred.ToString()), "NO OPTIONS | {target} | CacheFlow: No options has been provided. The defaults are used.");
         }
 
 
