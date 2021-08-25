@@ -135,6 +135,22 @@ public MyClass(IMemoryFlow<MyClass> cache)
 ```
 
 
+#### Time Spans
+
+If you want to avoid overlaps in caching, you may use following `TimeSpan` extensions:
+
+|Method Name          |Time Frame|
+|---------------------|----------|
+|BeforeMinuteEnds     |up to 1 minute
+|BeforeTwoMinutesEnd  |up to 2 minutes
+|BeforeFiveMinutesEnd |up to 5 minutes
+|BeforeTenMinutesEnd  |up to 10 minutes
+|BeforeQuarterHourEnds|up to 15 minutes
+|BeforeHalfHourEnds   |up to 30 minutes
+|BeforeHourEnds       |up to 60 minutes
+|BeforeDayEnds        |up to 24 hours
+
+
 ## Extensions
 
 ### Serialization
@@ -206,19 +222,3 @@ services.AddOpenTelemetrySdk(builder =>
             .SetSampler(new AlwaysOnActivitySampler());
     });
 ```
-
-
-### Time Spans
-
-If you want to avoid overlaps in caching, you may use following `TimeSpan` extensions:
-
-|Method Name          |Time Frame|
-|---------------------|----------|
-|BeforeMinuteEnds     |up to 1 minute
-|BeforeTwoMinutesEnd  |up to 2 minutes
-|BeforeFiveMinutesEnd |up to 5 minutes
-|BeforeTenMinutesEnd  |up to 10 minutes
-|BeforeQuarterHourEnds|up to 15 minutes
-|BeforeHalfHourEnds   |up to 30 minutes
-|BeforeHourEnds       |up to 60 minutes
-|BeforeDayEnds        |up to 24 hours
