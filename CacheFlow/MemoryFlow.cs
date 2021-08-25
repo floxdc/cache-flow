@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using FloxDc.CacheFlow.Infrastructure;
 using FloxDc.CacheFlow.Logging;
+using FloxDc.CacheFlow.Telemetry;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -13,12 +15,12 @@ namespace FloxDc.CacheFlow
 {
     public class MemoryFlow : IMemoryFlow
     {
-        public MemoryFlow(DiagnosticSource diagnosticSource, IMemoryCache memoryCache, ILogger<MemoryFlow>? logger = default,
+        public MemoryFlow(IMemoryCache memoryCache, ILogger<MemoryFlow>? logger = default,
             IOptions<FlowOptions>? options = default)
         {
             Instance = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             _logger = logger ?? new NullLogger<MemoryFlow>();
-            _diagnosticSource = diagnosticSource ?? throw new ArgumentNullException(nameof(diagnosticSource));
+            _activitySource = ActivitySourceContainer.Instance;
 
             if (options is null)
             {
@@ -48,9 +50,9 @@ namespace FloxDc.CacheFlow
             if (TryGetValue(key, out T result))
                 return result;
 
-            var activity = _diagnosticSource.GetStartedActivity("Value calculations");
+            var activity = _activitySource.GetStartedActivity("Value calculations");
             result = getValueFunction();
-            _diagnosticSource.StopStartedActivity(activity);
+            _activitySource.StopStartedActivity(activity);
             
             Set(key, result, options);
 
@@ -69,9 +71,9 @@ namespace FloxDc.CacheFlow
             if (TryGetValue(key, out T result))
                 return result;
 
-            var activity = _diagnosticSource.GetStartedActivity("Async value calculations");
+            var activity = _activitySource.GetStartedActivity("Async value calculations");
             result = await getValueFunction();
-            _diagnosticSource.StopStartedActivity(activity);
+            _activitySource.StopStartedActivity(activity);
             
             Set(key, result, options);
 
@@ -81,7 +83,7 @@ namespace FloxDc.CacheFlow
 
         public void Remove(string key)
         {
-            var activity = _diagnosticSource.GetStartedActivity(nameof(Remove));
+            var activity = _activitySource.GetStartedActivity(nameof(Remove));
             var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             _executor.TryExecute(() => Instance.Remove(fullKey));
 
@@ -90,7 +92,7 @@ namespace FloxDc.CacheFlow
             else
                 _logger.LogRemovedInsensitive(key);
 
-            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Remove, fullKey));
+            _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Remove, fullKey));
         }
 
 
@@ -100,7 +102,7 @@ namespace FloxDc.CacheFlow
 
         public void Set<T>(string key, T value, MemoryCacheEntryOptions options)
         {
-            var activity = _diagnosticSource.GetStartedActivity(nameof(Set));
+            var activity = _activitySource.GetStartedActivity(nameof(Set));
             var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             if (Utils.IsDefaultStruct(value))
             {
@@ -109,7 +111,7 @@ namespace FloxDc.CacheFlow
                 else
                     _logger.LogNotSetInsensitive(key);
 
-                _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Skipped, fullKey));
+                _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Skipped, fullKey));
                 return;
             }
 
@@ -125,13 +127,13 @@ namespace FloxDc.CacheFlow
             else
                 _logger.LogSetInsensitive(key);
 
-            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Set, fullKey));
+            _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Set, fullKey));
         }
 
 
         public bool TryGetValue<T>(string key, out T value)
         {
-            var activity = _diagnosticSource.GetStartedActivity(nameof(TryGetValue));
+            var activity = _activitySource.GetStartedActivity(nameof(TryGetValue));
             var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
 
             bool isCached;
@@ -148,7 +150,7 @@ namespace FloxDc.CacheFlow
                 else
                     _logger.LogMissedInsensitive(key);
 
-                _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Miss, fullKey));
+                _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Miss, fullKey));
                 return false;
             }
 
@@ -157,20 +159,25 @@ namespace FloxDc.CacheFlow
             else
                 _logger.LogHitInsensitive(key);
             
-            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Hit, fullKey));
+            _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Hit, fullKey));
             return true;
         }
 
 
-        private static DiagnosticPayload BuildArgs(CacheEvents @event, string key) 
-            => new (@event, key, nameof(MemoryFlow));
+        private static Dictionary<string, string> BuildArgs(CacheEvents @event, string key)
+            => new()
+            {
+                { "event", @event.ToString() },
+                { "key", key },
+                { "service-type", nameof(MemoryFlow) }
+            };
 
 
         public IMemoryCache Instance { get; }
         public FlowOptions Options { get; }
 
 
-        private readonly DiagnosticSource _diagnosticSource;
+        private readonly ActivitySource _activitySource;
         private readonly Executor _executor;
         private readonly ILogger<MemoryFlow> _logger;
         private readonly string _prefix;

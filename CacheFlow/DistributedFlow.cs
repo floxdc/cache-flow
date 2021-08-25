@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FloxDc.CacheFlow.Infrastructure;
 using FloxDc.CacheFlow.Logging;
+using FloxDc.CacheFlow.Serialization;
+using FloxDc.CacheFlow.Telemetry;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -14,12 +17,12 @@ namespace FloxDc.CacheFlow
 {
     public class DistributedFlow : IDistributedFlow
     {
-        public DistributedFlow(DiagnosticSource diagnosticSource, IDistributedCache distributedCache, ILogger<DistributedFlow>? logger = default,
+        public DistributedFlow(IDistributedCache distributedCache, ILogger<DistributedFlow>? logger = default,
             IOptions<FlowOptions>? options = default, ISerializer? serializer = default)
         {
             Instance = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
             _logger = logger ?? new NullLogger<DistributedFlow>();
-            _diagnosticSource = diagnosticSource ?? throw new ArgumentNullException(nameof(diagnosticSource));
+            _activitySource = ActivitySourceContainer.Instance;
             _serializer = serializer ?? new TextJsonSerializer();
 
             if (options is null)
@@ -42,7 +45,7 @@ namespace FloxDc.CacheFlow
 
         public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
-            var activity = _diagnosticSource.GetStartedActivity(nameof(GetAsync));
+            var activity = _activitySource.GetStartedActivity(nameof(GetAsync));
             var cached = await GetInternalAsync(key, cancellationToken);
             if (cached.IsEmpty)
             {
@@ -51,7 +54,7 @@ namespace FloxDc.CacheFlow
                 else
                     _logger.LogMissedInsensitive(key);
 
-                _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Miss, key));
+                _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Miss, key));
                 return default;
             }
 
@@ -61,7 +64,7 @@ namespace FloxDc.CacheFlow
             else
                 _logger.LogHitInsensitive(key);
             
-            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Hit, key));
+            _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Hit, key));
             return value;
         }
 
@@ -75,9 +78,9 @@ namespace FloxDc.CacheFlow
             if (TryGetValue(key, out T result))
                 return result;
 
-            var activity = _diagnosticSource.GetStartedActivity("Value calculations");
+            var activity = _activitySource.GetStartedActivity("Value calculations");
             result = getFunction();
-            _diagnosticSource.StopStartedActivity(activity);
+            _activitySource.StopStartedActivity(activity);
 
             Set(key, result, options);
 
@@ -99,9 +102,9 @@ namespace FloxDc.CacheFlow
             if (result != null && !result.Equals(default(T)))
                 return result;
             
-            var activity = _diagnosticSource.GetStartedActivity("Async value calculations");
+            var activity = _activitySource.GetStartedActivity("Async value calculations");
             result = await getFunction();
-            _diagnosticSource.StopStartedActivity(activity);
+            _activitySource.StopStartedActivity(activity);
 
             await SetAsync(key, result, options, cancellationToken);
 
@@ -111,7 +114,7 @@ namespace FloxDc.CacheFlow
 
         public void Refresh(string key)
         {
-            var activity = _diagnosticSource.GetStartedActivity(nameof(Refresh));
+            var activity = _activitySource.GetStartedActivity(nameof(Refresh));
 
             TryExecute(() =>
             {
@@ -119,13 +122,13 @@ namespace FloxDc.CacheFlow
                 Instance.Refresh(fullKey);
             });
 
-            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Set, key));
+            _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Set, key));
         }
 
 
         public async Task RefreshAsync(string key, CancellationToken cancellationToken = default)
         {
-            var activity = _diagnosticSource.GetStartedActivity(nameof(RefreshAsync));
+            var activity = _activitySource.GetStartedActivity(nameof(RefreshAsync));
 
             await TryExecuteAsync(async () =>
             {
@@ -133,13 +136,13 @@ namespace FloxDc.CacheFlow
                 await Instance.RefreshAsync(fullKey, cancellationToken);
             });
 
-            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Set, key));
+            _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Set, key));
         }
 
 
         public void Remove(string key)
         {
-            var activity = _diagnosticSource.GetStartedActivity(nameof(Remove));
+            var activity = _activitySource.GetStartedActivity(nameof(Remove));
             var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             TryExecute(() => Instance.Remove(fullKey));
 
@@ -148,13 +151,13 @@ namespace FloxDc.CacheFlow
             else
                 _logger.LogRemovedInsensitive(key);
 
-            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Remove, key));
+            _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Remove, key));
         }
 
 
         public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
         {
-            var activity = _diagnosticSource.GetStartedActivity(nameof(RemoveAsync));
+            var activity = _activitySource.GetStartedActivity(nameof(RemoveAsync));
             
             await TryExecuteAsync(async () => 
             {
@@ -167,7 +170,7 @@ namespace FloxDc.CacheFlow
             else
                 _logger.LogRemovedInsensitive(key);
 
-            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Remove, key));
+            _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Remove, key));
         }
 
 
@@ -194,7 +197,7 @@ namespace FloxDc.CacheFlow
 
         public bool TryGetValue<T>(string key, out T? value)
         {
-            var activity = _diagnosticSource.GetStartedActivity(nameof(TryGetValue));
+            var activity = _activitySource.GetStartedActivity(nameof(TryGetValue));
 
             value = default;
             var cached = GetInternal(key);
@@ -205,7 +208,7 @@ namespace FloxDc.CacheFlow
                 else
                     _logger.LogMissedInsensitive(key);
                 
-                _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Miss, key));
+                _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Miss, key));
                 return false;
             }
 
@@ -216,13 +219,18 @@ namespace FloxDc.CacheFlow
             else
                 _logger.LogHitInsensitive(key);
 
-            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Hit, key));
+            _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Hit, key));
             return true;
         }
 
 
-        private static DiagnosticPayload BuildArgs(CacheEvents @event, string key) 
-            => new (@event, key, nameof(DistributedFlow));
+        private static Dictionary<string, string> BuildTags(CacheEvents @event, string key)
+            => new()
+            {
+                {"event", @event.ToString()},
+                {"key", key},
+                {"service-type", nameof(DistributedFlow)}
+            };
 
 
         private bool CanSet<T>(string key, T value, Activity? activity)
@@ -235,7 +243,7 @@ namespace FloxDc.CacheFlow
             else
                 _logger.LogNotSetInsensitive(key);
 
-            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Skipped, key));
+            _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Skipped, key));
             return false;
         }
 
@@ -264,7 +272,7 @@ namespace FloxDc.CacheFlow
 
         private void SetInternal<T>(string key, T value, DistributedCacheEntryOptions options)
         {
-            var activity = _diagnosticSource.GetStartedActivity(nameof(Set));
+            var activity = _activitySource.GetStartedActivity(nameof(Set));
             if (!CanSet(key, value, activity))
                 return;
 
@@ -280,13 +288,13 @@ namespace FloxDc.CacheFlow
             else
                 _logger.LogSetInsensitive(key);
 
-            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Set, key));
+            _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Set, key));
         }
 
 
         private async Task SetInternalAsync<T>(string key, T value, DistributedCacheEntryOptions options, CancellationToken cancellationToken)
         {
-            var activity = _diagnosticSource.GetStartedActivity(nameof(SetAsync));
+            var activity = _activitySource.GetStartedActivity(nameof(SetAsync));
             if (!CanSet(key, value, activity))
                 return;
 
@@ -302,7 +310,7 @@ namespace FloxDc.CacheFlow
             else
                 _logger.LogSetInsensitive(key);
 
-            _diagnosticSource.StopStartedActivity(activity, BuildArgs(CacheEvents.Set, key));
+            _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Set, key));
         }
 
 
@@ -327,7 +335,7 @@ namespace FloxDc.CacheFlow
         public FlowOptions Options { get; }
 
 
-        private readonly DiagnosticSource _diagnosticSource;
+        private readonly ActivitySource _activitySource;
         private readonly Executor _executor;
         private readonly ILogger<DistributedFlow> _logger;
         private readonly string _prefix;

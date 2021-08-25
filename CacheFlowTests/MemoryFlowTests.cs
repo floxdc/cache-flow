@@ -16,7 +16,7 @@ namespace CacheFlowTests
             memoryCacheMock.Setup(c => c.Remove(It.IsAny<object>()))
                 .Verifiable();
 
-            var cache = new MemoryFlow(new TestDiagnosticSource(), memoryCacheMock.Object);
+            var cache = new MemoryFlow(memoryCacheMock.Object);
             cache.Remove("key");
 
             memoryCacheMock.Verify(c => c.Remove(It.IsAny<object>()), Times.Once);
@@ -36,7 +36,7 @@ namespace CacheFlowTests
                 .Verifiable();
 
             var value = default(DefaultStruct);
-            var cache = new MemoryFlow(new TestDiagnosticSource(), memoryCacheMock.Object);
+            var cache = new MemoryFlow(memoryCacheMock.Object);
             cache.Set("key", value, TimeSpan.MaxValue);
 
             entryMock.VerifySet(e => e.Value = It.IsAny<object>(), Times.Never);
@@ -57,7 +57,7 @@ namespace CacheFlowTests
                 .Verifiable();
 
             var value = default(int);
-            var cache = new MemoryFlow(new TestDiagnosticSource(), memoryCacheMock.Object);
+            var cache = new MemoryFlow(memoryCacheMock.Object);
             cache.Set("key", value, TimeSpan.MaxValue);
 
             entryMock.VerifySet(e => e.Value = It.IsAny<object>(), Times.Once);
@@ -78,7 +78,7 @@ namespace CacheFlowTests
                 .Verifiable();
 
             var value = (DefaultClass) null;
-            var cache = new MemoryFlow(new TestDiagnosticSource(), memoryCacheMock.Object);
+            var cache = new MemoryFlow(memoryCacheMock.Object);
             cache.Set("key", value, TimeSpan.MaxValue);
 
             entryMock.VerifySet(e => e.Value = It.IsAny<object>(), Times.Once);
@@ -95,7 +95,7 @@ namespace CacheFlowTests
                 .Returns(false)
                 .Verifiable();
 
-            var cache = new MemoryFlow(new TestDiagnosticSource(), memoryCacheMock.Object);
+            var cache = new MemoryFlow(memoryCacheMock.Object);
             var expected = cache.TryGetValue<object>("key", out var value);
 
             Assert.False(expected);
@@ -113,7 +113,7 @@ namespace CacheFlowTests
                 .Returns(false)
                 .Verifiable();
 
-            var cache = new MemoryFlow(new TestDiagnosticSource(), memoryCacheMock.Object);
+            var cache = new MemoryFlow(memoryCacheMock.Object);
             var expected = cache.TryGetValue("key", out DefaultStruct value);
 
             Assert.False(expected);
@@ -133,7 +133,7 @@ namespace CacheFlowTests
                 .Returns(true)
                 .Verifiable();
 
-            var cache = new MemoryFlow(new TestDiagnosticSource(), memoryCacheMock.Object);
+            var cache = new MemoryFlow(memoryCacheMock.Object);
             var expected = cache.TryGetValue("key", out int value);
 
             Assert.True(expected);
@@ -152,7 +152,7 @@ namespace CacheFlowTests
                 .Returns(true)
                 .Verifiable();
 
-            var cache = new MemoryFlow(new TestDiagnosticSource(), memoryCacheMock.Object);
+            var cache = new MemoryFlow(memoryCacheMock.Object);
             var expected = cache.TryGetValue("key", out DefaultStruct value);
 
             Assert.True(expected);
@@ -171,7 +171,7 @@ namespace CacheFlowTests
                 .Returns(true)
                 .Verifiable();
 
-            var cache = new MemoryFlow(new TestDiagnosticSource(), memoryCacheMock.Object);
+            var cache = new MemoryFlow(memoryCacheMock.Object);
             var expected = cache.TryGetValue("key", out DefaultClass value);
 
             Assert.True(expected);
@@ -194,7 +194,7 @@ namespace CacheFlowTests
             optionsMock.Setup(o => o.Value)
                 .Returns(new FlowOptions{CacheKeyDelimiter = delimiter, CacheKeyPrefix = prefix});
 
-            var cache = new MemoryFlow(new TestDiagnosticSource(), memoryCacheMock.Object, options: optionsMock.Object);
+            var cache = new MemoryFlow(memoryCacheMock.Object, options: optionsMock.Object);
             var expected = cache.TryGetValue(key, out object value);
 
             Assert.True(expected);

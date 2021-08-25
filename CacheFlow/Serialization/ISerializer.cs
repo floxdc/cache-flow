@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FloxDc.CacheFlow.Infrastructure
+namespace FloxDc.CacheFlow.Serialization
 {
     public interface ISerializer
     {
