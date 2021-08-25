@@ -8,7 +8,7 @@ namespace CacheFlow.Json
     public class CacheFlowJsonSerializer : ISerializer
     {
         public T Deserialize<T>(string value) 
-            => JsonConvert.DeserializeObject<T>(value);
+            => JsonConvert.DeserializeObject<T>(value)!;
 
 
         public T Deserialize<T>(in ReadOnlyMemory<byte> _) 
@@ -22,8 +22,8 @@ namespace CacheFlow.Json
         }
 
 
-        public bool IsBinarySerializer { get; } = IsBinary;
-        public bool IsStringSerializer { get; } = !IsBinary;
+        public bool IsBinarySerializer => IsBinary;
+        public bool IsStringSerializer => !IsBinary;
 
 
         private const bool IsBinary = false;

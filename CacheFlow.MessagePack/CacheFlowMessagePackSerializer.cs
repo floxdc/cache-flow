@@ -7,7 +7,7 @@ namespace CacheFlow.MessagePack
 {
     public class CacheFlowMessagePackSerializer : ISerializer
     {
-        public CacheFlowMessagePackSerializer(MessagePackSerializerOptions options = null, params IFormatterResolver[] resolvers)
+        public CacheFlowMessagePackSerializer(MessagePackSerializerOptions? options = null, params IFormatterResolver[]? resolvers)
         {
             resolvers ??= new IFormatterResolver[] {StandardResolver.Instance};
             var resolver = CompositeResolver.Create(resolvers);
@@ -29,8 +29,8 @@ namespace CacheFlow.MessagePack
             => MessagePackSerializer.Serialize(value, _options);
 
 
-        public bool IsBinarySerializer { get; } = IsBinary;
-        public bool IsStringSerializer { get; } = !IsBinary;
+        public bool IsBinarySerializer => IsBinary;
+        public bool IsStringSerializer => !IsBinary;
 
 
         private const bool IsBinary = true;
