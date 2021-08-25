@@ -29,7 +29,7 @@ namespace FloxDc.CacheFlow.Infrastructure
             catch (Exception ex)
             {
                 if (_dataLogLevel == DataLogLevel.Sensitive)
-                    _logger.LogCacheError(nameof(Executor) + ":" + nameof(TryExecute), ex);
+                    _logger.LogCacheError(GetExceptionTarget(nameof(TryExecute)), ex);
                 else
                     _logger.LogCacheErrorInsensitive(ex);
 
@@ -54,7 +54,7 @@ namespace FloxDc.CacheFlow.Infrastructure
             catch (Exception ex)
             {
                 if (_dataLogLevel == DataLogLevel.Sensitive)
-                    _logger.LogCacheError(nameof(Executor) + ":" + nameof(TryExecute), ex);
+                    _logger.LogCacheError(GetExceptionTarget(nameof(TryExecute)), ex);
                 else
                     _logger.LogCacheErrorInsensitive(ex);
                 
@@ -62,7 +62,7 @@ namespace FloxDc.CacheFlow.Infrastructure
                     throw;
             }
 
-            return default;
+            return default!;
         }
 
 
@@ -80,7 +80,7 @@ namespace FloxDc.CacheFlow.Infrastructure
             catch (Exception ex)
             {
                 if (_dataLogLevel == DataLogLevel.Sensitive)
-                    _logger.LogCacheError(nameof(Executor) + ":" + nameof(TryExecuteAsync), ex);
+                    _logger.LogCacheError(GetExceptionTarget(nameof(TryExecuteAsync)), ex);
                 else
                     _logger.LogCacheErrorInsensitive(ex);
                 
@@ -105,7 +105,7 @@ namespace FloxDc.CacheFlow.Infrastructure
             catch (Exception ex)
             {
                 if (_dataLogLevel == DataLogLevel.Sensitive)
-                    _logger.LogCacheError(nameof(Executor) + ":" + nameof(TryExecuteAsync), ex);
+                    _logger.LogCacheError(GetExceptionTarget(nameof(TryExecuteAsync)), ex);
                 else
                     _logger.LogCacheErrorInsensitive(ex);
                 
@@ -113,8 +113,11 @@ namespace FloxDc.CacheFlow.Infrastructure
                     throw;
             }
 
-            return default;
+            return default!;
         }
+
+
+        private static string GetExceptionTarget(string methodName) => nameof(Executor) + ":" + methodName;
 
 
         private readonly ILogger _logger;

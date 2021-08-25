@@ -13,7 +13,8 @@ namespace FloxDc.CacheFlow
 {
     public class MemoryFlow : IMemoryFlow
     {
-        public MemoryFlow(DiagnosticSource diagnosticSource, IMemoryCache memoryCache, ILogger<MemoryFlow> logger = default, IOptions<FlowOptions> options = default)
+        public MemoryFlow(DiagnosticSource diagnosticSource, IMemoryCache memoryCache, ILogger<MemoryFlow>? logger = default,
+            IOptions<FlowOptions>? options = default)
         {
             Instance = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             _logger = logger ?? new NullLogger<MemoryFlow>();
@@ -104,7 +105,7 @@ namespace FloxDc.CacheFlow
             if (Utils.IsDefaultStruct(value))
             {
                 if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                    _logger.LogNotSet(nameof(MemoryFlow) + ":" + nameof(Set), fullKey, value);
+                    _logger.LogNotSet(nameof(MemoryFlow) + ":" + nameof(Set), fullKey, value!);
                 else
                     _logger.LogNotSetInsensitive(key);
 
@@ -120,7 +121,7 @@ namespace FloxDc.CacheFlow
             });
 
             if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogSet(nameof(MemoryFlow) + ":" + nameof(Set), fullKey, value);
+                _logger.LogSet(nameof(MemoryFlow) + ":" + nameof(Set), fullKey, value!);
             else
                 _logger.LogSetInsensitive(key);
 
@@ -152,7 +153,7 @@ namespace FloxDc.CacheFlow
             }
 
             if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogHit(nameof(MemoryFlow) + ":" + nameof(TryGetValue), fullKey, value);
+                _logger.LogHit(nameof(MemoryFlow) + ":" + nameof(TryGetValue), fullKey, value!);
             else
                 _logger.LogHitInsensitive(key);
             
@@ -162,7 +163,7 @@ namespace FloxDc.CacheFlow
 
 
         private static DiagnosticPayload BuildArgs(CacheEvents @event, string key) 
-            => new DiagnosticPayload(@event, key, nameof(MemoryFlow));
+            => new (@event, key, nameof(MemoryFlow));
 
 
         public IMemoryCache Instance { get; }

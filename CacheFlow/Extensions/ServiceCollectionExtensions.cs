@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FloxDc.CacheFlow.Extensions
 {
-    [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static class ServiceCollectionExtensions
     {
         /// <summary>
@@ -14,7 +11,7 @@ namespace FloxDc.CacheFlow.Extensions
         /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddCacheFlow(this IServiceCollection services, Action<FlowOptions> options = null) 
+        public static IServiceCollection AddCacheFlow(this IServiceCollection services, Action<FlowOptions>? options = null) 
             => services.AddDistributedFlow(options)
                 .AddMemoryFlow();
 
@@ -25,7 +22,7 @@ namespace FloxDc.CacheFlow.Extensions
         /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddDistributedFlow(this IServiceCollection services, Action<FlowOptions> options = null)
+        public static IServiceCollection AddDistributedFlow(this IServiceCollection services, Action<FlowOptions>? options = null)
             => services.RegisterOptions(options)
                 .AddSingleton<IDistributedFlow, DistributedFlow>();
 
@@ -36,7 +33,7 @@ namespace FloxDc.CacheFlow.Extensions
         /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddDoubleFlow(this IServiceCollection services, Action<FlowOptions> options = null) 
+        public static IServiceCollection AddDoubleFlow(this IServiceCollection services, Action<FlowOptions>? options = null) 
             => services.AddDistributedFlow(options)
                 .AddMemoryFlow()
                 .AddSingleton<IDoubleFlow, DoubleFlow>();
@@ -48,13 +45,13 @@ namespace FloxDc.CacheFlow.Extensions
         /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddMemoryFlow(this IServiceCollection services, Action<FlowOptions> options = null) 
+        public static IServiceCollection AddMemoryFlow(this IServiceCollection services, Action<FlowOptions>? options = null) 
             => services.RegisterOptions(options)
                 .AddSingleton<IMemoryFlow, MemoryFlow>()
                 .AddSingleton(typeof(IMemoryFlow<>), typeof(MemoryFlow<>));
 
 
-        private static IServiceCollection RegisterOptions(this IServiceCollection services, Action<FlowOptions> options)
+        private static IServiceCollection RegisterOptions(this IServiceCollection services, Action<FlowOptions>? options)
         {
             if (options != null)
                 services.Configure(options);

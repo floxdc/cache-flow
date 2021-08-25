@@ -4,7 +4,7 @@ namespace FloxDc.CacheFlow.Infrastructure
 {
     public static class DiagnosticSourceHelper
     {
-        internal static Activity GetStartedActivity(this DiagnosticSource source, string activityName, object args = null)
+        internal static Activity? GetStartedActivity(this DiagnosticSource source, string activityName, object? args = null)
         {
             if (!source.IsEnabled(SourceName))
                 return null;
@@ -24,7 +24,7 @@ namespace FloxDc.CacheFlow.Infrastructure
         }
 
 
-        internal static void StopStartedActivity(this DiagnosticSource source, Activity activity, object args = null)
+        internal static void StopStartedActivity(this DiagnosticSource source, Activity? activity, object? args = null)
         {
             if (activity is null)
                 return;

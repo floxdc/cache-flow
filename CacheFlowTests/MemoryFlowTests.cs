@@ -66,6 +66,27 @@ namespace CacheFlowTests
 
 
         [Fact]
+        public void Set_ShouldSetValueWhenValueIsNull()
+        {
+            var entryMock = new Mock<ICacheEntry>();
+            entryMock.SetupSet(e => e.Value = It.IsAny<object>())
+                .Verifiable();
+
+            var memoryCacheMock = new Mock<IMemoryCache>();
+            memoryCacheMock.Setup(c => c.CreateEntry(It.IsAny<object>()))
+                .Returns(entryMock.Object)
+                .Verifiable();
+
+            var value = (DefaultClass) null;
+            var cache = new MemoryFlow(new TestDiagnosticSource(), memoryCacheMock.Object);
+            cache.Set("key", value, TimeSpan.MaxValue);
+
+            entryMock.VerifySet(e => e.Value = It.IsAny<object>(), Times.Once);
+            memoryCacheMock.Verify(c => c.CreateEntry(It.IsAny<object>()), Times.Once);
+        }
+
+
+        [Fact]
         public void TryGetValue_ShouldNotGetValueWhenValueIsNull()
         {
             object storedValue;

@@ -19,7 +19,7 @@ namespace FloxDc.CacheFlow
         /// <param name="key">Cache key.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default);
+        Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Tries to get a value from a cache, and sets it if no entries were found.
@@ -138,6 +138,6 @@ namespace FloxDc.CacheFlow
         /// <param name="key">Cache key.</param>
         /// <param name="value">Extracted value.</param>
         /// <returns></returns>
-        bool TryGetValue<T>(string key, out T value);
+        bool TryGetValue<T>(string key, out T? value);
     }
 }

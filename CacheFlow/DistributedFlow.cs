@@ -14,8 +14,8 @@ namespace FloxDc.CacheFlow
 {
     public class DistributedFlow : IDistributedFlow
     {
-        public DistributedFlow(DiagnosticSource diagnosticSource, IDistributedCache distributedCache, ILogger<DistributedFlow> logger = default,
-            IOptions<FlowOptions> options = default, ISerializer serializer = default)
+        public DistributedFlow(DiagnosticSource diagnosticSource, IDistributedCache distributedCache, ILogger<DistributedFlow>? logger = default,
+            IOptions<FlowOptions>? options = default, ISerializer? serializer = default)
         {
             Instance = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
             _logger = logger ?? new NullLogger<DistributedFlow>();
@@ -40,7 +40,7 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
+        public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {
             var activity = _diagnosticSource.GetStartedActivity(nameof(GetAsync));
             var cached = await GetInternalAsync(key, cancellationToken);
@@ -57,7 +57,7 @@ namespace FloxDc.CacheFlow
 
             var value = DeserializeAndDecode<T>(_serializer, cached);
             if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogHit(nameof(DistributedFlow) + ":" + nameof(GetAsync), key, value);
+                _logger.LogHit(nameof(DistributedFlow) + ":" + nameof(GetAsync), key, value!);
             else
                 _logger.LogHitInsensitive(key);
             
@@ -192,7 +192,7 @@ namespace FloxDc.CacheFlow
             => SetInternalAsync(key, value, options, cancellationToken);
 
 
-        public bool TryGetValue<T>(string key, out T value)
+        public bool TryGetValue<T>(string key, out T? value)
         {
             var activity = _diagnosticSource.GetStartedActivity(nameof(TryGetValue));
 
@@ -212,7 +212,7 @@ namespace FloxDc.CacheFlow
             value = DeserializeAndDecode<T>(_serializer, cached);
 
             if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogHit(nameof(DistributedFlow) + ":" + nameof(TryGetValue), key, value);
+                _logger.LogHit(nameof(DistributedFlow) + ":" + nameof(TryGetValue), key, value!);
             else
                 _logger.LogHitInsensitive(key);
 
@@ -222,16 +222,16 @@ namespace FloxDc.CacheFlow
 
 
         private static DiagnosticPayload BuildArgs(CacheEvents @event, string key) 
-            => new DiagnosticPayload(@event, key, nameof(DistributedFlow));
+            => new (@event, key, nameof(DistributedFlow));
 
 
-        private bool CanSet<T>(string key, T value, Activity activity)
+        private bool CanSet<T>(string key, T value, Activity? activity)
         {
             if (!Utils.IsDefaultStruct(value))
                 return true;
 
             if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogNotSet(nameof(DistributedFlow) + ":" + nameof(CanSet), key, value);
+                _logger.LogNotSet(nameof(DistributedFlow) + ":" + nameof(CanSet), key, value!);
             else
                 _logger.LogNotSetInsensitive(key);
 
@@ -276,7 +276,7 @@ namespace FloxDc.CacheFlow
             });
 
             if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogSet(nameof(DistributedFlow) + ":" + nameof(SetInternal), key, value);
+                _logger.LogSet(nameof(DistributedFlow) + ":" + nameof(SetInternal), key, value!);
             else
                 _logger.LogSetInsensitive(key);
 
@@ -298,7 +298,7 @@ namespace FloxDc.CacheFlow
             });
 
             if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogSet(nameof(DistributedFlow) + ":" + nameof(SetInternalAsync), key, value);
+                _logger.LogSet(nameof(DistributedFlow) + ":" + nameof(SetInternalAsync), key, value!);
             else
                 _logger.LogSetInsensitive(key);
 

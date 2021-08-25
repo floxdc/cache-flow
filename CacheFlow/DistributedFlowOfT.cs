@@ -12,7 +12,7 @@ namespace FloxDc.CacheFlow
         {
             _cache = cache;
 
-            _keyPrefix = GetFullCacheKeyPrefix(typeof(TClass).FullName, options.Value.CacheKeyDelimiter);
+            _keyPrefix = GetFullCacheKeyPrefix(typeof(TClass).FullName!, options.Value.CacheKeyDelimiter);
         }
 
 
@@ -23,7 +23,7 @@ namespace FloxDc.CacheFlow
             => _cache.Options;
 
 
-        public Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
+        public Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
             => _cache.GetAsync<T>(GetFullKey(_keyPrefix, key), cancellationToken);
 
 
@@ -80,7 +80,7 @@ namespace FloxDc.CacheFlow
             => _cache.SetAsync(GetFullKey(_keyPrefix, key), value, options, cancellationToken);
 
 
-        public bool TryGetValue<T>(string key, out T value)
+        public bool TryGetValue<T>(string key, out T? value)
             => _cache.TryGetValue(GetFullKey(_keyPrefix, key), out value);
 
 
