@@ -22,7 +22,7 @@ namespace FloxDc.CacheFlow
         /// <param name="absoluteDistributedExpirationRelativeToNow">Absolute amount of time relative to now which should pass to expire a cache.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        ValueTask<T> GetAsync<T>(string key, TimeSpan absoluteDistributedExpirationRelativeToNow, CancellationToken cancellationToken = default);
+        ValueTask<T?> GetAsync<T>(string key, TimeSpan absoluteDistributedExpirationRelativeToNow, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Tries to get a value from a cache, and sets it if no entries were found.
@@ -33,7 +33,7 @@ namespace FloxDc.CacheFlow
         /// <param name="distributedOptions"></param>
         /// <param name="memoryOptions"></param>
         /// <returns></returns>
-        T GetOrSet<T>(string key, Func<T> getValueFunction, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions memoryOptions = null);
+        T GetOrSet<T>(string key, Func<T> getValueFunction, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null);
 
         /// <summary>
         /// Tries to get a value from a cache, and sets it if no entries were found.
@@ -55,7 +55,7 @@ namespace FloxDc.CacheFlow
         /// <param name="memoryOptions"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions memoryOptions = null, CancellationToken cancellationToken = default);
+        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Tries to get a value from a cache, and sets it if no entries were found.
@@ -104,7 +104,7 @@ namespace FloxDc.CacheFlow
         /// <param name="value"></param>
         /// <param name="distributedOptions"></param>
         /// <param name="memoryOptions"></param>
-        void Set<T>(string key, T value, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions memoryOptions = null);
+        void Set<T>(string key, T value, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null);
 
         /// <summary>
         /// Sets a cache entry with a provided value.
@@ -125,7 +125,7 @@ namespace FloxDc.CacheFlow
         /// <param name="memoryOptions"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions memoryOptions = null, CancellationToken cancellationToken = default);
+        Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sets a cache entry with a provided value.
@@ -146,7 +146,7 @@ namespace FloxDc.CacheFlow
         /// <param name="value">Extracted value.</param>
         /// <param name="memoryOptions"></param>
         /// <returns></returns>
-        bool TryGetValue<T>(string key, out T value, MemoryCacheEntryOptions memoryOptions);
+        bool TryGetValue<T>(string key, out T? value, MemoryCacheEntryOptions memoryOptions);
 
         /// <summary>
         /// Tries to get a value from a cache.
@@ -156,6 +156,6 @@ namespace FloxDc.CacheFlow
         /// <param name="value">Extracted value.</param>
         /// <param name="absoluteDistributedExpirationRelativeToNow">Absolute amount of time relative to now which should pass to expire a cache.</param>
         /// <returns></returns>
-        bool TryGetValue<T>(string key, out T value, TimeSpan absoluteDistributedExpirationRelativeToNow);
+        bool TryGetValue<T>(string key, out T? value, TimeSpan absoluteDistributedExpirationRelativeToNow);
     }
 }

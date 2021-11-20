@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CacheFlow", "CacheFlow\CacheFlow.csproj", "{6175932D-33BA-4FCA-81F7-3E32850EBA8B}"
 EndProject
@@ -14,9 +14,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CFF6FAAF-7A55-47A8-9536-3699B8A59F36}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE.MD = LICENSE.MD
+		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CacheFlow.OpenTelemetry", "CacheFlow.OpenTelemetry\CacheFlow.OpenTelemetry.csproj", "{0D298532-7478-4AF7-8CD0-343EE89312C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,10 +39,6 @@ Global
 		{001ED3C7-EE8F-4EE2-B40F-A44F48A81489}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{001ED3C7-EE8F-4EE2-B40F-A44F48A81489}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{001ED3C7-EE8F-4EE2-B40F-A44F48A81489}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0D298532-7478-4AF7-8CD0-343EE89312C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0D298532-7478-4AF7-8CD0-343EE89312C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0D298532-7478-4AF7-8CD0-343EE89312C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0D298532-7478-4AF7-8CD0-343EE89312C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

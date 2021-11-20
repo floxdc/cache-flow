@@ -12,7 +12,7 @@ namespace FloxDc.CacheFlow
         {
             _cache = cache;
 
-            _keyPrefix = GetFullCacheKeyPrefix(typeof(TClass).FullName, options.Value.CacheKeyDelimiter);
+            _keyPrefix = GetFullCacheKeyPrefix(typeof(TClass).FullName!, options.Value.CacheKeyDelimiter);
         }
 
 

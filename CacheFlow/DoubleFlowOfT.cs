@@ -13,7 +13,7 @@ namespace FloxDc.CacheFlow
         {
             _cache = cache;
 
-            _keyPrefix = GetFullCacheKeyPrefix(typeof(TClass).FullName, options.Value.CacheKeyDelimiter);
+            _keyPrefix = GetFullCacheKeyPrefix(typeof(TClass).FullName!, options.Value.CacheKeyDelimiter);
         }
 
 
@@ -22,12 +22,12 @@ namespace FloxDc.CacheFlow
         public FlowOptions Options => _cache.Options;
 
 
-        public ValueTask<T> GetAsync<T>(string key, TimeSpan absoluteDistributedExpirationRelativeToNow, CancellationToken cancellationToken = default)
+        public ValueTask<T?> GetAsync<T>(string key, TimeSpan absoluteDistributedExpirationRelativeToNow, CancellationToken cancellationToken = default)
             => _cache.GetAsync<T>(GetFullKey(_keyPrefix, key), absoluteDistributedExpirationRelativeToNow, cancellationToken);
 
 
         public T GetOrSet<T>(string key, Func<T> getValueFunction, DistributedCacheEntryOptions distributedOptions,
-            MemoryCacheEntryOptions memoryOptions = null)
+            MemoryCacheEntryOptions? memoryOptions = null)
             => _cache.GetOrSet(GetFullKey(_keyPrefix, key), getValueFunction, distributedOptions, memoryOptions);
 
 
@@ -38,7 +38,7 @@ namespace FloxDc.CacheFlow
 
 
         public Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, DistributedCacheEntryOptions distributedOptions,
-            MemoryCacheEntryOptions memoryOptions = null,
+            MemoryCacheEntryOptions? memoryOptions = null,
             CancellationToken cancellationToken = default)
             => _cache.GetOrSetAsync(GetFullKey(_keyPrefix, key), getValueFunction, distributedOptions, memoryOptions, cancellationToken);
 
@@ -47,7 +47,7 @@ namespace FloxDc.CacheFlow
             CancellationToken cancellationToken = default)
             => GetOrSetAsync(GetFullKey(_keyPrefix, key), getValueFunction,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
-                new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow});
+                new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow}, cancellationToken);
 
 
         public void Refresh(string key) => _cache.Refresh(GetFullKey(_keyPrefix, key));
@@ -64,7 +64,7 @@ namespace FloxDc.CacheFlow
             => _cache.RemoveAsync(GetFullKey(_keyPrefix, key), cancellationToken);
 
 
-        public void Set<T>(string key, T value, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions memoryOptions = null)
+        public void Set<T>(string key, T value, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null)
         {
             _cache.Set(GetFullKey(_keyPrefix, key), value, distributedOptions, memoryOptions);
         }
@@ -78,22 +78,22 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions memoryOptions = null,
+        public Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null,
             CancellationToken cancellationToken = default)
-            => _cache.SetAsync(GetFullKey(_keyPrefix, key), value, distributedOptions, memoryOptions);
+            => _cache.SetAsync(GetFullKey(_keyPrefix, key), value, distributedOptions, memoryOptions, cancellationToken);
 
 
         public Task SetAsync<T>(string key, T value, TimeSpan absoluteDistributedExpirationRelativeToNow, CancellationToken cancellationToken = default)
             => SetAsync(GetFullKey(_keyPrefix, key), value,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
-                new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow});
+                new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow}, cancellationToken);
 
 
-        public bool TryGetValue<T>(string key, out T value, MemoryCacheEntryOptions memoryOptions)
+        public bool TryGetValue<T>(string key, out T? value, MemoryCacheEntryOptions memoryOptions)
             => _cache.TryGetValue(GetFullKey(_keyPrefix, key), out value, memoryOptions);
 
 
-        public bool TryGetValue<T>(string key, out T value, TimeSpan absoluteDistributedExpirationRelativeToNow)
+        public bool TryGetValue<T>(string key, out T? value, TimeSpan absoluteDistributedExpirationRelativeToNow)
             => TryGetValue(GetFullKey(_keyPrefix, key), out value,
                 new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow});
 

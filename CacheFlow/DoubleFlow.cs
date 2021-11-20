@@ -11,7 +11,7 @@ namespace FloxDc.CacheFlow
 {
     public class DoubleFlow : IDoubleFlow
     {
-        public DoubleFlow(IDistributedFlow distributed, IMemoryFlow memory, ILogger<DoubleFlow> logger = default, IOptions<FlowOptions> options = default)
+        public DoubleFlow(IDistributedFlow distributed, IMemoryFlow memory, ILogger<DoubleFlow>? logger = default, IOptions<FlowOptions>? options = default)
         {
             _distributed = distributed;
             _memory = memory;
@@ -28,9 +28,9 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public async ValueTask<T> GetAsync<T>(string key, TimeSpan absoluteDistributedExpirationRelativeToNow, CancellationToken cancellationToken = default)
+        public async ValueTask<T?> GetAsync<T>(string key, TimeSpan absoluteDistributedExpirationRelativeToNow, CancellationToken cancellationToken = default)
         {
-            if (_memory.TryGetValue(key, out T value))
+            if (_memory.TryGetValue(key, out T? value))
                 return value;
 
             value = await _distributed.GetAsync<T>(key, cancellationToken);
@@ -49,7 +49,7 @@ namespace FloxDc.CacheFlow
         
 
 
-        public T GetOrSet<T>(string key, Func<T> getFunction, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions memoryOptions = null)
+        public T GetOrSet<T>(string key, Func<T> getFunction, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null)
         {
             if (_memory.TryGetValue(key, out T value))
             {
@@ -77,7 +77,7 @@ namespace FloxDc.CacheFlow
 
 
         public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
-            DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions memoryOptions = null,
+            DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null,
             CancellationToken cancellationToken = default)
         {
             if (_memory.TryGetValue(key, out T value))
@@ -124,7 +124,7 @@ namespace FloxDc.CacheFlow
             );
 
 
-        public void Set<T>(string key, T value, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions memoryOptions = null)
+        public void Set<T>(string key, T value, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null)
         {
             memoryOptions ??= GetDefaultMemoryOptions(distributedOptions);
             _memory.Set(key, value, memoryOptions);
@@ -142,7 +142,7 @@ namespace FloxDc.CacheFlow
 
 
         public Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions distributedOptions,
-            MemoryCacheEntryOptions memoryOptions = null,
+            MemoryCacheEntryOptions? memoryOptions = null,
             CancellationToken cancellationToken = default)
         {
             memoryOptions ??= GetDefaultMemoryOptions(distributedOptions);
@@ -151,7 +151,7 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public bool TryGetValue<T>(string key, out T value, TimeSpan absoluteDistributedExpirationRelativeToNow)
+        public bool TryGetValue<T>(string key, out T? value, TimeSpan absoluteDistributedExpirationRelativeToNow)
             => TryGetValue(key, out value,
                 new MemoryCacheEntryOptions
                 {
@@ -159,12 +159,12 @@ namespace FloxDc.CacheFlow
                 });
 
 
-        public bool TryGetValue<T>(string key, out T value, MemoryCacheEntryOptions memoryOptions) 
+        public bool TryGetValue<T>(string key, out T? value, MemoryCacheEntryOptions memoryOptions) 
             => _memory.TryGetValue(key, out value) || _distributed.TryGetValue(key, out value);
 
 
         private static MemoryCacheEntryOptions GetDefaultMemoryOptions(DistributedCacheEntryOptions distributedOptions)
-            => new MemoryCacheEntryOptions
+            => new()
             {
                 AbsoluteExpirationRelativeToNow = distributedOptions.AbsoluteExpirationRelativeToNow
             };

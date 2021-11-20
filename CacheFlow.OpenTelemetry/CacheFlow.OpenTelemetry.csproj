@@ -1,11 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
     <RepositoryUrl>https://github.com/floxdc/cache-flow</RepositoryUrl>
     <RepositoryType>https://github.com/floxdc/cache-flow</RepositoryType>
     <Authors>Kirill Taran</Authors>
-    <Version>1.7.1.355</Version>
+    <Version>1.10.0-beta1</Version>
     <PackageId>FloxDc.CacheFlow.OpenTelemetry</PackageId>
     <Product>FloxDc.CacheFlow.OpenTelemetry</Product>
     <Company>FloxDc</Company>
@@ -15,8 +16,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FloxDc.CacheFlow" Version="1.7.0" />
-    <PackageReference Include="OpenTelemetry" Version="0.2.0-alpha.354" />
+    <PackageReference Include="FloxDc.CacheFlow" Version="1.10.0-beta1" />
+    <PackageReference Include="OpenTelemetry" Version="1.1.0" />
   </ItemGroup>
 
 </Project>

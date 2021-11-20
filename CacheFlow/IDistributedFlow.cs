@@ -19,7 +19,7 @@ namespace FloxDc.CacheFlow
         /// <param name="key">Cache key.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default);
+        Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Tries to get a value from a cache, and sets it if no entries were found.
@@ -29,7 +29,7 @@ namespace FloxDc.CacheFlow
         /// <param name="getValueFunction">Function what gets value to set it to a cache. Executes if a provided key wasn't found.</param>
         /// <param name="absoluteExpirationRelativeToNow">Absolute amount of time relative to now which should pass to expire a cache.</param>
         /// <returns></returns>
-        T GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteExpirationRelativeToNow);
+        T? GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteExpirationRelativeToNow);
         
         /// <summary>
         /// Tries to get a value from a cache, and sets it if no entries were found.
@@ -39,7 +39,7 @@ namespace FloxDc.CacheFlow
         /// <param name="getValueFunction">Function what gets a value to set it to a cache. Executes if a provided key wasn't found.</param>
         /// <param name="options">Cache options.</param>
         /// <returns></returns>
-        T GetOrSet<T>(string key, Func<T> getValueFunction, DistributedCacheEntryOptions options);
+        T? GetOrSet<T>(string key, Func<T> getValueFunction, DistributedCacheEntryOptions options);
 
         /// <summary>
         /// Tries to get a value from a cache, and sets it if no entries were found.
@@ -138,6 +138,6 @@ namespace FloxDc.CacheFlow
         /// <param name="key">Cache key.</param>
         /// <param name="value">Extracted value.</param>
         /// <returns></returns>
-        bool TryGetValue<T>(string key, out T value);
+        bool TryGetValue<T>(string key, out T? value);
     }
 }

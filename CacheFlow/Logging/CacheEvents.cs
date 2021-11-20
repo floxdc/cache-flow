@@ -2,7 +2,7 @@
 {
     public enum CacheEvents
     {
-        AnErrorHasOccured = 7771,
+        AnErrorHasOccurred = 7771,
         Hit = 7777,
         Miss = 7776,
         Remove = 7772,

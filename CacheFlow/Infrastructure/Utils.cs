@@ -5,7 +5,7 @@ namespace FloxDc.CacheFlow.Infrastructure
     internal static class Utils
     {
         internal static bool IsDefaultStruct<T>(T value)
-            => IsUserDefinedStruct(typeof(T)) && value.Equals(default(T));
+            => IsUserDefinedStruct(typeof(T)) && value!.Equals(default(T));
 
 
         private static bool IsUserDefinedStruct(Type type) 

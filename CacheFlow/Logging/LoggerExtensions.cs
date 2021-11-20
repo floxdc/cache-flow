@@ -20,13 +20,13 @@ namespace FloxDc.CacheFlow.Logging
             CacheSet = LoggerMessage.Define<string, string, string>(LogLevel.Debug, new EventId((int)CacheEvents.Set, CacheEvents.Set.ToString()), "SET | {target} | {Key} | {value} | CacheFlow: The entry is set.");
             CacheSetInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvents.Set, CacheEvents.Set.ToString()), "SET | {Key} | CacheFlow: The entry is set.");
             
-            ErrorOccured = LoggerMessage.Define<string>(LogLevel.Error, new EventId((int)CacheEvents.AnErrorHasOccured, CacheEvents.AnErrorHasOccured.ToString()), "EXCEPTION | {target} | CacheFlow: ");
-            ErrorOccuredInsensitive = LoggerMessage.Define(LogLevel.Error, new EventId((int)CacheEvents.AnErrorHasOccured, CacheEvents.AnErrorHasOccured.ToString()), "EXCEPTION | CacheFlow: ");
+            ErrorOccurred = LoggerMessage.Define<string>(LogLevel.Error, new EventId((int)CacheEvents.AnErrorHasOccurred, CacheEvents.AnErrorHasOccurred.ToString()), "EXCEPTION | {target} | CacheFlow: ");
+            ErrorOccurredInsensitive = LoggerMessage.Define(LogLevel.Error, new EventId((int)CacheEvents.AnErrorHasOccurred, CacheEvents.AnErrorHasOccurred.ToString()), "EXCEPTION | CacheFlow: ");
             
             EntryRemoved = LoggerMessage.Define<string, string>(LogLevel.Debug, new EventId((int)CacheEvents.Remove, CacheEvents.Remove.ToString()), "REMOVED | {target} | {Key} | CacheFlow: The key has been removed from a cache.");
             EntryRemovedInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvents.Remove, CacheEvents.Remove.ToString()), "REMOVED | {Key} | CacheFlow: The key has been removed from a cache.");
             
-            NoOptions = LoggerMessage.Define<string>(LogLevel.Warning, new EventId((int)CacheEvents.AnErrorHasOccured, CacheEvents.AnErrorHasOccured.ToString()), "NO OPTIONS | {target} | CacheFlow: No options has been provided. The defaults are used.");
+            NoOptions = LoggerMessage.Define<string>(LogLevel.Warning, new EventId((int)CacheEvents.AnErrorHasOccurred, CacheEvents.AnErrorHasOccurred.ToString()), "NO OPTIONS | {target} | CacheFlow: No options has been provided. The defaults are used.");
         }
 
 
@@ -72,11 +72,11 @@ namespace FloxDc.CacheFlow.Logging
 
 
         internal static void LogCacheError(this ILogger logger, string target, Exception exception) 
-            => ErrorOccured(logger, target, exception);
+            => ErrorOccurred(logger, target, exception);
 
 
         internal static void LogCacheErrorInsensitive(this ILogger logger, Exception exception) 
-            => ErrorOccuredInsensitive(logger, exception);
+            => ErrorOccurredInsensitive(logger, exception);
 
 
         internal static void LogNoOptionsProvided(this ILogger logger, string target)
@@ -91,28 +91,28 @@ namespace FloxDc.CacheFlow.Logging
             => EntryRemovedInsensitive(logger, key, null);
 
 
-        private static readonly Action<ILogger, string, string, string, Exception> CacheHit;
-        private static readonly Action<ILogger, string, Exception> CacheHitInsensitive;
+        private static readonly Action<ILogger, string, string, string, Exception?> CacheHit;
+        private static readonly Action<ILogger, string, Exception?> CacheHitInsensitive;
 
-        private static readonly Action<ILogger, string, string, Exception> CacheMissed;
-        private static readonly Action<ILogger, string, Exception> CacheMissedInsensitive;
+        private static readonly Action<ILogger, string, string, Exception?> CacheMissed;
+        private static readonly Action<ILogger, string, Exception?> CacheMissedInsensitive;
 
-        private static readonly Action<ILogger, string, string, string, Exception> CacheNotSet;
-        private static readonly Action<ILogger, string, Exception> CacheNotSetInsensitive;
+        private static readonly Action<ILogger, string, string, string, Exception?> CacheNotSet;
+        private static readonly Action<ILogger, string, Exception?> CacheNotSetInsensitive;
 
-        private static readonly Action<ILogger, string, string, string, Exception> CacheSet;
-        private static readonly Action<ILogger, string, Exception> CacheSetInsensitive;
+        private static readonly Action<ILogger, string, string, string, Exception?> CacheSet;
+        private static readonly Action<ILogger, string, Exception?> CacheSetInsensitive;
 
-        private static readonly Action<ILogger, string, string, Exception> EntryRemoved;
-        private static readonly Action<ILogger, string, Exception> EntryRemovedInsensitive;
+        private static readonly Action<ILogger, string, string, Exception?> EntryRemoved;
+        private static readonly Action<ILogger, string, Exception?> EntryRemovedInsensitive;
 
-        private static readonly Action<ILogger, string, Exception> ErrorOccured;
-        private static readonly Action<ILogger, Exception> ErrorOccuredInsensitive;
+        private static readonly Action<ILogger, string, Exception> ErrorOccurred;
+        private static readonly Action<ILogger, Exception> ErrorOccurredInsensitive;
 
-        private static readonly Action<ILogger, string, Exception> NoOptions;
+        private static readonly Action<ILogger, string, Exception?> NoOptions;
 
 
-        private static readonly JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions
+        private static readonly JsonSerializerOptions JsonSerializerOptions = new()
         {
             WriteIndented = true
         };
