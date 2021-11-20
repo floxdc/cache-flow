@@ -80,7 +80,7 @@ namespace FloxDc.CacheFlow
             DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null,
             CancellationToken cancellationToken = default)
         {
-            if (_memory.TryGetValue(key, out T value))
+            if (_memory.TryGetValue(key, out T? value))
             {
                 await _distributed.RefreshAsync(key, cancellationToken);
                 return value;

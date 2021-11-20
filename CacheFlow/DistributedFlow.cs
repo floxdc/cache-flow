@@ -82,14 +82,14 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
+        public Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
             TimeSpan absoluteExpirationRelativeToNow, CancellationToken cancellationToken = default)
             => GetOrSetAsync(key, getFunction,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow},
                 cancellationToken);
 
 
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
+        public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
             DistributedCacheEntryOptions options, CancellationToken cancellationToken = default)
         {
             var result = await GetAsync<T>(key, cancellationToken);

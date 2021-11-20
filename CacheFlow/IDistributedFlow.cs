@@ -50,7 +50,7 @@ namespace FloxDc.CacheFlow
         /// <param name="absoluteExpirationRelativeToNow">Absolute amount of time relative to now which should pass to expire a cache.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, TimeSpan absoluteExpirationRelativeToNow, CancellationToken cancellationToken = default);
+        Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, TimeSpan absoluteExpirationRelativeToNow, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Tries to get a value from a cache, and sets it if no entries were found.
@@ -61,7 +61,7 @@ namespace FloxDc.CacheFlow
         /// <param name="options">Cache options.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, DistributedCacheEntryOptions options, CancellationToken cancellationToken = default);
+        Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, DistributedCacheEntryOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Refreshes a specified cache entry.

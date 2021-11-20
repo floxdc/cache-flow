@@ -33,7 +33,7 @@ namespace FloxDc.CacheFlow
         /// <param name="distributedOptions"></param>
         /// <param name="memoryOptions"></param>
         /// <returns></returns>
-        T GetOrSet<T>(string key, Func<T> getValueFunction, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null);
+        T? GetOrSet<T>(string key, Func<T> getValueFunction, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null);
 
         /// <summary>
         /// Tries to get a value from a cache, and sets it if no entries were found.
@@ -43,7 +43,7 @@ namespace FloxDc.CacheFlow
         /// <param name="getValueFunction">Function what gets a value to set it to a cache. Executes if a provided key wasn't found.</param>
         /// <param name="absoluteDistributedExpirationRelativeToNow">Absolute amount of time relative to now which should pass to expire a cache.</param>
         /// <returns></returns>
-        T GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteDistributedExpirationRelativeToNow);
+        T? GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteDistributedExpirationRelativeToNow);
 
         /// <summary>
         /// Tries to get a value from a cache, and sets it if no entries were found.
@@ -55,7 +55,7 @@ namespace FloxDc.CacheFlow
         /// <param name="memoryOptions"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null, CancellationToken cancellationToken = default);
+        Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Tries to get a value from a cache, and sets it if no entries were found.
@@ -66,7 +66,7 @@ namespace FloxDc.CacheFlow
         /// <param name="absoluteDistributedExpirationRelativeToNow">Absolute amount of time relative to now which should pass to expire a cache.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, TimeSpan absoluteDistributedExpirationRelativeToNow, CancellationToken cancellationToken = default);
+        Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, TimeSpan absoluteDistributedExpirationRelativeToNow, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Refreshes a specified cache entry.
