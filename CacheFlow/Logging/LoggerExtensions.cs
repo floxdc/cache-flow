@@ -30,65 +30,66 @@ namespace FloxDc.CacheFlow.Logging
         }
 
 
-        internal static void LogHit(this ILogger logger, string target, string key, object value)
+        internal static void LogHit(this ILogger logger, string target, string key, object value, bool logSensitive)
         {
-            var json = JsonSerializer.Serialize(value, JsonSerializerOptions);
-            CacheHit(logger, target, key, json, null);
+            if (logSensitive)
+                CacheHit(logger, target, key, Serialize(value), null);
+            else
+                CacheHitInsensitive(logger, key, null);
         }
 
 
-        internal static void LogHitInsensitive(this ILogger logger, string key) 
-            => CacheHitInsensitive(logger, key, null);
-
-
-        internal static void LogMissed(this ILogger logger, string target, string key) 
-            => CacheMissed(logger, target, key, null);
-
-
-        internal static void LogMissedInsensitive(this ILogger logger, string key) 
-            => CacheMissedInsensitive(logger, key, null);
-
-
-        internal static void LogNotSet(this ILogger logger, string target, string key, object value)
+        internal static void LogMissed(this ILogger logger, string target, string key, bool logSensitive)
         {
-            var json = JsonSerializer.Serialize(value, JsonSerializerOptions);
-            CacheNotSet(logger, target, key, json, null);
+            if (logSensitive)
+                CacheMissed(logger, target, key, null);
+            else
+                CacheMissedInsensitive(logger, key, null);
         }
 
 
-        internal static void LogNotSetInsensitive(this ILogger logger, string key)
-            => CacheNotSetInsensitive(logger, key, null);
-
-
-        internal static void LogSet(this ILogger logger, string target, string key, object value)
+        internal static void LogNotSet(this ILogger logger, string target, string key, object value, bool logSensitive)
         {
-            var json = JsonSerializer.Serialize(value, JsonSerializerOptions);
-            CacheSet(logger, target, key, json, null);
+            if (logSensitive)
+                CacheNotSet(logger, target, key, Serialize(value), null);
+            else
+                CacheNotSetInsensitive(logger, key, null);
         }
 
 
-        internal static void LogSetInsensitive(this ILogger logger, string key)
-            => CacheSetInsensitive(logger, key, null);
+        internal static void LogSet(this ILogger logger, string target, string key, object value, bool logSensitive)
+        {
+            if (logSensitive)
+                CacheSet(logger, target, key, Serialize(value), null);
+            else
+                CacheSetInsensitive(logger, key, null);
+        }
 
 
-        internal static void LogCacheError(this ILogger logger, string target, Exception exception) 
-            => ErrorOccurred(logger, target, exception);
-
-
-        internal static void LogCacheErrorInsensitive(this ILogger logger, Exception exception) 
-            => ErrorOccurredInsensitive(logger, exception);
+        internal static void LogCacheError(this ILogger logger, string target, Exception exception, bool logSensitive)
+        {
+            if (logSensitive)
+                ErrorOccurred(logger, target, exception);
+            else
+                ErrorOccurredInsensitive(logger, exception);
+        }
 
 
         internal static void LogNoOptionsProvided(this ILogger logger, string target)
             => NoOptions(logger, target, null);
 
 
-        internal static void LogRemoved(this ILogger logger, string target, string key) 
-            => EntryRemoved(logger, target, key, null);
+        internal static void LogRemoved(this ILogger logger, string target, string key, bool logSensitive)
+        {
+            if (logSensitive)
+                EntryRemoved(logger, target, key, null);
+            else
+                EntryRemovedInsensitive(logger, key, null);
+        }
 
 
-        internal static void LogRemovedInsensitive(this ILogger logger, string key)
-            => EntryRemovedInsensitive(logger, key, null);
+        private static string Serialize(object target) 
+            => JsonSerializer.Serialize(target, JsonSerializerOptions);
 
 
         private static readonly Action<ILogger, string, string, string, Exception?> CacheHit;

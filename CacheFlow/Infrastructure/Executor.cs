@@ -9,8 +9,8 @@ namespace FloxDc.CacheFlow.Infrastructure
     {
         internal Executor(ILogger logger, bool suppressCacheExceptions, DataLogLevel dataLogLevel)
         {
-            _dataLogLevel = dataLogLevel;
             _logger = logger;
+            _logSensitive = dataLogLevel == DataLogLevel.Sensitive;
             _suppressCacheExceptions = suppressCacheExceptions;
         }
 
@@ -28,11 +28,7 @@ namespace FloxDc.CacheFlow.Infrastructure
             }
             catch (Exception ex)
             {
-                if (_dataLogLevel == DataLogLevel.Sensitive)
-                    _logger.LogCacheError(GetExceptionTarget(nameof(TryExecute)), ex);
-                else
-                    _logger.LogCacheErrorInsensitive(ex);
-
+                _logger.LogCacheError(GetExceptionTarget(nameof(TryExecute)), ex, _logSensitive);
                 if (!_suppressCacheExceptions)
                     throw;
             }
@@ -53,11 +49,7 @@ namespace FloxDc.CacheFlow.Infrastructure
             }
             catch (Exception ex)
             {
-                if (_dataLogLevel == DataLogLevel.Sensitive)
-                    _logger.LogCacheError(GetExceptionTarget(nameof(TryExecute)), ex);
-                else
-                    _logger.LogCacheErrorInsensitive(ex);
-                
+                _logger.LogCacheError(GetExceptionTarget(nameof(TryExecute)), ex, _logSensitive);
                 if (!_suppressCacheExceptions)
                     throw;
             }
@@ -79,11 +71,7 @@ namespace FloxDc.CacheFlow.Infrastructure
             }
             catch (Exception ex)
             {
-                if (_dataLogLevel == DataLogLevel.Sensitive)
-                    _logger.LogCacheError(GetExceptionTarget(nameof(TryExecuteAsync)), ex);
-                else
-                    _logger.LogCacheErrorInsensitive(ex);
-                
+                _logger.LogCacheError(GetExceptionTarget(nameof(TryExecuteAsync)), ex, _logSensitive);
                 if (!_suppressCacheExceptions)
                     throw;
             }
@@ -104,11 +92,7 @@ namespace FloxDc.CacheFlow.Infrastructure
             }
             catch (Exception ex)
             {
-                if (_dataLogLevel == DataLogLevel.Sensitive)
-                    _logger.LogCacheError(GetExceptionTarget(nameof(TryExecuteAsync)), ex);
-                else
-                    _logger.LogCacheErrorInsensitive(ex);
-                
+                _logger.LogCacheError(GetExceptionTarget(nameof(TryExecuteAsync)), ex, _logSensitive);
                 if (!_suppressCacheExceptions)
                     throw;
             }
@@ -121,7 +105,7 @@ namespace FloxDc.CacheFlow.Infrastructure
 
 
         private readonly ILogger _logger;
+        private readonly bool _logSensitive;
         private readonly bool _suppressCacheExceptions;
-        private readonly DataLogLevel _dataLogLevel;
     }
 }

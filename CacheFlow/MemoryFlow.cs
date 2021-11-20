@@ -37,6 +37,8 @@ namespace FloxDc.CacheFlow
 
             _executor = new Executor(_logger, Options.SuppressCacheExceptions, Options.DataLoggingLevel);
             _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(Options.CacheKeyPrefix, Options.CacheKeyDelimiter);
+
+            _logSensitive = Options.DataLoggingLevel == DataLogLevel.Sensitive;
         }
 
 
@@ -87,11 +89,7 @@ namespace FloxDc.CacheFlow
             var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             _executor.TryExecute(() => Instance.Remove(fullKey));
 
-            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogRemoved(nameof(MemoryFlow) + ":" + nameof(Remove), fullKey);
-            else
-                _logger.LogRemovedInsensitive(key);
-
+            _logger.LogRemoved(nameof(MemoryFlow) + ":" + nameof(Remove), fullKey, _logSensitive);
             _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Remove, fullKey));
         }
 
@@ -106,11 +104,7 @@ namespace FloxDc.CacheFlow
             var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             if (Utils.IsDefaultStruct(value))
             {
-                if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                    _logger.LogNotSet(nameof(MemoryFlow) + ":" + nameof(Set), fullKey, value!);
-                else
-                    _logger.LogNotSetInsensitive(key);
-
+                _logger.LogNotSet(nameof(MemoryFlow) + ":" + nameof(Set), fullKey, value!, _logSensitive);
                 _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Skipped, fullKey));
                 return;
             }
@@ -122,11 +116,7 @@ namespace FloxDc.CacheFlow
                 entry.Value = value;
             });
 
-            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogSet(nameof(MemoryFlow) + ":" + nameof(Set), fullKey, value!);
-            else
-                _logger.LogSetInsensitive(key);
-
+            _logger.LogSet(nameof(MemoryFlow) + ":" + nameof(Set), fullKey, value!, _logSensitive);
             _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Set, fullKey));
         }
 
@@ -145,20 +135,12 @@ namespace FloxDc.CacheFlow
 
             if (!isCached)
             {
-                if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                    _logger.LogMissed(nameof(MemoryFlow) + ":" + nameof(TryGetValue), fullKey);
-                else
-                    _logger.LogMissedInsensitive(key);
-
+                _logger.LogMissed(nameof(MemoryFlow) + ":" + nameof(TryGetValue), fullKey, _logSensitive);
                 _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Miss, fullKey));
                 return false;
             }
 
-            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogHit(nameof(MemoryFlow) + ":" + nameof(TryGetValue), fullKey, value!);
-            else
-                _logger.LogHitInsensitive(key);
-            
+            _logger.LogHit(nameof(MemoryFlow) + ":" + nameof(TryGetValue), fullKey, value!, _logSensitive);
             _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Hit, fullKey));
             return true;
         }
@@ -180,6 +162,7 @@ namespace FloxDc.CacheFlow
         private readonly ActivitySource _activitySource;
         private readonly Executor _executor;
         private readonly ILogger<MemoryFlow> _logger;
+        private readonly bool _logSensitive;
         private readonly string _prefix;
     }
 }

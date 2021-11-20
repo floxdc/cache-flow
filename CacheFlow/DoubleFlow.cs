@@ -41,7 +41,7 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public T GetOrSet<T>(string key, Func<T> getFunction, TimeSpan absoluteDistributedExpirationRelativeToNow)
+        public T? GetOrSet<T>(string key, Func<T> getFunction, TimeSpan absoluteDistributedExpirationRelativeToNow)
             => GetOrSet(key, getFunction,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
                 new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow}
@@ -49,9 +49,9 @@ namespace FloxDc.CacheFlow
         
 
 
-        public T GetOrSet<T>(string key, Func<T> getFunction, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null)
+        public T? GetOrSet<T>(string key, Func<T> getFunction, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null)
         {
-            if (_memory.TryGetValue(key, out T value))
+            if (_memory.TryGetValue(key, out T? value))
             {
                 _distributed.Refresh(key);
                 return value;
@@ -66,7 +66,7 @@ namespace FloxDc.CacheFlow
         }
 
 
-        public Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
+        public Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
             TimeSpan absoluteDistributedExpirationRelativeToNow,
             CancellationToken cancellationToken = default)
             => GetOrSetAsync(key, getFunction,
@@ -76,7 +76,7 @@ namespace FloxDc.CacheFlow
             );
 
 
-        public async Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
+        public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
             DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null,
             CancellationToken cancellationToken = default)
         {

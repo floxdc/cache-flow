@@ -40,6 +40,8 @@ namespace FloxDc.CacheFlow
 
             _executor = new Executor(_logger, Options.SuppressCacheExceptions, Options.DataLoggingLevel);
             _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(Options.CacheKeyPrefix, Options.CacheKeyDelimiter);
+
+            _logSensitive = Options.DataLoggingLevel == DataLogLevel.Sensitive;
         }
 
 
@@ -49,21 +51,13 @@ namespace FloxDc.CacheFlow
             var cached = await GetInternalAsync(key, cancellationToken);
             if (cached.IsEmpty)
             {
-                if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                    _logger.LogMissed(nameof(DistributedFlow) + ":" + nameof(GetAsync), key);
-                else
-                    _logger.LogMissedInsensitive(key);
-
+                _logger.LogMissed(nameof(DistributedFlow) + ":" + nameof(GetAsync), key, _logSensitive);
                 _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Miss, key));
                 return default;
             }
 
             var value = DeserializeAndDecode<T>(_serializer, cached);
-            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogHit(nameof(DistributedFlow) + ":" + nameof(GetAsync), key, value!);
-            else
-                _logger.LogHitInsensitive(key);
-            
+            _logger.LogHit(nameof(DistributedFlow) + ":" + nameof(GetAsync), key, value!, _logSensitive);
             _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Hit, key));
             return value;
         }
@@ -146,11 +140,7 @@ namespace FloxDc.CacheFlow
             var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             TryExecute(() => Instance.Remove(fullKey));
 
-            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogRemoved(nameof(DistributedFlow) + ":" + nameof(Remove), key);
-            else
-                _logger.LogRemovedInsensitive(key);
-
+            _logger.LogRemoved(nameof(DistributedFlow) + ":" + nameof(Remove), key, _logSensitive);
             _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Remove, key));
         }
 
@@ -165,11 +155,7 @@ namespace FloxDc.CacheFlow
                 await Instance.RemoveAsync(fullKey, cancellationToken);
             });
 
-            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogRemoved(nameof(DistributedFlow) + ":" + nameof(RemoveAsync), key);
-            else
-                _logger.LogRemovedInsensitive(key);
-
+            _logger.LogRemoved(nameof(DistributedFlow) + ":" + nameof(RemoveAsync), key, _logSensitive);
             _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Remove, key));
         }
 
@@ -203,22 +189,14 @@ namespace FloxDc.CacheFlow
             var cached = GetInternal(key);
             if (cached.IsEmpty)
             {
-                if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                    _logger.LogMissed(nameof(DistributedFlow) + ":" + nameof(TryGetValue), key);
-                else
-                    _logger.LogMissedInsensitive(key);
-                
+                _logger.LogMissed(nameof(DistributedFlow) + ":" + nameof(TryGetValue), key, _logSensitive);
                 _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Miss, key));
                 return false;
             }
 
             value = DeserializeAndDecode<T>(_serializer, cached);
 
-            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogHit(nameof(DistributedFlow) + ":" + nameof(TryGetValue), key, value!);
-            else
-                _logger.LogHitInsensitive(key);
-
+            _logger.LogHit(nameof(DistributedFlow) + ":" + nameof(TryGetValue), key, value!, _logSensitive);
             _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Hit, key));
             return true;
         }
@@ -238,11 +216,7 @@ namespace FloxDc.CacheFlow
             if (!Utils.IsDefaultStruct(value))
                 return true;
 
-            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogNotSet(nameof(DistributedFlow) + ":" + nameof(CanSet), key, value!);
-            else
-                _logger.LogNotSetInsensitive(key);
-
+            _logger.LogNotSet(nameof(DistributedFlow) + ":" + nameof(CanSet), key, value!, _logSensitive);
             _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Skipped, key));
             return false;
         }
@@ -283,11 +257,7 @@ namespace FloxDc.CacheFlow
                 Instance.Set(fullKey, encoded, options);
             });
 
-            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogSet(nameof(DistributedFlow) + ":" + nameof(SetInternal), key, value!);
-            else
-                _logger.LogSetInsensitive(key);
-
+            _logger.LogSet(nameof(DistributedFlow) + ":" + nameof(SetInternal), key, value!, _logSensitive);
             _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Set, key));
         }
 
@@ -305,11 +275,7 @@ namespace FloxDc.CacheFlow
                 await Instance.SetAsync(fullKey, encoded, options, cancellationToken);
             });
 
-            if (Options.DataLoggingLevel == DataLogLevel.Sensitive)
-                _logger.LogSet(nameof(DistributedFlow) + ":" + nameof(SetInternalAsync), key, value!);
-            else
-                _logger.LogSetInsensitive(key);
-
+            _logger.LogSet(nameof(DistributedFlow) + ":" + nameof(SetInternalAsync), key, value!, _logSensitive);
             _activitySource.StopStartedActivity(activity, BuildTags(CacheEvents.Set, key));
         }
 
@@ -338,6 +304,7 @@ namespace FloxDc.CacheFlow
         private readonly ActivitySource _activitySource;
         private readonly Executor _executor;
         private readonly ILogger<DistributedFlow> _logger;
+        private readonly bool _logSensitive;
         private readonly string _prefix;
         private readonly ISerializer _serializer;
     }
