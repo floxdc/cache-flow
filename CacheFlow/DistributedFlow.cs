@@ -75,8 +75,8 @@ namespace FloxDc.CacheFlow
 
         public T GetOrSet<T>(string key, Func<T> getFunction, DistributedCacheEntryOptions options)
         {
-            if (TryGetValue(key, out T result))
-                return result;
+            if (TryGetValue(key, out T? result))
+                return result!;
 
             var activity = _activitySource.GetStartedActivity("Value calculations");
             result = getFunction();
