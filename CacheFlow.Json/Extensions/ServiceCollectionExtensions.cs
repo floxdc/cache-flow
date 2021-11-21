@@ -1,11 +1,10 @@
-﻿using FloxDc.CacheFlow.Infrastructure;
+﻿using FloxDc.CacheFlow.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CacheFlow.Json.Extensions
+namespace CacheFlow.Json.Extensions;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
-    {
-        public static IServiceCollection AddCacheFlowJsonSerialization(this IServiceCollection services)
-            => services.AddSingleton<ISerializer, CacheFlowJsonSerializer>();
-    }
+    public static IServiceCollection AddCacheFlowJsonSerialization(this IServiceCollection services)
+        => services.AddSingleton<ISerializer, CacheFlowJsonSerializer>();
 }

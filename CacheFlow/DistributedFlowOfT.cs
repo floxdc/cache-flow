@@ -27,22 +27,22 @@ namespace FloxDc.CacheFlow
             => _cache.GetAsync<T>(GetFullKey(_keyPrefix, key), cancellationToken);
 
 
-        public T GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteExpirationRelativeToNow)
+        public T? GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteExpirationRelativeToNow)
             => GetOrSet(key, getValueFunction,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
-        public T GetOrSet<T>(string key, Func<T> getValueFunction, DistributedCacheEntryOptions options)
+        public T? GetOrSet<T>(string key, Func<T> getValueFunction, DistributedCacheEntryOptions options)
             => _cache.GetOrSet(GetFullKey(_keyPrefix, key), getValueFunction, options);
 
 
-        public Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, TimeSpan absoluteExpirationRelativeToNow,
+        public Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, TimeSpan absoluteExpirationRelativeToNow,
             CancellationToken cancellationToken = default)
             => GetOrSetAsync(key, getValueFunction, new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow},
                 cancellationToken);
 
 
-        public Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, DistributedCacheEntryOptions options,
+        public Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, DistributedCacheEntryOptions options,
             CancellationToken cancellationToken = default)
             => _cache.GetOrSetAsync(GetFullKey(_keyPrefix, key), getValueFunction, options, cancellationToken);
 

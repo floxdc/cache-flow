@@ -1,9 +1,8 @@
-﻿namespace FloxDc.CacheFlow
+﻿namespace FloxDc.CacheFlow;
+
+public enum DataLogLevel
 {
-    public enum DataLogLevel
-    {
-        Disabled,
-        Normal,
-        Sensitive
-    }
+    Disabled,
+    Normal,
+    Sensitive
 }
