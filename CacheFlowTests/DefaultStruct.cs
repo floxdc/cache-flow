@@ -34,5 +34,17 @@ public struct DefaultStruct
     }
 
 
+    public static bool operator ==(DefaultStruct left, DefaultStruct right)
+    {
+        return left.Equals(right);
+    }
+
+
+    public static bool operator !=(DefaultStruct left, DefaultStruct right)
+    {
+        return !(left == right);
+    }
+
+
     public int Id { get; }
 }
