@@ -63,14 +63,14 @@ public class DistributedFlow : IDistributedFlow
     }
 
 
-    public T GetOrSet<T>(string key, Func<T> getFunction, TimeSpan absoluteExpirationRelativeToNow)
+    public T? GetOrSet<T>(string key, Func<T> getFunction, TimeSpan absoluteExpirationRelativeToNow)
         => GetOrSet(key, getFunction, new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
-    public T GetOrSet<T>(string key, Func<T> getFunction, DistributedCacheEntryOptions options)
+    public T? GetOrSet<T>(string key, Func<T> getFunction, DistributedCacheEntryOptions options)
     {
         if (TryGetValue(key, out T? result))
-            return result!;
+            return result;
 
         var activity = _activitySource.GetStartedActivity("Value calculations");
         result = getFunction();
