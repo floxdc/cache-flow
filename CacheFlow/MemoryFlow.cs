@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,14 +12,14 @@ using Microsoft.Extensions.Options;
 
 namespace FloxDc.CacheFlow;
 
-public class MemoryFlow : IMemoryFlow
+public class MemoryFlow : FlowBase, IMemoryFlow
 {
     public MemoryFlow(IMemoryCache memoryCache, ILogger<MemoryFlow>? logger = default,
         IOptions<FlowOptions>? options = default)
     {
+        _activitySource = ActivitySourceContainer.Instance;
         Instance = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
         _logger = logger ?? new NullLogger<MemoryFlow>();
-        _activitySource = ActivitySourceContainer.Instance;
 
         if (options is null)
         {
@@ -32,19 +31,18 @@ public class MemoryFlow : IMemoryFlow
             Options = options.Value;
         }
 
-        if (Options.DataLoggingLevel == DataLogLevel.Disabled)
+        if (Options.DataLoggingLevel is DataLogLevel.Disabled)
             _logger = new NullLogger<MemoryFlow>();
 
         _executor = new Executor(_logger, Options.SuppressCacheExceptions, Options.DataLoggingLevel);
         _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(Options.CacheKeyPrefix, Options.CacheKeyDelimiter);
 
-        _logSensitive = Options.DataLoggingLevel == DataLogLevel.Sensitive;
+        _logSensitive = Options.DataLoggingLevel is DataLogLevel.Sensitive;
     }
 
 
     public T GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteExpirationRelativeToNow)
-        => GetOrSet(key, getValueFunction,
-            new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
+        => GetOrSet(key, getValueFunction, new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow });
 
 
     public T GetOrSet<T>(string key, Func<T> getValueFunction, MemoryCacheEntryOptions options)
@@ -52,45 +50,45 @@ public class MemoryFlow : IMemoryFlow
         if (TryGetValue(key, out T result))
             return result;
 
-        var activity = _activitySource.GetStartedActivity("Value calculations");
-        result = getValueFunction();
-        _activitySource.StopStartedActivity(activity);
-            
-        Set(key, result, options);
+        using (var _ = _activitySource.GetStartedActivity("Value calculations"))
+            result = getValueFunction();
 
+        Set(key, result, options);
         return result;
     }
 
 
     public ValueTask<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, TimeSpan absoluteExpirationRelativeToNow,
-        CancellationToken cancellationToken = default) 
-        => GetOrSetAsync(key, getValueFunction, new MemoryCacheEntryOptions{AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow}, cancellationToken);
+        CancellationToken cancellationToken = default)
+        => GetOrSetAsync(key, getValueFunction, new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow },
+            cancellationToken);
 
 
-    public async ValueTask<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction,
-        MemoryCacheEntryOptions options, CancellationToken cancellationToken = default)
+    public async ValueTask<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, MemoryCacheEntryOptions options,
+        CancellationToken cancellationToken = default)
     {
         if (TryGetValue(key, out T result))
             return result;
 
-        var activity = _activitySource.GetStartedActivity("Async value calculations");
-        result = await getValueFunction();
-        _activitySource.StopStartedActivity(activity);
-            
-        Set(key, result, options);
+        using (var _ = _activitySource.GetStartedActivity("Async value calculations"))
+            result = await getValueFunction();
 
+        Set(key, result, options);
         return result;
     }
 
 
     public void Remove(string key)
     {
-        var activity = _activitySource.GetStartedActivity(nameof(Remove));
-        var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-        _executor.TryExecute(() => Instance.Remove(fullKey));
+        using var activity = _activitySource.GetStartedActivity(nameof(Remove), BuildTags(CacheEvents.Remove, key));
+        
+        _executor.TryExecute(() =>
+        {
+            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+            Instance.Remove(fullKey);
+        });
 
-        _logger.LogRemoved(nameof(MemoryFlow) + ":" + nameof(Remove), fullKey, _logSensitive);
-        _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Remove, fullKey));
+        _logger.LogRemoved(BuildTarget(nameof(Remove)), key, _logSensitive);
     }
 
 
@@ -100,30 +98,29 @@ public class MemoryFlow : IMemoryFlow
 
     public void Set<T>(string key, T value, MemoryCacheEntryOptions options)
     {
-        var activity = _activitySource.GetStartedActivity(nameof(Set));
-        var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+        using var activity = _activitySource.GetStartedActivity(nameof(Set), BuildTags(CacheEvents.Skipped, key));
         if (Utils.IsDefaultStruct(value))
         {
-            _logger.LogNotSet(nameof(MemoryFlow) + ":" + nameof(Set), fullKey, value!, _logSensitive);
-            _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Skipped, fullKey));
+            _logger.LogNotSet(BuildTarget(nameof(Set)), key, value!, _logSensitive);
             return;
         }
 
         _executor.TryExecute(() =>
         {
+            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             using var entry = Instance.CreateEntry(fullKey);
             entry.SetOptions(options);
             entry.Value = value;
         });
 
-        _logger.LogSet(nameof(MemoryFlow) + ":" + nameof(Set), fullKey, value!, _logSensitive);
-        _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Set, fullKey));
+        _logger.LogSet(BuildTarget(nameof(Set)), key, value!, _logSensitive);
+        activity.SetEvent(CacheEvents.Set);
     }
 
 
     public bool TryGetValue<T>(string key, out T value)
     {
-        var activity = _activitySource.GetStartedActivity(nameof(TryGetValue));
+        using var activity = _activitySource.GetStartedActivity(nameof(TryGetValue), BuildTags(CacheEvents.Miss, key));
         var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
 
         bool isCached;
@@ -135,24 +132,19 @@ public class MemoryFlow : IMemoryFlow
 
         if (!isCached)
         {
-            _logger.LogMissed(nameof(MemoryFlow) + ":" + nameof(TryGetValue), fullKey, _logSensitive);
-            _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Miss, fullKey));
+            _logger.LogMissed(BuildTarget(nameof(TryGetValue)), fullKey, _logSensitive);
             return false;
         }
 
-        _logger.LogHit(nameof(MemoryFlow) + ":" + nameof(TryGetValue), fullKey, value!, _logSensitive);
-        _activitySource.StopStartedActivity(activity, BuildArgs(CacheEvents.Hit, fullKey));
+        _logger.LogHit(BuildTarget(nameof(TryGetValue)), fullKey, value!, _logSensitive);
+        activity.SetEvent(CacheEvents.Hit);
+
         return true;
     }
 
 
-    private static Dictionary<string, string> BuildArgs(CacheEvents @event, string key)
-        => new()
-        {
-            { "event", @event.ToString() },
-            { "key", key },
-            { "service-type", nameof(MemoryFlow) }
-        };
+    private static string BuildTarget(string methodName) 
+        => BuildTarget(nameof(DistributedFlow), methodName);
 
 
     public IMemoryCache Instance { get; }
