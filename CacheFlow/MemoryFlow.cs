@@ -80,13 +80,10 @@ public class MemoryFlow : FlowBase, IMemoryFlow
 
     public void Remove(string key)
     {
-        using var activity = _activitySource.GetStartedActivity(nameof(Remove), BuildTags(CacheEvents.Remove, key));
+        var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+        using var activity = _activitySource.GetStartedActivity(nameof(Remove), BuildTags(CacheEvents.Remove, fullKey));
         
-        _executor.TryExecute(() =>
-        {
-            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-            Instance.Remove(fullKey);
-        });
+        _executor.TryExecute(() => Instance.Remove(fullKey));
 
         _logger.LogRemoved(BuildTarget(nameof(Remove)), key, _logSensitive);
     }
@@ -98,30 +95,30 @@ public class MemoryFlow : FlowBase, IMemoryFlow
 
     public void Set<T>(string key, T value, MemoryCacheEntryOptions options)
     {
-        using var activity = _activitySource.GetStartedActivity(nameof(Set), BuildTags(CacheEvents.Skipped, key));
+        var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+        using var activity = _activitySource.GetStartedActivity(nameof(Set), BuildTags(CacheEvents.Skipped, fullKey));
         if (Utils.IsDefaultStruct(value))
         {
-            _logger.LogNotSet(BuildTarget(nameof(Set)), key, value!, _logSensitive);
+            _logger.LogNotSet(BuildTarget(nameof(Set)), fullKey, value!, _logSensitive);
             return;
         }
 
         _executor.TryExecute(() =>
         {
-            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             using var entry = Instance.CreateEntry(fullKey);
             entry.SetOptions(options);
             entry.Value = value;
         });
 
-        _logger.LogSet(BuildTarget(nameof(Set)), key, value!, _logSensitive);
+        _logger.LogSet(BuildTarget(nameof(Set)), fullKey, value!, _logSensitive);
         activity.SetEvent(CacheEvents.Set);
     }
 
 
     public bool TryGetValue<T>(string key, out T value)
     {
-        using var activity = _activitySource.GetStartedActivity(nameof(TryGetValue), BuildTags(CacheEvents.Miss, key));
         var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+        using var activity = _activitySource.GetStartedActivity(nameof(TryGetValue), BuildTags(CacheEvents.Miss, fullKey));
 
         bool isCached;
         (isCached, value) = _executor.TryExecute(() =>

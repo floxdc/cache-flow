@@ -47,22 +47,19 @@ public class DistributedFlow : FlowBase, IDistributedFlow
 
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
     {
-        using var activity = _activitySource.GetStartedActivity(nameof(GetAsync), BuildTags(CacheEvents.Miss, key));
+        var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+        using var activity = _activitySource.GetStartedActivity(nameof(GetAsync), BuildTags(CacheEvents.Miss, fullKey));
 
-        var cached = await _executor.TryExecuteAsync(async () =>
-        {
-            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-            return (await Instance.GetAsync(fullKey, cancellationToken)).AsMemory();
-        });
+        var cached = await _executor.TryExecuteAsync(async () => (await Instance.GetAsync(fullKey, cancellationToken)).AsMemory());
         if (cached.IsEmpty)
         {
-            _logger.LogMissed(BuildTarget(nameof(GetAsync)), key, _logSensitive);
+            _logger.LogMissed(BuildTarget(nameof(GetAsync)), fullKey, _logSensitive);
             return default;
         }
 
         var value = DeserializeAndDecode<T>(_serializer, cached);
 
-        _logger.LogHit(BuildTarget(nameof(GetAsync)), key, value!, _logSensitive);
+        _logger.LogHit(BuildTarget(nameof(GetAsync)), fullKey, value!, _logSensitive);
         activity.SetEvent(CacheEvents.Hit);
 
         return value;
@@ -92,8 +89,8 @@ public class DistributedFlow : FlowBase, IDistributedFlow
             cancellationToken);
 
 
-    public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
-        DistributedCacheEntryOptions options, CancellationToken cancellationToken = default)
+    public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction, DistributedCacheEntryOptions options,
+        CancellationToken cancellationToken = default)
     {
         var result = await GetAsync<T>(key, cancellationToken);
         if (result is not null && !result.Equals(default(T)))
@@ -109,53 +106,41 @@ public class DistributedFlow : FlowBase, IDistributedFlow
 
     public void Refresh(string key)
     {
-        using var activity = _activitySource.GetStartedActivity(nameof(Refresh), BuildTags(CacheEvents.Set, key));
+        var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+        using var activity = _activitySource.GetStartedActivity(nameof(Refresh), BuildTags(CacheEvents.Set, fullKey));
         
-        TryExecute(() =>
-        {
-            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-            Instance.Refresh(fullKey);
-        });
+        TryExecute(() => Instance.Refresh(fullKey));
     }
 
 
     public async Task RefreshAsync(string key, CancellationToken cancellationToken = default)
     {
-        using var activity = _activitySource.GetStartedActivity(nameof(RefreshAsync), BuildTags(CacheEvents.Set, key));
+        var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+        using var activity = _activitySource.GetStartedActivity(nameof(RefreshAsync), BuildTags(CacheEvents.Set, fullKey));
         
-        await TryExecuteAsync(async () =>
-        {
-            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-            await Instance.RefreshAsync(fullKey, cancellationToken);
-        });
+        await TryExecuteAsync(async () => await Instance.RefreshAsync(fullKey, cancellationToken));
     }
 
 
     public void Remove(string key)
     {
-        using var activity = _activitySource.GetStartedActivity(nameof(Remove), BuildTags(CacheEvents.Remove, key));
+        var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+        using var activity = _activitySource.GetStartedActivity(nameof(Remove), BuildTags(CacheEvents.Remove, fullKey));
         
-        TryExecute(() =>
-        {
-            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-            Instance.Remove(fullKey);
-        });
+        TryExecute(() => Instance.Remove(fullKey));
 
-        _logger.LogRemoved(BuildTarget(nameof(Remove)), key, _logSensitive);
+        _logger.LogRemoved(BuildTarget(nameof(Remove)), fullKey, _logSensitive);
     }
 
 
     public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
     {
-        using var activity = _activitySource.GetStartedActivity(nameof(RemoveAsync), BuildTags(CacheEvents.Remove, key));
+        var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+        using var activity = _activitySource.GetStartedActivity(nameof(RemoveAsync), BuildTags(CacheEvents.Remove, fullKey));
         
-        await TryExecuteAsync(async () => 
-        {
-            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-            await Instance.RemoveAsync(fullKey, cancellationToken);
-        });
+        await TryExecuteAsync(async () => await Instance.RemoveAsync(fullKey, cancellationToken));
 
-        _logger.LogRemoved(BuildTarget(nameof(RemoveAsync)), key, _logSensitive);
+        _logger.LogRemoved(BuildTarget(nameof(RemoveAsync)), fullKey, _logSensitive);
     }
 
 
@@ -178,23 +163,20 @@ public class DistributedFlow : FlowBase, IDistributedFlow
 
     public bool TryGetValue<T>(string key, out T? value)
     {
-        using var activity = _activitySource.GetStartedActivity(nameof(TryGetValue), BuildTags(CacheEvents.Miss, key));
+        var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+        using var activity = _activitySource.GetStartedActivity(nameof(TryGetValue), BuildTags(CacheEvents.Miss, fullKey));
 
         value = default;
-        var cached = _executor.TryExecute(() =>
-        {
-            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-            return Instance.Get(fullKey).AsMemory();
-        });
+        var cached = _executor.TryExecute(() => Instance.Get(fullKey).AsMemory());
         if (cached.IsEmpty)
         {
-            _logger.LogMissed(BuildTarget(nameof(TryGetValue)), key, _logSensitive);
+            _logger.LogMissed(BuildTarget(nameof(TryGetValue)), fullKey, _logSensitive);
             return false;
         }
 
         value = DeserializeAndDecode<T>(_serializer, cached);
 
-        _logger.LogHit(BuildTarget(nameof(TryGetValue)), key, value!, _logSensitive);
+        _logger.LogHit(BuildTarget(nameof(TryGetValue)), fullKey, value!, _logSensitive);
         activity.SetEvent(CacheEvents.Hit);
 
         return true;
@@ -225,35 +207,37 @@ public class DistributedFlow : FlowBase, IDistributedFlow
 
     private void SetInternal<T>(string key, T value, DistributedCacheEntryOptions options)
     {
-        using var activity = _activitySource.GetStartedActivity(nameof(Set), BuildTags(CacheEvents.Set, key));
-        if (!CanSet(key, value, activity))
+        var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+        using var activity = _activitySource.GetStartedActivity(nameof(Set), BuildTags(CacheEvents.Set, fullKey));
+        
+        if (!CanSet(fullKey, value, activity))
             return;
 
         TryExecute(() =>
         {
             var encoded = _serializer.Serialize(value);
-            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             Instance.Set(fullKey, encoded, options);
         });
 
-        _logger.LogSet(BuildTarget(nameof(SetInternal)), key, value!, _logSensitive);
+        _logger.LogSet(BuildTarget(nameof(SetInternal)), fullKey, value!, _logSensitive);
     }
 
 
     private async Task SetInternalAsync<T>(string key, T value, DistributedCacheEntryOptions options, CancellationToken cancellationToken)
     {
-        using var activity = _activitySource.GetStartedActivity(nameof(SetAsync), BuildTags(CacheEvents.Set, key));
-        if (!CanSet(key, value, activity))
+        var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+        using var activity = _activitySource.GetStartedActivity(nameof(SetAsync), BuildTags(CacheEvents.Set, fullKey));
+        
+        if (!CanSet(fullKey, value, activity))
             return;
 
         await TryExecuteAsync(async () =>
         {
             var encoded = _serializer.Serialize(value);
-            var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
             await Instance.SetAsync(fullKey, encoded, options, cancellationToken);
         });
 
-        _logger.LogSet(BuildTarget(nameof(SetInternalAsync)), key, value!, _logSensitive);
+        _logger.LogSet(BuildTarget(nameof(SetInternalAsync)), fullKey, value!, _logSensitive);
     }
 
 
