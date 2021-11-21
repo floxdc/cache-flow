@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using FloxDc.CacheFlow.Infrastructure;
+using FloxDc.CacheFlow.Serialization;
 using Newtonsoft.Json;
 
 namespace CacheFlow.Json;

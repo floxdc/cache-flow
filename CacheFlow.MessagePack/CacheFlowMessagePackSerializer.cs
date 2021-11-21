@@ -1,5 +1,5 @@
 ﻿using System;
-using FloxDc.CacheFlow.Infrastructure;
+using FloxDc.CacheFlow.Serialization;
 using MessagePack;
 using MessagePack.Resolvers;
 

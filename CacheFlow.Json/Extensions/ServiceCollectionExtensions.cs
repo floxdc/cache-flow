@@ -1,4 +1,4 @@
-﻿using FloxDc.CacheFlow.Infrastructure;
+﻿using FloxDc.CacheFlow.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CacheFlow.Json.Extensions;

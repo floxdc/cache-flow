@@ -1,4 +1,4 @@
-﻿using FloxDc.CacheFlow.Infrastructure;
+﻿using FloxDc.CacheFlow.Serialization;
 using MessagePack;
 using Microsoft.Extensions.DependencyInjection;
 
