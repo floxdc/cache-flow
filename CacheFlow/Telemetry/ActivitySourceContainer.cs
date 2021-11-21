@@ -4,5 +4,5 @@ namespace FloxDc.CacheFlow.Telemetry;
 
 internal static class ActivitySourceContainer
 {
-    internal static ActivitySource Instance = new(ActivitySourceHelper.ActivitySourceName, ActivitySourceHelper.ActivitySourceVersion);
+    internal static ActivitySource Instance = new(ActivitySourceHelper.CacheFlowActivitySourceName, ActivitySourceHelper.CacheFlowActivitySourceVersion);
 }

@@ -34,9 +34,9 @@ public static class ActivitySourceHelper
 
     internal const string EventToken = "event";
 
-    private static string BuildName(string activityName) => ActivitySourceName + "." + activityName;
+    private static string BuildName(string activityName) => CacheFlowActivitySourceName + "." + activityName;
 
 
-    public static readonly string ActivitySourceName = $"{nameof(FloxDc)}.{nameof(CacheFlow)}.Cache";
-    public const string ActivitySourceVersion = "1.0.0";
+    public static readonly string CacheFlowActivitySourceName = $"{nameof(FloxDc)}.{nameof(CacheFlow)}.Cache";
+    public const string CacheFlowActivitySourceVersion = "1.0.0";
 }
