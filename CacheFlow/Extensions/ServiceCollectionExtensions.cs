@@ -53,7 +53,7 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection RegisterOptions(this IServiceCollection services, Action<FlowOptions>? options)
     {
-        if (options != null)
+        if (options is not null)
             services.Configure(options);
 
         return services;

@@ -66,19 +66,14 @@ public class DoubleFlow : IDoubleFlow
     }
 
 
-    public Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
-        TimeSpan absoluteDistributedExpirationRelativeToNow,
+    public Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction, TimeSpan absoluteDistributedExpirationRelativeToNow,
         CancellationToken cancellationToken = default)
-        => GetOrSetAsync(key, getFunction,
-            new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
-            new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
-            cancellationToken
-        );
+        => GetOrSetAsync(key, getFunction, new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow },
+            new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow }, cancellationToken);
 
 
-    public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction,
-        DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null,
-        CancellationToken cancellationToken = default)
+    public async Task<T?> GetOrSetAsync<T>(string key, Func<Task<T>> getFunction, DistributedCacheEntryOptions distributedOptions,
+        MemoryCacheEntryOptions? memoryOptions = null, CancellationToken cancellationToken = default)
     {
         if (_memory.TryGetValue(key, out T? value))
         {
@@ -87,7 +82,7 @@ public class DoubleFlow : IDoubleFlow
         }
 
         value = await _distributed.GetOrSetAsync(key, getFunction, distributedOptions, cancellationToken);
-            
+
         memoryOptions ??= GetDefaultMemoryOptions(distributedOptions);
         _memory.Set(key, value, memoryOptions);
 
@@ -119,8 +114,8 @@ public class DoubleFlow : IDoubleFlow
 
     public void Set<T>(string key, T value, TimeSpan absoluteDistributedExpirationRelativeToNow)
         => Set(key, value,
-            new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
-            new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow}
+            new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow },
+            new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow }
         );
 
 
@@ -135,14 +130,13 @@ public class DoubleFlow : IDoubleFlow
     public Task SetAsync<T>(string key, T value, TimeSpan absoluteDistributedExpirationRelativeToNow,
         CancellationToken cancellationToken = default)
         => SetAsync(key, value,
-            new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
-            new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
+            new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow },
+            new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow },
             cancellationToken
         );
 
 
-    public Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions distributedOptions,
-        MemoryCacheEntryOptions? memoryOptions = null,
+    public Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions distributedOptions, MemoryCacheEntryOptions? memoryOptions = null,
         CancellationToken cancellationToken = default)
     {
         memoryOptions ??= GetDefaultMemoryOptions(distributedOptions);
