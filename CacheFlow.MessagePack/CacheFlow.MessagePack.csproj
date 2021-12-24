@@ -9,13 +9,13 @@
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow.MessagePack</PackageId>
 	<Title>FloxDc's Cache Flow Message Pack serializer</Title>
-    <Version>1.10.0-beta3</Version>
+    <Version>1.10.0</Version>
     <Product>FloxDc.CacheFlow.MessagePack</Product>
     <Description>Message Pack serialization for FloxDc's Cache Flow</Description>
     <RepositoryUrl>https://github.com/floxdc/cache-flow</RepositoryUrl>
     <PackageTags>CacheFlow MessagePack</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReleaseNotes>- Updated to 1.10.0-beta1. See the main package for a list of change.</PackageReleaseNotes>
+    <PackageReleaseNotes>- Updated to 1.10.0. See the main package for a list of change.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.1|AnyCPU'">
@@ -23,7 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FloxDc.CacheFlow" Version="1.10.0-beta3" />
+    <PackageReference Include="FloxDc.CacheFlow" Version="1.10.0" />
     <PackageReference Include="MessagePack" Version="2.3.85" />
   </ItemGroup>
 

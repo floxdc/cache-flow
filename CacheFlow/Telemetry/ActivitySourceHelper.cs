@@ -6,7 +6,7 @@ namespace FloxDc.CacheFlow.Telemetry;
 
 public static class ActivitySourceHelper
 {
-    internal static Activity? GetStartedActivity(this ActivitySource source, string activityName, Dictionary<string, string>? tags = null)
+    internal static Activity? CreateStartedActivity(this ActivitySource source, string activityName, Dictionary<string, string>? tags = null)
     {
         if (!source.HasListeners())
             return default;
