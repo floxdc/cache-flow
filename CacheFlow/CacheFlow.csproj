@@ -10,14 +10,10 @@
     <PackageId>FloxDc.CacheFlow</PackageId>
 	<Title>FloxDc's Cache Flow</Title>
     <Description>.Net Core distributed cache management library based on IDistributedCache and IMemoryCache interfaces</Description>
-    <Version>1.10.0</Version>
+    <Version>1.11.0</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
-    <PackageReleaseNotes>- Nullable annotations
-- netcoreapp2.1 support ended
-- net6.0 support added
-- code base clean-up and readability improvements
-- modern telemetry support</PackageReleaseNotes>
+    <PackageReleaseNotes>- JsonOptions are configurable from a startup now</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

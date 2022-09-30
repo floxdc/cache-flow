@@ -1,5 +1,6 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Text.Json;
 
 namespace FloxDc.CacheFlow.Extensions;
 
@@ -10,10 +11,14 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="options"></param>
+    /// <param name="defaultSerializationOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddCacheFlow(this IServiceCollection services, Action<FlowOptions>? options = null) 
-        => services.AddDistributedFlow(options)
-            .AddMemoryFlow();
+    public static IServiceCollection AddCacheFlow(this IServiceCollection services, Action<FlowOptions>? options = default, Action<JsonSerializerOptions>? defaultSerializationOptions = default)
+        => services
+            .RegisterOptions(options)
+            .RegisterOptions(defaultSerializationOptions)
+            .AddDistributedFlowInternal()
+            .AddMemoryFlowInternal();
 
 
     /// <summary>
@@ -21,10 +26,13 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="options"></param>
+    /// <param name="defaultSerializationOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddDistributedFlow(this IServiceCollection services, Action<FlowOptions>? options = null)
-        => services.RegisterOptions(options)
-            .AddSingleton<IDistributedFlow, DistributedFlow>();
+    public static IServiceCollection AddDistributedFlow(this IServiceCollection services, Action<FlowOptions>? options = null, Action<JsonSerializerOptions>? defaultSerializationOptions = default)
+        => services
+            .RegisterOptions(options)
+            .RegisterOptions(defaultSerializationOptions)
+            .AddDistributedFlowInternal();
 
 
     /// <summary>
@@ -32,11 +40,16 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="options"></param>
+    /// <param name="defaultSerializationOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddDoubleFlow(this IServiceCollection services, Action<FlowOptions>? options = null) 
-        => services.AddDistributedFlow(options)
-            .AddMemoryFlow()
-            .AddSingleton<IDoubleFlow, DoubleFlow>();
+    public static IServiceCollection AddDoubleFlow(this IServiceCollection services, Action<FlowOptions>? options = null, Action<JsonSerializerOptions>? defaultSerializationOptions = default)
+        => services
+            .RegisterOptions(options)
+            .RegisterOptions(defaultSerializationOptions)
+            .AddDistributedFlowInternal()
+            .AddMemoryFlowInternal()
+            .AddSingleton<IDoubleFlow, DoubleFlow>()
+            .AddSingleton(typeof(IDoubleFlow<>), typeof(DoubleFlow<>));
 
 
     /// <summary>
@@ -44,14 +57,28 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="options"></param>
+    /// <param name="defaultSerializationOptions"></param>
     /// <returns></returns>
-    public static IServiceCollection AddMemoryFlow(this IServiceCollection services, Action<FlowOptions>? options = null) 
-        => services.RegisterOptions(options)
+    public static IServiceCollection AddMemoryFlow(this IServiceCollection services, Action<FlowOptions>? options = null, Action<JsonSerializerOptions>? defaultSerializationOptions = default)
+        => services
+            .RegisterOptions(options)
+            .RegisterOptions(defaultSerializationOptions)
+            .AddMemoryFlowInternal();
+
+
+    private static IServiceCollection AddDistributedFlowInternal(this IServiceCollection services)
+        => services
+            .AddSingleton<IDistributedFlow, DistributedFlow>()
+            .AddSingleton(typeof(IDistributedFlow<>), typeof(DistributedFlow<>));
+
+
+    private static IServiceCollection AddMemoryFlowInternal(this IServiceCollection services)
+        => services
             .AddSingleton<IMemoryFlow, MemoryFlow>()
             .AddSingleton(typeof(IMemoryFlow<>), typeof(MemoryFlow<>));
 
 
-    private static IServiceCollection RegisterOptions(this IServiceCollection services, Action<FlowOptions>? options)
+    private static IServiceCollection RegisterOptions<T>(this IServiceCollection services, Action<T>? options) where T : class
     {
         if (options is not null)
             services.Configure(options);

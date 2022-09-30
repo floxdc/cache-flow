@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using FloxDc.CacheFlow.Infrastructure;
@@ -17,13 +18,13 @@ namespace FloxDc.CacheFlow;
 public class DistributedFlow : FlowBase, IDistributedFlow
 {
     public DistributedFlow(IDistributedCache distributedCache, ILogger<DistributedFlow>? logger = default,
-        IOptions<FlowOptions>? options = default, ISerializer? serializer = default)
+        IOptions<FlowOptions>? options = default, ISerializer? serializer = default, IOptions<JsonSerializerOptions>? serializationOptions = default)
     {
         Instance = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
 
         _activitySource = ActivitySourceContainer.Instance;
         _logger = logger ?? new NullLogger<DistributedFlow>();
-        _serializer = serializer ?? new TextJsonSerializer();
+        _serializer = serializer ?? new TextJsonSerializer(serializationOptions);
 
         if (options is null)
         {
