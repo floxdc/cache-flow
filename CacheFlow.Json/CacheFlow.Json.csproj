@@ -9,13 +9,13 @@
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow.Json</PackageId>
 	<Title>FloxDc's Cache Flow Newtonsoft Json serializer</Title>  
-	<Version>1.10.0</Version>
+	<Version>1.11.0</Version>
     <Product>FloxDc.CacheFlow.Json</Product>
     <Description>Newtonsoft Json serialization for FloxDc's Cache Flow</Description>
     <RepositoryUrl>https://github.com/floxdc/cache-flow</RepositoryUrl>
     <PackageTags>CacheFlow Json</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReleaseNotes>- Updated to 1.10.0. See the main package for a list of change.</PackageReleaseNotes>
+    <PackageReleaseNotes>- Updated to 1.11.0. See the main package for a list of change.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.1|AnyCPU'">
@@ -23,7 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FloxDc.CacheFlow" Version="1.10.0" />
+    <PackageReference Include="FloxDc.CacheFlow" Version="1.11.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
