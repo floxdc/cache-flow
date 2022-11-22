@@ -13,7 +13,11 @@
     <Version>1.12.0</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
-    <PackageReleaseNotes>- .Net 7 support</PackageReleaseNotes>
+    <PackageReleaseNotes>Warning: .Net 7 libraries officially support only .Net 6+ projects! Please, reach us on Github in case of any inconsistancies.
+
+- .Net 7 support
+- New way of serializer configuration
+- Code improvments</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

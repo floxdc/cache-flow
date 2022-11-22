@@ -1,7 +1,9 @@
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using FloxDc.CacheFlow;
+using FloxDc.CacheFlow.Serialization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -18,7 +20,7 @@ public class DistributedFlowTests
         distributedCacheMock.Setup(c => c.Refresh(It.IsAny<string>()))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         cache.Refresh("Key");
 
         distributedCacheMock.Verify(c => c.Refresh(It.IsAny<string>()), Times.Once);
@@ -32,7 +34,7 @@ public class DistributedFlowTests
         distributedCacheMock.Setup(c => c.RefreshAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         await cache.RefreshAsync("Key");
 
         distributedCacheMock.Verify(c => c.RefreshAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
@@ -47,7 +49,7 @@ public class DistributedFlowTests
         distributedCacheMock.Setup(c => c.Remove(It.IsAny<string>()))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         cache.Remove("Key");
 
         distributedCacheMock.Verify(c => c.Remove(It.IsAny<string>()), Times.Once);
@@ -61,7 +63,7 @@ public class DistributedFlowTests
         distributedCacheMock.Setup(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         await cache.RemoveAsync("Key");
 
         distributedCacheMock.Verify(c => c.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
@@ -77,7 +79,7 @@ public class DistributedFlowTests
                 c.Set(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>()))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         cache.Set("Key", new DefaultStruct(0), TimeSpan.MaxValue);
 
         distributedCacheMock.Verify(
@@ -94,7 +96,7 @@ public class DistributedFlowTests
                 c.Set(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>()))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         cache.Set("Key", default(int), TimeSpan.MaxValue);
 
         distributedCacheMock
@@ -112,7 +114,7 @@ public class DistributedFlowTests
                     It.IsAny<CancellationToken>()))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         await cache.SetAsync("Key", new DefaultStruct(0), TimeSpan.MaxValue);
 
         distributedCacheMock
@@ -132,7 +134,7 @@ public class DistributedFlowTests
                     It.IsAny<CancellationToken>()))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         await cache.SetAsync("Key", default(int), TimeSpan.MaxValue);
 
         distributedCacheMock
@@ -150,7 +152,7 @@ public class DistributedFlowTests
             .Returns((byte[]) null)
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         var result = cache.TryGetValue<object>("key", out _);
 
         Assert.False(result);
@@ -166,7 +168,7 @@ public class DistributedFlowTests
             .Returns((byte[])null)
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         var isSuccess = cache.TryGetValue("key", out DefaultStruct result);
 
         Assert.False(isSuccess);
@@ -186,7 +188,7 @@ public class DistributedFlowTests
             .Returns(ObjectToDefaultTextJson(temp))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         var isSuccess = cache.TryGetValue("key", out int result);
 
         Assert.True(isSuccess);
@@ -205,7 +207,7 @@ public class DistributedFlowTests
             .Returns(ObjectToDefaultTextJson(temp))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         var isSuccess = cache.TryGetValue("key", out DefaultStruct result);
 
         Assert.True(isSuccess);
@@ -224,7 +226,7 @@ public class DistributedFlowTests
             .Returns(ObjectToDefaultTextJson(temp))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         var isSuccess = cache.TryGetValue("key", out DefaultClass result);
 
         Assert.True(isSuccess);
@@ -241,7 +243,7 @@ public class DistributedFlowTests
             .ReturnsAsync((byte[])null)
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         var result = await cache.GetAsync<object>("key");
 
         Assert.Null(result);
@@ -257,7 +259,7 @@ public class DistributedFlowTests
             .ReturnsAsync((byte[])null)
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         var result = await cache.GetAsync<DefaultStruct>("key");
 
         Assert.Equal(default, result);
@@ -276,7 +278,7 @@ public class DistributedFlowTests
             .ReturnsAsync(ObjectToDefaultTextJson(temp))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         var result = await cache.GetAsync<int>("key");
 
         Assert.Equal(storedValue, result);
@@ -294,7 +296,7 @@ public class DistributedFlowTests
             .ReturnsAsync(ObjectToDefaultTextJson(temp))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         var result = await cache.GetAsync<DefaultStruct>("key");
 
         Assert.Equal(storedValue, result);
@@ -312,7 +314,7 @@ public class DistributedFlowTests
             .ReturnsAsync(ObjectToDefaultTextJson(temp))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         var result = await cache.GetAsync<DefaultClass>("key");
 
         Assert.Equal(storedValue, result);
@@ -335,7 +337,7 @@ public class DistributedFlowTests
                     It.IsAny<CancellationToken>()))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         var result = await cache.GetOrSetAsync("key", async () => await Task.FromResult(returnedValue),
             TimeSpan.FromMilliseconds(1));
 
@@ -359,7 +361,7 @@ public class DistributedFlowTests
                     It.IsAny<CancellationToken>()))
             .Verifiable();
 
-        var cache = new DistributedFlow(distributedCacheMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
         var result = await cache.GetOrSetAsync("key", async () => await Task.FromResult(returnedValue),
             TimeSpan.FromMilliseconds(1));
 
@@ -384,7 +386,7 @@ public class DistributedFlowTests
         optionsMock.Setup(o => o.Value)
             .Returns(new FlowOptions { CacheKeyDelimiter = delimiter, CacheKeyPrefix = prefix });
 
-        var cache = new DistributedFlow(distributedCacheMock.Object, options: optionsMock.Object);
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())), options: optionsMock.Object);
         var expected = cache.TryGetValue(key, out DefaultClass value);
 
         Assert.True(expected);
@@ -393,10 +395,5 @@ public class DistributedFlowTests
 
 
     private static byte[] ObjectToDefaultTextJson(object obj)
-    {
-        if (obj is null)
-            return null;
-
-        return System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(obj);
-    }
+        => obj is null ? null : JsonSerializer.SerializeToUtf8Bytes(obj);
 }
