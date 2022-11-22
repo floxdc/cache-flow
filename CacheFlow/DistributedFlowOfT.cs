@@ -27,7 +27,7 @@ namespace FloxDc.CacheFlow
             => _cache.GetAsync<T>(GetFullKey(_keyPrefix, key), cancellationToken);
 
 
-        public T? GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteExpirationRelativeToNow)
+        public T? GetOrSet<T>(string key, Func<T> getValueFunction, in TimeSpan absoluteExpirationRelativeToNow)
             => GetOrSet(key, getValueFunction,
                 new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
@@ -63,7 +63,7 @@ namespace FloxDc.CacheFlow
             => _cache.RemoveAsync(GetFullKey(_keyPrefix, key), cancellationToken);
 
 
-        public void Set<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow)
+        public void Set<T>(string key, T value, in TimeSpan absoluteExpirationRelativeToNow)
             => Set(key, value, new DistributedCacheEntryOptions{AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
