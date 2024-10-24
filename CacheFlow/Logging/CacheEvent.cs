@@ -1,6 +1,6 @@
 ﻿namespace FloxDc.CacheFlow.Logging;
 
-public enum CacheEvents
+public enum CacheEvent
 {
     AnErrorHasOccurred = 7771,
     Hit = 7777,

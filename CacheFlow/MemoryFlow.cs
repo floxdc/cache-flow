@@ -17,9 +17,10 @@ public class MemoryFlow : FlowBase, IMemoryFlow
     public MemoryFlow(IMemoryCache memoryCache, ILogger<MemoryFlow>? logger = default,
         IOptions<FlowOptions>? options = default)
     {
-        _activitySource = ActivitySourceContainer.Instance;
         Instance = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
-        _logger = logger ?? new NullLogger<MemoryFlow>();
+        
+        _activitySource = ActivitySourceContainer.Instance;
+        _logger ??= logger ?? new NullLogger<MemoryFlow>();
 
         if (options is null)
         {
@@ -41,7 +42,7 @@ public class MemoryFlow : FlowBase, IMemoryFlow
     }
 
 
-    public T GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteExpirationRelativeToNow)
+    public T GetOrSet<T>(string key, Func<T> getValueFunction, in TimeSpan absoluteExpirationRelativeToNow)
         => GetOrSet(key, getValueFunction, new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow });
 
 
@@ -71,7 +72,7 @@ public class MemoryFlow : FlowBase, IMemoryFlow
             return result;
 
         using (var _ = _activitySource.CreateStartedActivity("Async value calculations"))
-            result = await getValueFunction();
+            result = await Task.Run(getValueFunction, cancellationToken);
 
         Set(key, result, options);
         return result;
@@ -81,7 +82,7 @@ public class MemoryFlow : FlowBase, IMemoryFlow
     public void Remove(string key)
     {
         var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-        using var activity = _activitySource.CreateStartedActivity(nameof(Remove), BuildTags(CacheEvents.Remove, fullKey));
+        using var activity = _activitySource.CreateStartedActivity(nameof(Remove), BuildTags(CacheEvent.Remove, fullKey));
         
         _executor.TryExecute(() => Instance.Remove(fullKey));
 
@@ -89,14 +90,14 @@ public class MemoryFlow : FlowBase, IMemoryFlow
     }
 
 
-    public void Set<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow) 
+    public void Set<T>(string key, T value, in TimeSpan absoluteExpirationRelativeToNow) 
         => Set(key, value, new MemoryCacheEntryOptions{AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 
     public void Set<T>(string key, T value, MemoryCacheEntryOptions options)
     {
         var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-        using var activity = _activitySource.CreateStartedActivity(nameof(Set), BuildTags(CacheEvents.Skipped, fullKey));
+        using var activity = _activitySource.CreateStartedActivity(nameof(Set), BuildTags(CacheEvent.Skipped, fullKey));
         if (Utils.IsDefaultStruct(value))
         {
             _logger.LogNotSet(BuildTarget(nameof(Set)), fullKey, value!, _logSensitive);
@@ -111,30 +112,30 @@ public class MemoryFlow : FlowBase, IMemoryFlow
         });
 
         _logger.LogSet(BuildTarget(nameof(Set)), fullKey, value!, _logSensitive);
-        activity.SetEvent(CacheEvents.Set);
+        activity.SetEvent(CacheEvent.Set);
     }
 
 
     public bool TryGetValue<T>(string key, out T value)
     {
         var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-        using var activity = _activitySource.CreateStartedActivity(nameof(TryGetValue), BuildTags(CacheEvents.Miss, fullKey));
+        using var activity = _activitySource.CreateStartedActivity(nameof(TryGetValue), BuildTags(CacheEvent.Miss, fullKey));
 
-        bool isCached;
-        (isCached, value) = _executor.TryExecute(() =>
+        var (isCached, returnedValue) = _executor.TryExecute(() =>
         {
-            var result = Instance.TryGetValue(fullKey, out T obj);
+            var result = Instance.TryGetValue(fullKey, out T? obj);
             return (result, obj);
         });
 
+        value = returnedValue ?? default!;
         if (!isCached)
         {
             _logger.LogMissed(BuildTarget(nameof(TryGetValue)), fullKey, _logSensitive);
             return false;
         }
 
-        _logger.LogHit(BuildTarget(nameof(TryGetValue)), fullKey, value!, _logSensitive);
-        activity.SetEvent(CacheEvents.Hit);
+        _logger.LogHit(BuildTarget(nameof(TryGetValue)), fullKey, value, _logSensitive);
+        activity.SetEvent(CacheEvent.Hit);
 
         return true;
     }

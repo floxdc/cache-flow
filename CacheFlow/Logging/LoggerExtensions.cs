@@ -8,25 +8,25 @@ internal static class LoggerExtensions
 {
     static LoggerExtensions()
     {
-        CacheHit = LoggerMessage.Define<string, string, string>(LogLevel.Debug, new EventId((int)CacheEvents.Hit, CacheEvents.Hit.ToString()), "HIT | {target} | {Key} | {value} | CacheFlow: The cache hit occurs.");
-        CacheHitInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvents.Hit, CacheEvents.Hit.ToString()), "HIT | {Key} | CacheFlow: The cache hit occurs.");
+        CacheHit = LoggerMessage.Define<string, string, string>(LogLevel.Debug, new EventId((int)CacheEvent.Hit, CacheEvent.Hit.ToString()), "HIT | {target} | {Key} | {value} | CacheFlow: The cache hit occurs.");
+        CacheHitInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvent.Hit, CacheEvent.Hit.ToString()), "HIT | {Key} | CacheFlow: The cache hit occurs.");
             
-        CacheMissed = LoggerMessage.Define<string, string>(LogLevel.Debug, new EventId((int)CacheEvents.Miss, CacheEvents.Miss.ToString()), "MISS | {target} | {Key} | CacheFlow: The cache miss occurs.");
-        CacheMissedInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvents.Miss, CacheEvents.Miss.ToString()), "MISS | {Key} | CacheFlow: The cache miss occurs.");
+        CacheMissed = LoggerMessage.Define<string, string>(LogLevel.Debug, new EventId((int)CacheEvent.Miss, CacheEvent.Miss.ToString()), "MISS | {target} | {Key} | CacheFlow: The cache miss occurs.");
+        CacheMissedInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvent.Miss, CacheEvent.Miss.ToString()), "MISS | {Key} | CacheFlow: The cache miss occurs.");
             
-        CacheNotSet = LoggerMessage.Define<string, string, string>(LogLevel.Debug, new EventId((int) CacheEvents.Skipped, CacheEvents.Skipped.ToString()), "SKIPPED | {target} | {Key} | {value} | CacheFlow: The key has not been set, because the entry is a default struct value.");
-        CacheNotSetInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int) CacheEvents.Skipped, CacheEvents.Skipped.ToString()), "SKIPPED | {Key} | CacheFlow: The key has not been set, because the entry is a default struct value.");
+        CacheNotSet = LoggerMessage.Define<string, string, string>(LogLevel.Debug, new EventId((int) CacheEvent.Skipped, CacheEvent.Skipped.ToString()), "SKIPPED | {target} | {Key} | {value} | CacheFlow: The key has not been set, because the entry is a default struct value.");
+        CacheNotSetInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int) CacheEvent.Skipped, CacheEvent.Skipped.ToString()), "SKIPPED | {Key} | CacheFlow: The key has not been set, because the entry is a default struct value.");
             
-        CacheSet = LoggerMessage.Define<string, string, string>(LogLevel.Debug, new EventId((int)CacheEvents.Set, CacheEvents.Set.ToString()), "SET | {target} | {Key} | {value} | CacheFlow: The entry is set.");
-        CacheSetInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvents.Set, CacheEvents.Set.ToString()), "SET | {Key} | CacheFlow: The entry is set.");
+        CacheSet = LoggerMessage.Define<string, string, string>(LogLevel.Debug, new EventId((int)CacheEvent.Set, CacheEvent.Set.ToString()), "SET | {target} | {Key} | {value} | CacheFlow: The entry is set.");
+        CacheSetInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvent.Set, CacheEvent.Set.ToString()), "SET | {Key} | CacheFlow: The entry is set.");
             
-        ErrorOccurred = LoggerMessage.Define<string>(LogLevel.Error, new EventId((int)CacheEvents.AnErrorHasOccurred, CacheEvents.AnErrorHasOccurred.ToString()), "EXCEPTION | {target} | CacheFlow: ");
-        ErrorOccurredInsensitive = LoggerMessage.Define(LogLevel.Error, new EventId((int)CacheEvents.AnErrorHasOccurred, CacheEvents.AnErrorHasOccurred.ToString()), "EXCEPTION | CacheFlow: ");
+        ErrorOccurred = LoggerMessage.Define<string>(LogLevel.Error, new EventId((int)CacheEvent.AnErrorHasOccurred, CacheEvent.AnErrorHasOccurred.ToString()), "EXCEPTION | {target} | CacheFlow: ");
+        ErrorOccurredInsensitive = LoggerMessage.Define(LogLevel.Error, new EventId((int)CacheEvent.AnErrorHasOccurred, CacheEvent.AnErrorHasOccurred.ToString()), "EXCEPTION | CacheFlow: ");
             
-        EntryRemoved = LoggerMessage.Define<string, string>(LogLevel.Debug, new EventId((int)CacheEvents.Remove, CacheEvents.Remove.ToString()), "REMOVED | {target} | {Key} | CacheFlow: The key has been removed from a cache.");
-        EntryRemovedInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvents.Remove, CacheEvents.Remove.ToString()), "REMOVED | {Key} | CacheFlow: The key has been removed from a cache.");
+        EntryRemoved = LoggerMessage.Define<string, string>(LogLevel.Debug, new EventId((int)CacheEvent.Remove, CacheEvent.Remove.ToString()), "REMOVED | {target} | {Key} | CacheFlow: The key has been removed from a cache.");
+        EntryRemovedInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvent.Remove, CacheEvent.Remove.ToString()), "REMOVED | {Key} | CacheFlow: The key has been removed from a cache.");
             
-        NoOptions = LoggerMessage.Define<string>(LogLevel.Warning, new EventId((int)CacheEvents.AnErrorHasOccurred, CacheEvents.AnErrorHasOccurred.ToString()), "NO OPTIONS | {target} | CacheFlow: No options has been provided. The defaults are used.");
+        NoOptions = LoggerMessage.Define<string>(LogLevel.Warning, new EventId((int)CacheEvent.AnErrorHasOccurred, CacheEvent.AnErrorHasOccurred.ToString()), "NO OPTIONS | {target} | CacheFlow: No options has been provided. The defaults are used.");
     }
 
 

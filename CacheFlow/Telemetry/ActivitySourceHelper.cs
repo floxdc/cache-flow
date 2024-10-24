@@ -28,7 +28,7 @@ public static class ActivitySourceHelper
     }
 
 
-    internal static void SetEvent(this Activity? target, CacheEvents @event) 
+    internal static void SetEvent(this Activity? target, CacheEvent @event) 
         => target?.SetTag(EventToken, @event.ToString());
 
 

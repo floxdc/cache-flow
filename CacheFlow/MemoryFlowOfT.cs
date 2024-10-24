@@ -23,7 +23,7 @@ public class MemoryFlow<TClass> : FlowBase, IMemoryFlow<TClass> where TClass: cl
         => _cache.Options;
 
 
-    public T GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteExpirationRelativeToNow)
+    public T GetOrSet<T>(string key, Func<T> getValueFunction, in TimeSpan absoluteExpirationRelativeToNow)
         => GetOrSet(key, getValueFunction,
             new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
@@ -49,7 +49,7 @@ public class MemoryFlow<TClass> : FlowBase, IMemoryFlow<TClass> where TClass: cl
         => _cache.Remove(GetFullKey(_keyPrefix, key));
 
 
-    public void Set<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow)
+    public void Set<T>(string key, T value, in TimeSpan absoluteExpirationRelativeToNow)
         => Set(GetFullKey(_keyPrefix, key), value, new MemoryCacheEntryOptions{AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow});
 
 

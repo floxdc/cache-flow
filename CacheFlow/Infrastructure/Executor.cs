@@ -10,7 +10,7 @@ internal class Executor
     internal Executor(ILogger logger, bool suppressCacheExceptions, DataLogLevel dataLogLevel)
     {
         _logger = logger;
-        _logSensitive = dataLogLevel == DataLogLevel.Sensitive;
+        _logSensitiveData = dataLogLevel == DataLogLevel.Sensitive;
         _suppressCacheExceptions = suppressCacheExceptions;
     }
 
@@ -28,7 +28,7 @@ internal class Executor
         }
         catch (Exception ex)
         {
-            _logger.LogCacheError(GetExceptionTarget(nameof(TryExecute)), ex, _logSensitive);
+            _logger.LogCacheError(GetExceptionTarget(nameof(TryExecute)), ex, _logSensitiveData);
             if (!_suppressCacheExceptions)
                 throw;
         }
@@ -49,7 +49,7 @@ internal class Executor
         }
         catch (Exception ex)
         {
-            _logger.LogCacheError(GetExceptionTarget(nameof(TryExecute)), ex, _logSensitive);
+            _logger.LogCacheError(GetExceptionTarget(nameof(TryExecute)), ex, _logSensitiveData);
             if (!_suppressCacheExceptions)
                 throw;
         }
@@ -71,7 +71,7 @@ internal class Executor
         }
         catch (Exception ex)
         {
-            _logger.LogCacheError(GetExceptionTarget(nameof(TryExecuteAsync)), ex, _logSensitive);
+            _logger.LogCacheError(GetExceptionTarget(nameof(TryExecuteAsync)), ex, _logSensitiveData);
             if (!_suppressCacheExceptions)
                 throw;
         }
@@ -92,7 +92,7 @@ internal class Executor
         }
         catch (Exception ex)
         {
-            _logger.LogCacheError(GetExceptionTarget(nameof(TryExecuteAsync)), ex, _logSensitive);
+            _logger.LogCacheError(GetExceptionTarget(nameof(TryExecuteAsync)), ex, _logSensitiveData);
             if (!_suppressCacheExceptions)
                 throw;
         }
@@ -101,10 +101,11 @@ internal class Executor
     }
 
 
-    private static string GetExceptionTarget(string methodName) => nameof(Executor) + ":" + methodName;
+    private static string GetExceptionTarget(string methodName) 
+        => nameof(Executor) + "::" + methodName;
 
 
     private readonly ILogger _logger;
-    private readonly bool _logSensitive;
+    private readonly bool _logSensitiveData;
     private readonly bool _suppressCacheExceptions;
 }

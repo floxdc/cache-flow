@@ -31,7 +31,7 @@ public class DoubleFlow<TClass> : FlowBase, IDoubleFlow<TClass> where TClass : c
         => _cache.GetOrSet(GetFullKey(_keyPrefix, key), getValueFunction, distributedOptions, memoryOptions);
 
 
-    public T? GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteDistributedExpirationRelativeToNow)
+    public T? GetOrSet<T>(string key, Func<T> getValueFunction, in TimeSpan absoluteDistributedExpirationRelativeToNow)
         => GetOrSet(GetFullKey(_keyPrefix, key), getValueFunction,
             new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
             new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow});
@@ -70,7 +70,7 @@ public class DoubleFlow<TClass> : FlowBase, IDoubleFlow<TClass> where TClass : c
         => _cache.Set(GetFullKey(_keyPrefix, key), value, distributedOptions, memoryOptions);
 
 
-    public void Set<T>(string key, T value, TimeSpan absoluteDistributedExpirationRelativeToNow)
+    public void Set<T>(string key, T value, in TimeSpan absoluteDistributedExpirationRelativeToNow)
     {
         Set(GetFullKey(_keyPrefix, key), value,
             new DistributedCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow},
@@ -93,7 +93,7 @@ public class DoubleFlow<TClass> : FlowBase, IDoubleFlow<TClass> where TClass : c
         => _cache.TryGetValue(GetFullKey(_keyPrefix, key), out value, memoryOptions);
 
 
-    public bool TryGetValue<T>(string key, out T? value, TimeSpan absoluteDistributedExpirationRelativeToNow)
+    public bool TryGetValue<T>(string key, out T? value, in TimeSpan absoluteDistributedExpirationRelativeToNow)
         => TryGetValue(GetFullKey(_keyPrefix, key), out value,
             new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteDistributedExpirationRelativeToNow});
 

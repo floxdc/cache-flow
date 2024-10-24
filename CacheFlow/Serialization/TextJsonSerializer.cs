@@ -7,21 +7,19 @@ namespace FloxDc.CacheFlow.Serialization;
 public class TextJsonSerializer : ISerializer
 {
     public TextJsonSerializer(IOptions<JsonSerializerOptions>? options)
-    {
-        _options = options?.Value ?? new JsonSerializerOptions();
-    }
+        => _options = options?.Value ?? new JsonSerializerOptions();
 
 
     public T Deserialize<T>(string value) 
-        => System.Text.Json.JsonSerializer.Deserialize<T>(value, _options)!;
+        => JsonSerializer.Deserialize<T>(value, _options)!;
 
 
     public T Deserialize<T>(in ReadOnlyMemory<byte> value) 
-        => System.Text.Json.JsonSerializer.Deserialize<T>(value.Span, _options)!;
+        => JsonSerializer.Deserialize<T>(value.Span, _options)!;
 
 
     public byte[] Serialize<T>(T value) 
-        => System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(value, _options);
+        => JsonSerializer.SerializeToUtf8Bytes(value, _options);
 
 
     public bool IsBinarySerializer => IsBinary;

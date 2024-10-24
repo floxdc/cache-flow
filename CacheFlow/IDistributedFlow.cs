@@ -29,7 +29,7 @@ public interface IDistributedFlow<TClass> where  TClass: class
     /// <param name="getValueFunction">Function what gets value to set it to a cache. Executes if a provided key wasn't found.</param>
     /// <param name="absoluteExpirationRelativeToNow">Absolute amount of time relative to now which should pass to expire a cache.</param>
     /// <returns></returns>
-    T? GetOrSet<T>(string key, Func<T> getValueFunction, TimeSpan absoluteExpirationRelativeToNow);
+    T? GetOrSet<T>(string key, Func<T> getValueFunction, in TimeSpan absoluteExpirationRelativeToNow);
         
     /// <summary>
     /// Tries to get a value from a cache, and sets it if no entries were found.
@@ -98,7 +98,7 @@ public interface IDistributedFlow<TClass> where  TClass: class
     /// <param name="key">Target cache key.</param>
     /// <param name="value">Value of the cache entry.</param>
     /// <param name="absoluteExpirationRelativeToNow">Absolute amount of time relative to now which should pass to expire a cache.</param>
-    void Set<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow);
+    void Set<T>(string key, T value, in TimeSpan absoluteExpirationRelativeToNow);
 
     /// <summary>
     /// Sets a cache entry with a provided value.

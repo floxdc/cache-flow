@@ -6,7 +6,7 @@ namespace FloxDc.CacheFlow;
 
 public class FlowBase
 {
-    protected static Dictionary<string, string> BuildTags(CacheEvents @event, string key)
+    protected static Dictionary<string, string> BuildTags(CacheEvent @event, string key)
         => new()
         {
             {ActivitySourceHelper.EventToken, @event.ToString()},
@@ -16,7 +16,7 @@ public class FlowBase
 
 
     protected static string BuildTarget(string className, string methodName) 
-        => className + ":" + methodName;
+        => className + "::" + methodName;
 
 
     protected static string GetFullKey(string keyPrefix, string key) 
