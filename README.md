@@ -236,6 +236,25 @@ using var tracerProvider = Sdk.CreateTracerProviderBuilder()
 
 The library has been tested with the following benchmarks:
 
+** 1.12.0**
+```
+BenchmarkDotNet v0.14.0, Windows 11 (10.0.22631.4317/23H2/2023Update/SunValley3)
+12th Gen Intel Core i7-12700H, 1 CPU, 20 logical and 14 physical cores
+.NET SDK 8.0.403
+  [Host]     : .NET 8.0.10 (8.0.1024.46610), X64 RyuJIT AVX2
+  DefaultJob : .NET 8.0.10 (8.0.1024.46610), X64 RyuJIT AVX2
+```
+
+| Method        | Mean        | Error     | StdDev    | Gen0   | Allocated |
+|-------------- |------------:|----------:|----------:|-------:|----------:|
+| GetOrSet      |   266.46 ns |  5.309 ns |  4.966 ns | 0.0949 |    1192 B |
+| GetOrSetAsync | 1,280.23 ns | 16.234 ns | 14.391 ns | 0.1335 |    1687 B |
+| Remove        |    85.99 ns |  1.384 ns |  1.295 ns | 0.0362 |     456 B |
+| Set           |   144.00 ns |  2.874 ns |  3.422 ns | 0.0579 |     728 B |
+| TryGetValue   |    92.13 ns |  1.640 ns |  1.534 ns | 0.0370 |     464 B |
+
+
+**1.13.0**
 ```
 BenchmarkDotNet v0.14.0, Windows 11 (10.0.22631.4317/23H2/2023Update/SunValley3)
 12th Gen Intel Core i7-12700H, 1 CPU, 20 logical and 14 physical cores

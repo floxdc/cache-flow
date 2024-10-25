@@ -1,10 +1,12 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
 using FloxDc.CacheFlow;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 [MemoryDiagnoser]
+[SimpleJob(RuntimeMoniker.Net80, iterationCount: 100)]
 public class MemoryFlowBenchmark
 {
     [GlobalSetup]
