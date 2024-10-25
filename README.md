@@ -1,18 +1,17 @@
 # CacheFlow
 
-CacheFlow is a cache management system for .Net Core. It ables you not only use cache but handles various complex use cases i.e. value serialization, default values, the Get or Set pattern.
-
+CacheFlow is a cache management system for .Net Core. It helps you use cache and handle complex cases like value serialization, default values, and the Get or Set pattern.
 
 ### Table of Content
 * [Quick Start](#quick-start)
-* [Caching strategies](#caching-strategies)
+* [Caching Strategies](#caching-strategies)
   * [In-Memory](#in-memory)
   * [Distributed](#distributed)
-  * [Both In-Memory And Disitibuted ](#both-in-memory-and-disitibuted)
+  * [Both In-Memory and Distributed](#both-in-memory-and-distributed)
 * [Options](#options)
   * [Data Logging Levels](#data-logging-levels)
   * [Exception Suppression](#exception-suppression)
-  * [Named instances](#named-instances)
+  * [Named Instances](#named-instances)
   * [Time Spans](#time-spans)
 * [Extensions](#extensions)
   * [Serialization](#serialization)
@@ -21,8 +20,9 @@ CacheFlow is a cache management system for .Net Core. It ables you not only use 
   * [Telemetry](#telemetry)
 
 
-The library removes boilerplate code and builds on top of standard caching interfaces of .Net, so most of its methods have same names as regular caching services and use same option types. In addition to standard features it adds a little bit of comfort. For instance one may use the `GetOrSet` method instead of `Get` and `Set` separately.
-Just use this:
+The library reduces boilerplate code and builds on standard .Net caching interfaces. Most methods have the same names and option types as regular caching services. It also adds convenience features like the `GetOrSet` method.
+
+Use this:
 ```csharp
 public T CacheFlowWay<T>(string key, TimeSpan expirationTime)
     => GetOrSet(key, CalculateResult, timeout)
@@ -40,17 +40,17 @@ public T UsualWay<T>(string key, TimeSpan expirationTime)
     return result;
 }
 ```
-And that's the simpliest example. In addition the library contains safity checks, serialization, logging, and other handy features.
+This is the simplest example. The library also includes safety checks, serialization, logging, and other useful features.
 
 
 ## Quick Start
 
-Install a package via [NuGet](https://www.nuget.org/packages/FloxDc.CacheFlow/)
+Install the package via [NuGet](https://www.nuget.org/packages/FloxDc.CacheFlow/)
 ```
 PM> Install-Package FloxDc.CacheFlow -Version 1.13.0
 ``` 
 
-And add following lines to your `Startup.cs` file:
+Add the following lines to your `Startup.cs` file:
 ```csharp
 services.AddMemoryCache()
     .AddStackExchangeRedisCache(options => 
@@ -69,11 +69,11 @@ services.AddMemoryCache()
 
 |Method         |Description
 |---------------|-
-|GetOrSet       |Tries to get a value from a cache, and sets it if no entries were found
-|GetOrSetAsync  |Tries to get a value from a cache, and sets it if no entries were found
+|GetOrSet       |Tries to get a value from the cache, and sets it if not found
+|GetOrSetAsync  |Tries to get a value from the cache, and sets it if not found
 |Remove         |Removes a specified cache entry
 |Set            |Sets a cache entry with a provided value
-|TryGetValue    |Tries to get a value from a cache
+|TryGetValue    |Tries to get a value from the cache
 
 
 ### Distributed
@@ -82,54 +82,56 @@ services.AddMemoryCache()
 
 |Method         |Description
 |---------------|-
-|GetAsync       |Gets a value from a cache
-|GetOrSet       |Tries to get a value from a cache, and sets it if no entries were found
-|GetOrSetAsync  |Tries to get a value from a cache, and sets it if no entries were found
+|GetAsync       |Gets a value from the cache
+|GetOrSet       |Tries to get a value from the cache, and sets it if not found
+|GetOrSetAsync  |Tries to get a value from the cache, and sets it if not found
 |Refresh        |Refreshes a specified cache entry
 |RefreshAsync   |Refreshes a specified cache entry
 |Remove         |Removes a specified cache entry
 |RemoveAsync    |Removes a specified cache entry
 |Set            |Sets a cache entry with a provided value
 |SetAsync       |Sets a cache entry with a provided value
-|TryGetValue    |Tries to get a value from a cache
+|TryGetValue    |Tries to get a value from the cache
 
 
 ### Both In-Memory And Disitibuted 
 
-When you work with immutable data you may want to cache it both distributed and in-memory. There is a `DoubleFlow` approach for that case. Note some methods of the `DoubleFlow` may return a `ValueTask` where the `DistributedFlow` returns a `Task`.
+For immutable data, you may want to cache it both distributed and in-memory. Use the `DoubleFlow` approach. 
 
+**Warning!**
+Note that some methods of `DoubleFlow` may return a `ValueTask` where `DistributedFlow` returns a `Task`.
 
 #### DoubleFlow
 
 |Method         |Description
 |---------------|-
-|GetAsync       |Gets a value from a cache
-|GetOrSet       |Tries to get a value from a cache, and sets it if no entries were found
-|GetOrSetAsync  |Tries to get a value from a cache, and sets it if no entries were found
+|GetAsync       |Gets a value from the cache
+|GetOrSet       |Tries to get a value from the cache, and sets it if not found
+|GetOrSetAsync  |Tries to get a value from the cache, and sets it if not found
 |Refresh        |Refreshes a specified cache entry
 |RefreshAsync   |Refreshes a specified cache entry
 |Remove         |Removes a specified cache entry
 |RemoveAsync    |Removes a specified cache entry
 |Set            |Sets a cache entry with a provided value
 |SetAsync       |Sets a cache entry with a provided value
-|TryGetValue    |Tries to get a value from a cache
+|TryGetValue    |Tries to get a value from the cache
 
 
 ## Options
 
-There is a set of options you can use to configure CacheFlow:
+You can configure CacheFlow with the following options:
 
 |Parameter              |Default    |Meaning
 |-----------------------|-----------|-
-|CacheKeyDelimiter      |::         |Sets a delimiter which uses for key construction
-|CacheKeyPrefix         |           |Sets a prefix to all cache keys within an app
-|DataLoggingLevel       |_Normal_   |Sets a logging level of cache values and execution points, like hit, miss, data calculation etc.
-|SuppressCacheExceptions|_true_     |Enables exception throwing suppression, for error caused by caching service itself. Suitable when your app tolerate for invalid cache requests.
+|CacheKeyDelimiter      |::         |Delimiter used for key construction
+|CacheKeyPrefix         |           |Prefix for all cache keys within an app
+|DataLoggingLevel       |_Normal_   |Logging level for cache values and execution points (hit, miss, data calculation, etc.)
+|SuppressCacheExceptions|_true_     |Suppresses exceptions caused by the caching service itself. Useful if your app can tolerate invalid cache requests.
 
 
 #### Data Logging Levels
 
-The library can produce monitoring events of different types:
+CacheFlow can produce different types of monitoring events:
 
 |Level      |Behavior
 |-----------|-
@@ -140,23 +142,23 @@ The library can produce monitoring events of different types:
 
 #### Exception Suppression
 
-**Warning!**
-
-By default exception supression is on and it _may slow down_ your application. Turn off the option if you confident in your caching system.
+**Warning!** 
+By default, exception suppression is on and it may slow down your application.\
+Turn off this option if you are confident in your caching system.
 
 
 #### Named instances 
 
-You could use typed service insances to autoprefix cache keys with the class name:
+You could use typed service instances to autoprefix cache keys with the class name:
 ```csharp
 public MyClass(IMemoryFlow<MyClass> cache)
 ```
-Useful if one want to find a key in a database.
+This is useful if you want to find a key in a database.
 
 
 #### Time Spans
 
-If you want to avoid overlaps in caching, you may use following `TimeSpan` extensions:
+To avoid overlaps in caching, you can use the following `TimeSpan` extensions:
 
 |Method Name          |Time Frame|
 |---------------------|----------|
@@ -174,19 +176,21 @@ If you want to avoid overlaps in caching, you may use following `TimeSpan` exten
 
 ### Serialization
 
-By default CacheFlow uses the `System.Text.Json` serializer. Add no extension metoods on a configuration step to use that method. There are two more pre-built options, and also you could implement your own serializer as well.
+By default, CacheFlow uses the `System.Text.Json serializer`. 
+Add no extension methods during the configuration step to use it. 
+There are two more pre-built options, and you can also implement your own serializer.
 
 
 #### Json
 
 A `Newtonsoft.Json` serializer.
 
-Install a package via NuGet
+Install the package via NuGet
 ```
 PM> Install-Package FloxDc.CacheFlow.Json -Version 1.13.0
 ``` 
 
-And add following lines to your configuration:
+Add the following lines to your configuration:
 ```csharp
 services.AddMemoryFlow()
     .AddCacheFlowJsonSerialization();
@@ -197,12 +201,12 @@ services.AddMemoryFlow()
 
 A neuecc's `MessagePack` serializer.
 
-Install a package via NuGet
+Install the package via NuGet
 ```
 PM> Install-Package FloxDc.CacheFlow.MessagePack -Version 1.13.0
 ``` 
 
-And add following lines to `Startup.cs`:
+Add the following lines to `Startup.cs`:
 ```csharp
 var messagePackOptions = MessagePackSerializerOptions.Standard;
 
@@ -210,12 +214,14 @@ services.AddMemoryFlow()
     .AddCacheFlowMessagePackSerialization(messagePackOptions, StandardResolver.Instance);
 ```
 
-Keep in mind `MessagePack` requires to specify a structured map of serialized data.
+Note: `MessagePack` requires a structured map of serialized data
 
 
 ### Telemetry
 
-The package supports standard .Net activity-based telemetry. Register a source from a namespace `FloxDc.CacheFlow.Telemetry.ActivitySourceHelper` to enable it. Here's an example of `OpenTelemetry` configuration with the source:
+The package supports .Net activity-based telemetry. 
+Register a source from the `FloxDc.CacheFlow.Telemetry.ActivitySourceHelper` namespace to enable it. 
+Here's an example of `OpenTelemetry` configuration with the source:
 
 ```csharp
 using var tracerProvider = Sdk.CreateTracerProviderBuilder()
