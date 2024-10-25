@@ -1,23 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0;net7.0;net8.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <Company>Flox DC</Company>
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow</PackageId>
-	<Title>FloxDc's Cache Flow</Title>
-    <Description>.Net Core distributed cache management library based on IDistributedCache and IMemoryCache interfaces</Description>
-    <Version>1.12.0</Version>
+	  <Title>FloxDc's Cache Flow</Title>
+    <Description>
+      FloxDc's Cache Flow is a comprehensive .NET library designed for efficient distributed cache management. 
+      It leverages the IDistributedCache and IMemoryCache interfaces to provide robust caching solutions, 
+      ensuring high performance and scalability for your applications. This library supports multiple .NET 
+      versions, including .NET Core 3.1, .NET 5, .NET 6, .NET 7, and .NET 8.
+    </Description>
+    <Version>1.13.0</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
-    <PackageReleaseNotes>Warning: .Net 7 libraries officially support only .Net 6+ projects! Please, reach us on Github in case of any inconsistancies.
-
-- .Net 7 support
-- New way of serializer configuration
-- Code improvments</PackageReleaseNotes>
+    <PackageReleaseNotes>
+      Warning: logger messages are slightly changed. Please update your logger configuration if needed.
+      
+      * CVE-2024-48924 fixed
+      * .Net 8 support
+      * Code improvments
+  </PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -51,12 +58,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
-    <PackageReference Include="System.Text.Json" Version="7.0.0" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="8.0.1" />
   </ItemGroup>
 
 </Project>

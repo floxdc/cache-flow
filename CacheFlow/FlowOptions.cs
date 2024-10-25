@@ -6,12 +6,12 @@
 public class FlowOptions
 {
     /// <summary>
-    /// 
+    /// Delimiter used in cache keys.
     /// </summary>
     public string CacheKeyDelimiter { get; set; } = "::";
 
     /// <summary>
-    /// 
+    /// Prefix used in cache keys.
     /// </summary>
     public string CacheKeyPrefix { get; set; } = string.Empty;
 
@@ -21,7 +21,7 @@ public class FlowOptions
     public DataLogLevel DataLoggingLevel { get; set; } = DataLogLevel.Normal;
 
     /// <summary>
-    /// Enables suppression of throwing exceptions, caused by caching service itself. Default: true.
+    /// Enables suppression of exceptions caused by the caching service itself. Default: true.
     /// </summary>
     public bool SuppressCacheExceptions { get; set; } = true;
 }

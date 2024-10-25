@@ -54,7 +54,7 @@ public static class ServiceCollectionExtensions
 
 
     /// <summary>
-    /// Use CacheFlow with a in-memory cache provider.
+    /// Use CacheFlow with an in-memory cache provider.
     /// </summary>
     /// <param name="services"></param>
     /// <param name="options"></param>

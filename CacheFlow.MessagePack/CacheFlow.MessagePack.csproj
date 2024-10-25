@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0;net7.0;net8.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -9,13 +9,13 @@
     <Authors>Kirill Taran</Authors>
     <PackageId>FloxDc.CacheFlow.MessagePack</PackageId>
 	<Title>FloxDc's Cache Flow Message Pack serializer</Title>
-    <Version>1.12.0</Version>
+    <Version>1.13.0</Version>
     <Product>FloxDc.CacheFlow.MessagePack</Product>
     <Description>Message Pack serialization for FloxDc's Cache Flow</Description>
     <RepositoryUrl>https://github.com/floxdc/cache-flow</RepositoryUrl>
     <PackageTags>CacheFlow MessagePack</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReleaseNotes>- Updated to 1.12.0. See the main package for a list of change.</PackageReleaseNotes>
+    <PackageReleaseNotes>- Updated to 1.13.0. See the main package for a list of change.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.1|AnyCPU'">
@@ -28,7 +28,8 @@
 
   <ItemGroup>
     <PackageReference Include="FloxDc.CacheFlow" Version="1.12.0" />
-    <PackageReference Include="MessagePack" Version="2.4.59" />
+    <PackageReference Include="MessagePack" Version="2.5.187" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
 </Project>
