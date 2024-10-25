@@ -187,7 +187,7 @@ A `Newtonsoft.Json` serializer.
 
 Install the package via NuGet
 ```
-PM> Install-Package FloxDc.CacheFlow.Json -Version 1.13.0
+PM> Install-Package FloxDc.CacheFlow.Json -Version 1.13.1
 ``` 
 
 Add the following lines to your configuration:
@@ -203,7 +203,7 @@ A neuecc's `MessagePack` serializer.
 
 Install the package via NuGet
 ```
-PM> Install-Package FloxDc.CacheFlow.MessagePack -Version 1.13.0
+PM> Install-Package FloxDc.CacheFlow.MessagePack -Version 1.13.1
 ``` 
 
 Add the following lines to `Startup.cs`:
@@ -236,7 +236,7 @@ using var tracerProvider = Sdk.CreateTracerProviderBuilder()
 
 The library has been tested with the following benchmarks:
 
-** 1.12.0**
+**1.12.0**
 ```
 BenchmarkDotNet v0.14.0, Windows 11 (10.0.22631.4317/23H2/2023Update/SunValley3)
 12th Gen Intel Core i7-12700H, 1 CPU, 20 logical and 14 physical cores
