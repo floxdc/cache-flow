@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80, iterationCount: 100)]
+[SimpleJob(RuntimeMoniker.Net80, iterationCount: 50)]
 public class MemoryFlowBenchmark
 {
     [GlobalSetup]
