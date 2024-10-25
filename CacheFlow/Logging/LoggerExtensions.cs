@@ -6,111 +6,66 @@ namespace FloxDc.CacheFlow.Logging;
 
 internal static class LoggerExtensions
 {
-    static LoggerExtensions()
-    {
-        CacheHit = LoggerMessage.Define<string, string, string>(LogLevel.Debug, new EventId((int)CacheEvent.Hit, CacheEvent.Hit.ToString()), "HIT | {target} | {Key} | {value} | CacheFlow: A cache hit occurred.");
-        CacheHitInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvent.Hit, CacheEvent.Hit.ToString()), "HIT | {Key} | CacheFlow: A cache hit occurred.");
-
-        CacheMissed = LoggerMessage.Define<string, string>(LogLevel.Debug, new EventId((int)CacheEvent.Miss, CacheEvent.Miss.ToString()), "MISS | {target} | {Key} | CacheFlow: A cache miss occurred.");
-        CacheMissedInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvent.Miss, CacheEvent.Miss.ToString()), "MISS | {Key} | CacheFlow: A cache miss occurred.");
-
-        CacheNotSet = LoggerMessage.Define<string, string, string>(LogLevel.Debug, new EventId((int)CacheEvent.Skipped, CacheEvent.Skipped.ToString()), "SKIPPED | {target} | {Key} | {value} | CacheFlow: The key has not been set because the entry is a default struct value.");
-        CacheNotSetInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvent.Skipped, CacheEvent.Skipped.ToString()), "SKIPPED | {Key} | CacheFlow: The key has not been set because the entry is a default struct value.");
-
-        CacheSet = LoggerMessage.Define<string, string, string>(LogLevel.Debug, new EventId((int)CacheEvent.Set, CacheEvent.Set.ToString()), "SET | {target} | {Key} | {value} | CacheFlow: The entry has been set.");
-        CacheSetInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvent.Set, CacheEvent.Set.ToString()), "SET | {Key} | CacheFlow: The entry has been set.");
-
-        ErrorOccurred = LoggerMessage.Define<string>(LogLevel.Error, new EventId((int)CacheEvent.AnErrorHasOccurred, CacheEvent.AnErrorHasOccurred.ToString()), "EXCEPTION | {target} | CacheFlow: An error occurred.");
-        ErrorOccurredInsensitive = LoggerMessage.Define(LogLevel.Error, new EventId((int)CacheEvent.AnErrorHasOccurred, CacheEvent.AnErrorHasOccurred.ToString()), "EXCEPTION | CacheFlow: An error occurred.");
-
-        EntryRemoved = LoggerMessage.Define<string, string>(LogLevel.Debug, new EventId((int)CacheEvent.Remove, CacheEvent.Remove.ToString()), "REMOVED | {target} | {Key} | CacheFlow: The key has been removed from the cache.");
-        EntryRemovedInsensitive = LoggerMessage.Define<string>(LogLevel.Debug, new EventId((int)CacheEvent.Remove, CacheEvent.Remove.ToString()), "REMOVED | {Key} | CacheFlow: The key has been removed from the cache.");
-
-        NoOptions = LoggerMessage.Define<string>(LogLevel.Warning, new EventId((int)CacheEvent.AnErrorHasOccurred, CacheEvent.AnErrorHasOccurred.ToString()), "NO OPTIONS | {target} | CacheFlow: No options have been provided. The defaults are used.");
-    }
-
-
     internal static void LogHit(this ILogger logger, string target, string key, object value, bool logSensitive)
     {
         if (logSensitive)
-            CacheHit(logger, target, key, Serialize(value), null);
+            logger.CacheHit(target, key, Serialize(value));
         else
-            CacheHitInsensitive(logger, key, null);
+            logger.CacheHitInsensitive(key);
     }
 
 
     internal static void LogMissed(this ILogger logger, string target, string key, bool logSensitive)
     {
         if (logSensitive)
-            CacheMissed(logger, target, key, null);
+            logger.CacheMissed(target, key);
         else
-            CacheMissedInsensitive(logger, key, null);
+            logger.CacheMissedInsensitive(key);
     }
 
 
     internal static void LogNotSet(this ILogger logger, string target, string key, object value, bool logSensitive)
     {
         if (logSensitive)
-            CacheNotSet(logger, target, key, Serialize(value), null);
+            logger.CacheNotSet(target, key, Serialize(value));
         else
-            CacheNotSetInsensitive(logger, key, null);
+            logger.CacheNotSetInsensitive(key);
     }
 
 
     internal static void LogSet(this ILogger logger, string target, string key, object value, bool logSensitive)
     {
         if (logSensitive)
-            CacheSet(logger, target, key, Serialize(value), null);
+            logger.CacheSet(target, key, Serialize(value));
         else
-            CacheSetInsensitive(logger, key, null);
+            logger.CacheSetInsensitive(key);
     }
 
 
     internal static void LogCacheError(this ILogger logger, string target, Exception exception, bool logSensitive)
     {
         if (logSensitive)
-            ErrorOccurred(logger, target, exception);
+            logger.ErrorOccurred(target, exception);
         else
-            ErrorOccurredInsensitive(logger, exception);
+            logger.ErrorOccurredInsensitive(exception);
     }
 
 
     internal static void LogNoOptionsProvided(this ILogger logger, string target)
-        => NoOptions(logger, target, null);
+        => logger.NoOptions(target);
 
 
     internal static void LogRemoved(this ILogger logger, string target, string key, bool logSensitive)
     {
         if (logSensitive)
-            EntryRemoved(logger, target, key, null);
+            logger.EntryRemoved(target, key);
         else
-            EntryRemovedInsensitive(logger, key, null);
+            logger.EntryRemovedInsensitive(key);
     }
 
 
-    private static string Serialize(object target) 
+    private static string Serialize(object target)
         => JsonSerializer.Serialize(target, JsonSerializerOptions);
-
-
-    private static readonly Action<ILogger, string, string, string, Exception?> CacheHit;
-    private static readonly Action<ILogger, string, Exception?> CacheHitInsensitive;
-
-    private static readonly Action<ILogger, string, string, Exception?> CacheMissed;
-    private static readonly Action<ILogger, string, Exception?> CacheMissedInsensitive;
-
-    private static readonly Action<ILogger, string, string, string, Exception?> CacheNotSet;
-    private static readonly Action<ILogger, string, Exception?> CacheNotSetInsensitive;
-
-    private static readonly Action<ILogger, string, string, string, Exception?> CacheSet;
-    private static readonly Action<ILogger, string, Exception?> CacheSetInsensitive;
-
-    private static readonly Action<ILogger, string, string, Exception?> EntryRemoved;
-    private static readonly Action<ILogger, string, Exception?> EntryRemovedInsensitive;
-
-    private static readonly Action<ILogger, string, Exception> ErrorOccurred;
-    private static readonly Action<ILogger, Exception> ErrorOccurredInsensitive;
-
-    private static readonly Action<ILogger, string, Exception?> NoOptions;
 
 
     private static readonly JsonSerializerOptions JsonSerializerOptions = new()
