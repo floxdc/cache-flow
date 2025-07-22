@@ -5,12 +5,12 @@ using Microsoft.Extensions.Logging;
 
 namespace FloxDc.CacheFlow.Infrastructure;
 
-internal class Executor
+internal sealed class Executor
 {
     internal Executor(ILogger logger, bool suppressCacheExceptions, DataLogLevel dataLogLevel)
     {
         _logger = logger;
-        _logSensitiveData = dataLogLevel == DataLogLevel.Sensitive;
+        _logSensitiveData = dataLogLevel is DataLogLevel.Sensitive;
         _suppressCacheExceptions = suppressCacheExceptions;
     }
 
@@ -58,7 +58,7 @@ internal class Executor
     }
 
 
-    internal async Task<bool> TryExecuteAsync(Func<Task> func)
+    internal async ValueTask<bool> TryExecuteAsync(Func<ValueTask> func)
     {
         try
         {
@@ -80,7 +80,7 @@ internal class Executor
     }
 
 
-    internal async Task<T> TryExecuteAsync<T>(Func<Task<T>> func)
+    internal async ValueTask<T> TryExecuteAsync<T>(Func<ValueTask<T>> func)
     {
         try
         {

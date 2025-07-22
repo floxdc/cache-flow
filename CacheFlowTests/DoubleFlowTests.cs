@@ -301,11 +301,12 @@ public class DoubleFlowTests
         var memoryFlowMock = new Mock<IMemoryFlow>();
         memoryFlowMock.Setup(f => f.Remove(It.IsAny<string>()))
             .Verifiable();
-            
+
         var distributedFlowMock = new Mock<IDistributedFlow>();
         distributedFlowMock.Setup(f => f.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask)
             .Verifiable();
-            
+
         var cache = new DoubleFlow(distributedFlowMock.Object, memoryFlowMock.Object);
         await cache.RemoveAsync("key");
 

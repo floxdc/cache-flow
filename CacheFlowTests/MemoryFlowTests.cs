@@ -66,6 +66,27 @@ public class MemoryFlowTests
 
 
     [Fact]
+    public void Set_ShouldSetValueWhenValueIsNonDefaultUserDefinedStruct()
+    {
+        var entryMock = new Mock<ICacheEntry>();
+        entryMock.SetupSet(e => e.Value = It.IsAny<object>())
+            .Verifiable();
+
+        var memoryCacheMock = new Mock<IMemoryCache>();
+        memoryCacheMock.Setup(c => c.CreateEntry(It.IsAny<object>()))
+            .Returns(entryMock.Object)
+            .Verifiable();
+
+        var value = new DefaultStruct(42);
+        var cache = new MemoryFlow(memoryCacheMock.Object);
+        cache.Set("key", value, TimeSpan.MaxValue);
+
+        entryMock.VerifySet(e => e.Value = It.IsAny<object>(), Times.Once);
+        memoryCacheMock.Verify(c => c.CreateEntry(It.IsAny<object>()), Times.Once);
+    }
+
+
+    [Fact]
     public void Set_ShouldSetValueWhenValueIsNull()
     {
         var entryMock = new Mock<ICacheEntry>();
@@ -122,6 +143,24 @@ public class MemoryFlowTests
     }
 
 
+    [Fact]
+    public void TryGetValue_ShouldNotGetValueWhenKeyDoesNotExist()
+    {
+        object storedValue;
+        var memoryCacheMock = new Mock<IMemoryCache>();
+        memoryCacheMock.Setup(c => c.TryGetValue(It.IsAny<object>(), out storedValue))
+            .Returns(false)
+            .Verifiable();
+
+        var cache = new MemoryFlow(memoryCacheMock.Object);
+        var expected = cache.TryGetValue("nonexistent_key", out object value);
+
+        Assert.False(expected);
+        Assert.Null(value);
+        memoryCacheMock.Verify(c => c.TryGetValue(It.IsAny<object>(), out storedValue), Times.Once);
+    }
+
+
     [Theory]
     [InlineData(default(int))]
     [InlineData(42)]
@@ -135,25 +174,6 @@ public class MemoryFlowTests
 
         var cache = new MemoryFlow(memoryCacheMock.Object);
         var expected = cache.TryGetValue("key", out int value);
-
-        Assert.True(expected);
-        Assert.Equal(storedValue, value);
-        memoryCacheMock.Verify(c => c.TryGetValue(It.IsAny<object>(), out temp), Times.Once);
-    }
-
-
-    [Fact]
-    public void TryGetValue_ShouldGetValueWhenValueIsUserDefinedStruct()
-    {
-        var storedValue = new DefaultStruct(42);
-        var temp = (object) storedValue;
-        var memoryCacheMock = new Mock<IMemoryCache>();
-        memoryCacheMock.Setup(c => c.TryGetValue(It.IsAny<object>(), out temp))
-            .Returns(true)
-            .Verifiable();
-
-        var cache = new MemoryFlow(memoryCacheMock.Object);
-        var expected = cache.TryGetValue("key", out DefaultStruct value);
 
         Assert.True(expected);
         Assert.Equal(storedValue, value);

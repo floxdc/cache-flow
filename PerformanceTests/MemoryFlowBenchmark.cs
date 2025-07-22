@@ -5,6 +5,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
+namespace PerformanceTests;
+
 [MemoryDiagnoser]
 [SimpleJob(RuntimeMoniker.Net80, iterationCount: 50)]
 public class MemoryFlowBenchmark
@@ -24,6 +26,7 @@ public class MemoryFlowBenchmark
         _memoryFlow = new MemoryFlow(memoryCache, new NullLogger<MemoryFlow>(), options);
     }
 
+
     [Benchmark]
     public void GetOrSet()
     {
@@ -35,6 +38,13 @@ public class MemoryFlowBenchmark
     public async Task GetOrSetAsync()
     {
         await _memoryFlow.GetOrSetAsync(Key, () => Task.FromResult(Value), _cacheEntryOptions);
+    }
+
+
+    [Benchmark]
+    public async Task GetOrSetValueTaskAsync()
+    {
+        await _memoryFlow.GetOrSetAsync(Key, () => ValueTask.FromResult(Value), _cacheEntryOptions);
     }
 
 
@@ -55,16 +65,16 @@ public class MemoryFlowBenchmark
     [Benchmark]
     public void TryGetValue()
     {
-        _memoryFlow.TryGetValue(Key, out string value);
+        _memoryFlow.TryGetValue(Key, out string _);
     }
 
-    
+
     private const string Key = "testKey";
     private const string Value = "testValue";
-    private MemoryCacheEntryOptions _cacheEntryOptions = new()
+    private readonly MemoryCacheEntryOptions _cacheEntryOptions = new()
     {
         AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
     };
-    
+
     private MemoryFlow _memoryFlow;
 }

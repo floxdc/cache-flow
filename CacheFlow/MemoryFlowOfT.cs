@@ -40,7 +40,20 @@ public class MemoryFlow<TClass> : FlowBase, IMemoryFlow<TClass> where TClass: cl
             cancellationToken);
 
 
+    public ValueTask<T> GetOrSetAsync<T>(string key, Func<ValueTask<T>> getValueFunction,
+        TimeSpan absoluteExpirationRelativeToNow,
+        CancellationToken cancellationToken = default)
+        => GetOrSetAsync(GetFullKey(_keyPrefix, key), getValueFunction,
+            new MemoryCacheEntryOptions {AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow},
+            cancellationToken);
+
+
     public ValueTask<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, MemoryCacheEntryOptions options,
+        CancellationToken cancellationToken = default)
+        => _cache.GetOrSetAsync(GetFullKey(_keyPrefix, key), getValueFunction, options, cancellationToken);
+
+
+    public ValueTask<T> GetOrSetAsync<T>(string key, Func<ValueTask<T>> getValueFunction, MemoryCacheEntryOptions options,
         CancellationToken cancellationToken = default)
         => _cache.GetOrSetAsync(GetFullKey(_keyPrefix, key), getValueFunction, options, cancellationToken);
 

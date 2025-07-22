@@ -49,10 +49,32 @@ public interface IMemoryFlow<TClass> where TClass : class
     /// <typeparam name="T">Type of the value to get and set.</typeparam>
     /// <param name="key">Target cache key.</param>
     /// <param name="getValueFunction">Function that gets a value to set in the cache. Executes if the provided key wasn't found.</param>
+    /// <param name="absoluteExpirationRelativeToNow">Absolute amount of time relative to now which should pass to expire the cache.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    ValueTask<T> GetOrSetAsync<T>(string key, Func<ValueTask<T>> getValueFunction, TimeSpan absoluteExpirationRelativeToNow, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Tries to get a value from the cache and sets it if no entries were found.
+    /// </summary>
+    /// <typeparam name="T">Type of the value to get and set.</typeparam>
+    /// <param name="key">Target cache key.</param>
+    /// <param name="getValueFunction">Function that gets a value to set in the cache. Executes if the provided key wasn't found.</param>
     /// <param name="options">Cache options.</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     ValueTask<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, MemoryCacheEntryOptions options, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Tries to get a value from the cache and sets it if no entries were found.
+    /// </summary>
+    /// <typeparam name="T">Type of the value to get and set.</typeparam>
+    /// <param name="key">Target cache key.</param>
+    /// <param name="getValueFunction">Function that gets a value to set in the cache. Executes if the provided key wasn't found.</param>
+    /// <param name="options">Cache options.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    ValueTask<T> GetOrSetAsync<T>(string key, Func<ValueTask<T>> getValueFunction, MemoryCacheEntryOptions options, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Removes a specified cache entry.

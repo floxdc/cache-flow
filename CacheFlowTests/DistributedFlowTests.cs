@@ -103,6 +103,24 @@ public class DistributedFlowTests
             .Verify(c => c.Set(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>()),
                 Times.Once);
     }
+    
+    
+    [Fact]
+    public void Set_ShouldExpireItem()
+    {
+        var distributedCacheMock = new Mock<IDistributedCache>();
+        distributedCacheMock.Setup(c => c.Set(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>()))
+            .Verifiable();
+
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
+        var options = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMilliseconds(500) };
+        cache.Set("Key", 42, options);
+
+        Thread.Sleep(TimeSpan.FromMilliseconds(1000));
+
+        var result = cache.TryGetValue("Key", out int _);
+        Assert.False(result);
+    }
 
 
     [Fact]
@@ -391,6 +409,24 @@ public class DistributedFlowTests
 
         Assert.True(expected);
         Assert.Equal(obj, value);
+    }
+
+
+    [Fact]
+    public void ShouldHandleConcurrentAccess()
+    {
+        var distributedCacheMock = new Mock<IDistributedCache>();
+        distributedCacheMock.Setup(c => c.Set(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>()))
+            .Verifiable();
+
+        var cache = new DistributedFlow(distributedCacheMock.Object, new TextJsonSerializer(Options.Create(new JsonSerializerOptions())));
+
+        Parallel.For(0, 100, i =>
+        {
+            cache.Set($"Key{i}", i, TimeSpan.MaxValue);
+        });
+
+        distributedCacheMock.Verify(c => c.Set(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>()), Times.Exactly(100));
     }
 
 

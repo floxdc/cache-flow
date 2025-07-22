@@ -65,6 +65,12 @@ public class MemoryFlow : FlowBase, IMemoryFlow
             cancellationToken);
 
 
+    public ValueTask<T> GetOrSetAsync<T>(string key, Func<ValueTask<T>> getValueFunction, TimeSpan absoluteExpirationRelativeToNow,
+        CancellationToken cancellationToken = default)
+        => GetOrSetAsync(key, getValueFunction, new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow },
+            cancellationToken);
+
+
     public async ValueTask<T> GetOrSetAsync<T>(string key, Func<Task<T>> getValueFunction, MemoryCacheEntryOptions options,
         CancellationToken cancellationToken = default)
     {
@@ -72,7 +78,29 @@ public class MemoryFlow : FlowBase, IMemoryFlow
             return result;
 
         using (var _ = _activitySource.CreateStartedActivity("Async value calculations"))
-            result = await Task.Run(getValueFunction, cancellationToken);
+        {
+            getValueFunction().Wait(cancellationToken);
+            result = await getValueFunction().ConfigureAwait(false);
+        }
+
+        Set(key, result, options);
+        return result;
+    }
+
+
+    public async ValueTask<T> GetOrSetAsync<T>(string key, Func<ValueTask<T>> getValueFunction, MemoryCacheEntryOptions options,
+        CancellationToken cancellationToken = default)
+    {
+        if (TryGetValue(key, out T result))
+            return result;
+
+        using (var _ = _activitySource.CreateStartedActivity("Async value calculations"))
+        {
+            if (!getValueFunction().IsCompleted)
+                getValueFunction().AsTask().Wait(cancellationToken);
+            
+            result = await getValueFunction().ConfigureAwait(false);
+        }
 
         Set(key, result, options);
         return result;

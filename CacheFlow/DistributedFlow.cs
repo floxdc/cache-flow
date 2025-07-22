@@ -245,7 +245,7 @@ public class DistributedFlow : FlowBase, IDistributedFlow
         => _executor.TryExecute(action);
 
 
-    private Task TryExecuteAsync(Func<Task> func) 
+    private ValueTask<bool> TryExecuteAsync(Func<ValueTask> func) 
         => _executor.TryExecuteAsync(func);
 
 
