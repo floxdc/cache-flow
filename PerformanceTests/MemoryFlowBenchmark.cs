@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 namespace PerformanceTests;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80, iterationCount: 50)]
+[SimpleJob(RuntimeMoniker.Net10_0, iterationCount: 50)]
 public class MemoryFlowBenchmark
 {
     [GlobalSetup]
