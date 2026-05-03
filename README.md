@@ -47,7 +47,7 @@ This is the simplest example. The library also includes safety checks, serializa
 
 Install the package via [NuGet](https://www.nuget.org/packages/FloxDc.CacheFlow/)
 ```
-PM> Install-Package FloxDc.CacheFlow -Version 1.14.0
+PM> Install-Package FloxDc.CacheFlow -Version 1.14.1
 ``` 
 
 Add the following lines to your `Startup.cs` file:
@@ -187,7 +187,7 @@ A `Newtonsoft.Json` serializer.
 
 Install the package via NuGet
 ```
-PM> Install-Package FloxDc.CacheFlow.Json -Version 1.14.0
+PM> Install-Package FloxDc.CacheFlow.Json -Version 1.14.1
 ``` 
 
 Add the following lines to your configuration:
@@ -203,7 +203,7 @@ A neuecc's `MessagePack` serializer.
 
 Install the package via NuGet
 ```
-PM> Install-Package FloxDc.CacheFlow.MessagePack -Version 1.14.0
+PM> Install-Package FloxDc.CacheFlow.MessagePack -Version 1.14.1
 ``` 
 
 Add the following lines to `Startup.cs`:

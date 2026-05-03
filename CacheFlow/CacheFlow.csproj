@@ -15,7 +15,7 @@
       ensuring high performance and scalability for your applications. This library supports multiple .NET
       versions, including .NET Core 3.1, .NET 5, .NET 6, .NET 7, .NET 8, .NET 9, and .NET 10.
     </Description>
-    <Version>1.14.0</Version>
+    <Version>1.14.1</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
     <PackageReleaseNotes>
