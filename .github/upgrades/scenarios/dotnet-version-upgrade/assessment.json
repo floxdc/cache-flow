@@ -1,0 +1,1303 @@
+{
+  "settings": {
+    "components": {
+      "code": true,
+      "binaries": false
+    },
+    "targetId": "net10.0",
+    "targetDisplayName": ".NETCoreApp,Version=v10.0"
+  },
+  "analysisStartTime": "2026-05-03T18:16:03.2234478Z",
+  "analysisEndTime": "2026-05-03T18:16:12.6668635Z",
+  "privacyModeHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2270980",
+  "stats": {
+    "summary": {
+      "projects": 5,
+      "issues": 6,
+      "incidents": 41,
+      "effort": 41
+    },
+    "charts": {
+      "severity": {
+        "Mandatory": 5,
+        "Optional": 2,
+        "Potential": 34,
+        "Information": 0
+      },
+      "category": {
+        "NuGet": 12,
+        "Project": 5,
+        "Api": 24
+      }
+    }
+  },
+  "projects": [
+    {
+      "path": "CacheFlow\\CacheFlow.csproj",
+      "startingProject": true,
+      "issues": 3,
+      "storyPoints": 11,
+      "properties": {
+        "appName": "CacheFlow",
+        "projectKind": "ClassLibrary",
+        "frameworks": [
+          "netcoreapp3.1",
+          "net5.0",
+          "net6.0",
+          "net7.0",
+          "net8.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "numberOfFiles": 28,
+        "numberOfCodeFiles": 28,
+        "linesTotal": 2078,
+        "linesOfCode": 2078,
+        "totalApiScanned": 3294,
+        "minLinesOfCodeToChange": 4,
+        "maxLinesOfCodeToChange": 4
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "3efa1663-e0ac-4993-9e93-bb6adefaa222",
+          "ruleId": "NuGet.0002",
+          "projectPath": "CacheFlow\\CacheFlow.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.Extensions.Caching.Abstractions, 8.0.0\n\nRecommendation:\n\nRemove Microsoft.Extensions.Caching.Abstractions, and replace with new package Microsoft.Extensions.Caching.Abstractions 10.0.7",
+              "protected": "Microsoft.Extensions.Caching.Abstractions, 8.0.0\n\nRecommendation:\n\nRemove Microsoft.Extensions.Caching.Abstractions, and replace with new package Microsoft.Extensions.Caching.Abstractions 10.0.7"
+            },
+            "kind": "File",
+            "path": "CacheFlow\\CacheFlow.csproj",
+            "snippet": "Microsoft.Extensions.Caching.Abstractions, 8.0.0\n\nRecommendation:\n\nRemove Microsoft.Extensions.Caching.Abstractions, and replace with new package Microsoft.Extensions.Caching.Abstractions 10.0.7",
+            "protectedSnippet": "Microsoft.Extensions.Caching.Abstractions, 8.0.0\n\nRecommendation:\n\nRemove Microsoft.Extensions.Caching.Abstractions, and replace with new package Microsoft.Extensions.Caching.Abstractions 10.0.7",
+            "label": "Microsoft.Extensions.Caching.Abstractions 8.0.0",
+            "properties": {
+              "PackageId": "Microsoft.Extensions.Caching.Abstractions",
+              "PackageVersion": "8.0.0",
+              "PackageNewVersion": "10.0.7",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "f0f51790-9dac-447c-9506-19f2608876c6",
+          "ruleId": "NuGet.0002",
+          "projectPath": "CacheFlow\\CacheFlow.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.Extensions.DependencyInjection.Abstractions, 8.0.2\n\nRecommendation:\n\nRemove Microsoft.Extensions.DependencyInjection.Abstractions, and replace with new package Microsoft.Extensions.DependencyInjection.Abstractions 10.0.7",
+              "protected": "Microsoft.Extensions.DependencyInjection.Abstractions, 8.0.2\n\nRecommendation:\n\nRemove Microsoft.Extensions.DependencyInjection.Abstractions, and replace with new package Microsoft.Extensions.DependencyInjection.Abstractions 10.0.7"
+            },
+            "kind": "File",
+            "path": "CacheFlow\\CacheFlow.csproj",
+            "snippet": "Microsoft.Extensions.DependencyInjection.Abstractions, 8.0.2\n\nRecommendation:\n\nRemove Microsoft.Extensions.DependencyInjection.Abstractions, and replace with new package Microsoft.Extensions.DependencyInjection.Abstractions 10.0.7",
+            "protectedSnippet": "Microsoft.Extensions.DependencyInjection.Abstractions, 8.0.2\n\nRecommendation:\n\nRemove Microsoft.Extensions.DependencyInjection.Abstractions, and replace with new package Microsoft.Extensions.DependencyInjection.Abstractions 10.0.7",
+            "label": "Microsoft.Extensions.DependencyInjection.Abstractions 8.0.2",
+            "properties": {
+              "PackageId": "Microsoft.Extensions.DependencyInjection.Abstractions",
+              "PackageVersion": "8.0.2",
+              "PackageNewVersion": "10.0.7",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "bc3911e4-2ee5-4e3a-be0e-55aa6babf3c6",
+          "ruleId": "NuGet.0002",
+          "projectPath": "CacheFlow\\CacheFlow.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.Extensions.Logging.Abstractions, 8.0.3\n\nRecommendation:\n\nRemove Microsoft.Extensions.Logging.Abstractions, and replace with new package Microsoft.Extensions.Logging.Abstractions 10.0.7",
+              "protected": "Microsoft.Extensions.Logging.Abstractions, 8.0.3\n\nRecommendation:\n\nRemove Microsoft.Extensions.Logging.Abstractions, and replace with new package Microsoft.Extensions.Logging.Abstractions 10.0.7"
+            },
+            "kind": "File",
+            "path": "CacheFlow\\CacheFlow.csproj",
+            "snippet": "Microsoft.Extensions.Logging.Abstractions, 8.0.3\n\nRecommendation:\n\nRemove Microsoft.Extensions.Logging.Abstractions, and replace with new package Microsoft.Extensions.Logging.Abstractions 10.0.7",
+            "protectedSnippet": "Microsoft.Extensions.Logging.Abstractions, 8.0.3\n\nRecommendation:\n\nRemove Microsoft.Extensions.Logging.Abstractions, and replace with new package Microsoft.Extensions.Logging.Abstractions 10.0.7",
+            "label": "Microsoft.Extensions.Logging.Abstractions 8.0.3",
+            "properties": {
+              "PackageId": "Microsoft.Extensions.Logging.Abstractions",
+              "PackageVersion": "8.0.3",
+              "PackageNewVersion": "10.0.7",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "2cb6d787-c39a-47d7-9d57-c12c5d67ea01",
+          "ruleId": "NuGet.0002",
+          "projectPath": "CacheFlow\\CacheFlow.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.Extensions.Options, 8.0.2\n\nRecommendation:\n\nRemove Microsoft.Extensions.Options, and replace with new package Microsoft.Extensions.Options 10.0.7",
+              "protected": "Microsoft.Extensions.Options, 8.0.2\n\nRecommendation:\n\nRemove Microsoft.Extensions.Options, and replace with new package Microsoft.Extensions.Options 10.0.7"
+            },
+            "kind": "File",
+            "path": "CacheFlow\\CacheFlow.csproj",
+            "snippet": "Microsoft.Extensions.Options, 8.0.2\n\nRecommendation:\n\nRemove Microsoft.Extensions.Options, and replace with new package Microsoft.Extensions.Options 10.0.7",
+            "protectedSnippet": "Microsoft.Extensions.Options, 8.0.2\n\nRecommendation:\n\nRemove Microsoft.Extensions.Options, and replace with new package Microsoft.Extensions.Options 10.0.7",
+            "label": "Microsoft.Extensions.Options 8.0.2",
+            "properties": {
+              "PackageId": "Microsoft.Extensions.Options",
+              "PackageVersion": "8.0.2",
+              "PackageNewVersion": "10.0.7",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "ae67eaf8-8941-428f-9a51-55d6da454c48",
+          "ruleId": "NuGet.0002",
+          "projectPath": "CacheFlow\\CacheFlow.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "System.Text.Json, 8.0.6\n\nRecommendation:\n\nRemove System.Text.Json, and replace with new package System.Text.Json 10.0.7",
+              "protected": "System.Text.Json, 8.0.6\n\nRecommendation:\n\nRemove System.Text.Json, and replace with new package System.Text.Json 10.0.7"
+            },
+            "kind": "File",
+            "path": "CacheFlow\\CacheFlow.csproj",
+            "snippet": "System.Text.Json, 8.0.6\n\nRecommendation:\n\nRemove System.Text.Json, and replace with new package System.Text.Json 10.0.7",
+            "protectedSnippet": "System.Text.Json, 8.0.6\n\nRecommendation:\n\nRemove System.Text.Json, and replace with new package System.Text.Json 10.0.7",
+            "label": "System.Text.Json 8.0.6",
+            "properties": {
+              "PackageId": "System.Text.Json",
+              "PackageVersion": "8.0.6",
+              "PackageNewVersion": "10.0.7",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "dc9ebe96-1f2b-4b94-aabd-9207e2239d1c",
+          "ruleId": "NuGet.0002",
+          "projectPath": "CacheFlow\\CacheFlow.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "System.Diagnostics.DiagnosticSource, 8.0.1\n\nRecommendation:\n\nRemove System.Diagnostics.DiagnosticSource, and replace with new package System.Diagnostics.DiagnosticSource 10.0.7",
+              "protected": "System.Diagnostics.DiagnosticSource, 8.0.1\n\nRecommendation:\n\nRemove System.Diagnostics.DiagnosticSource, and replace with new package System.Diagnostics.DiagnosticSource 10.0.7"
+            },
+            "kind": "File",
+            "path": "CacheFlow\\CacheFlow.csproj",
+            "snippet": "System.Diagnostics.DiagnosticSource, 8.0.1\n\nRecommendation:\n\nRemove System.Diagnostics.DiagnosticSource, and replace with new package System.Diagnostics.DiagnosticSource 10.0.7",
+            "protectedSnippet": "System.Diagnostics.DiagnosticSource, 8.0.1\n\nRecommendation:\n\nRemove System.Diagnostics.DiagnosticSource, and replace with new package System.Diagnostics.DiagnosticSource 10.0.7",
+            "label": "System.Diagnostics.DiagnosticSource 8.0.1",
+            "properties": {
+              "PackageId": "System.Diagnostics.DiagnosticSource",
+              "PackageVersion": "8.0.1",
+              "PackageNewVersion": "10.0.7",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "40d75569-2d02-4551-98b3-8123a7e49cb2",
+          "ruleId": "Project.0002",
+          "projectPath": "CacheFlow\\CacheFlow.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0\nRecommended target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0",
+              "protected": "Current target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0\nRecommended target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0"
+            },
+            "kind": "File",
+            "path": "CacheFlow\\CacheFlow.csproj",
+            "snippet": "Current target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0\nRecommended target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0",
+            "protectedSnippet": "Current target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0\nRecommended target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0",
+            "properties": {
+              "CurrentTargetFramework": "netcoreapp3.1;net5.0;net6.0;net7.0;net8.0",
+              "RecommendedTargetFramework": "netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0"
+            }
+          }
+        },
+        {
+          "incidentId": "6fb9f512-20cf-428e-90fe-f20a66d88ce4",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: ActivitySource.CreateActivity and ActivitySource.StartActivity behavior changes ",
+          "projectPath": "CacheFlow\\CacheFlow.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var activity = Activity.Current is null\r\n            ? source.StartActivity(BuildName(activityName))\r\n            : source.StartActivity(BuildName(activityName), ActivityKind.Internal, Activity.Current.Context);",
+              "protected": "M:System.Diagnostics.ActivitySource.StartActivity(System.String,System.Diagnostics.ActivityKind,System.Diagnostics.ActivityContext,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},System.Collections.Generic.IEnumerable{System.Diagnostics.ActivityLink},System.DateTimeOffset)"
+            },
+            "kind": "File",
+            "path": "CacheFlow\\Telemetry\\ActivitySourceHelper.cs",
+            "snippet": "var activity = Activity.Current is null\r\n            ? source.StartActivity(BuildName(activityName))\r\n            : source.StartActivity(BuildName(activityName), ActivityKind.Internal, Activity.Current.Context);",
+            "protectedSnippet": "M:System.Diagnostics.ActivitySource.StartActivity(System.String,System.Diagnostics.ActivityKind,System.Diagnostics.ActivityContext,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},System.Collections.Generic.IEnumerable{System.Diagnostics.ActivityLink},System.DateTimeOffset)",
+            "label": "M:System.Diagnostics.ActivitySource.StartActivity(System.String,System.Diagnostics.ActivityKind,System.Diagnostics.ActivityContext,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},System.Collections.Generic.IEnumerable{System.Diagnostics.ActivityLink},System.DateTimeOffset)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/10.0/activity-sampling.md",
+                "isCustom": false
+              }
+            ],
+            "line": 23,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "bc4ca24e-b2ed-4a87-aea5-913135018dd2",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: ActivitySource.CreateActivity and ActivitySource.StartActivity behavior changes ",
+          "projectPath": "CacheFlow\\CacheFlow.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var activity = Activity.Current is null\r\n            ? source.StartActivity(BuildName(activityName))\r\n            : source.StartActivity(BuildName(activityName), ActivityKind.Internal, Activity.Current.Context);",
+              "protected": "M:System.Diagnostics.ActivitySource.StartActivity(System.String,System.Diagnostics.ActivityKind)"
+            },
+            "kind": "File",
+            "path": "CacheFlow\\Telemetry\\ActivitySourceHelper.cs",
+            "snippet": "var activity = Activity.Current is null\r\n            ? source.StartActivity(BuildName(activityName))\r\n            : source.StartActivity(BuildName(activityName), ActivityKind.Internal, Activity.Current.Context);",
+            "protectedSnippet": "M:System.Diagnostics.ActivitySource.StartActivity(System.String,System.Diagnostics.ActivityKind)",
+            "label": "M:System.Diagnostics.ActivitySource.StartActivity(System.String,System.Diagnostics.ActivityKind)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/10.0/activity-sampling.md",
+                "isCustom": false
+              }
+            ],
+            "line": 23,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "9f78da67-554f-42a8-a9a5-fc3e87adb566",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: ActivitySource.CreateActivity and ActivitySource.StartActivity behavior changes ",
+          "projectPath": "CacheFlow\\CacheFlow.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "return Activity.Current is null\r\n            ? source.StartActivity(BuildName(activityName))\r\n            : source.StartActivity(BuildName(activityName), ActivityKind.Internal, Activity.Current.Context);",
+              "protected": "M:System.Diagnostics.ActivitySource.StartActivity(System.String,System.Diagnostics.ActivityKind,System.Diagnostics.ActivityContext,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},System.Collections.Generic.IEnumerable{System.Diagnostics.ActivityLink},System.DateTimeOffset)"
+            },
+            "kind": "File",
+            "path": "CacheFlow\\Telemetry\\ActivitySourceHelper.cs",
+            "snippet": "return Activity.Current is null\r\n            ? source.StartActivity(BuildName(activityName))\r\n            : source.StartActivity(BuildName(activityName), ActivityKind.Internal, Activity.Current.Context);",
+            "protectedSnippet": "M:System.Diagnostics.ActivitySource.StartActivity(System.String,System.Diagnostics.ActivityKind,System.Diagnostics.ActivityContext,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},System.Collections.Generic.IEnumerable{System.Diagnostics.ActivityLink},System.DateTimeOffset)",
+            "label": "M:System.Diagnostics.ActivitySource.StartActivity(System.String,System.Diagnostics.ActivityKind,System.Diagnostics.ActivityContext,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},System.Collections.Generic.IEnumerable{System.Diagnostics.ActivityLink},System.DateTimeOffset)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/10.0/activity-sampling.md",
+                "isCustom": false
+              }
+            ],
+            "line": 12,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "ee707ba6-3dea-4bbb-8d30-75e0fb29945b",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: ActivitySource.CreateActivity and ActivitySource.StartActivity behavior changes ",
+          "projectPath": "CacheFlow\\CacheFlow.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "return Activity.Current is null\r\n            ? source.StartActivity(BuildName(activityName))\r\n            : source.StartActivity(BuildName(activityName), ActivityKind.Internal, Activity.Current.Context);",
+              "protected": "M:System.Diagnostics.ActivitySource.StartActivity(System.String,System.Diagnostics.ActivityKind)"
+            },
+            "kind": "File",
+            "path": "CacheFlow\\Telemetry\\ActivitySourceHelper.cs",
+            "snippet": "return Activity.Current is null\r\n            ? source.StartActivity(BuildName(activityName))\r\n            : source.StartActivity(BuildName(activityName), ActivityKind.Internal, Activity.Current.Context);",
+            "protectedSnippet": "M:System.Diagnostics.ActivitySource.StartActivity(System.String,System.Diagnostics.ActivityKind)",
+            "label": "M:System.Diagnostics.ActivitySource.StartActivity(System.String,System.Diagnostics.ActivityKind)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/10.0/activity-sampling.md",
+                "isCustom": false
+              }
+            ],
+            "line": 12,
+            "column": 8
+          }
+        }
+      ],
+      "features": []
+    },
+    {
+      "path": "CacheFlow.Json\\CacheFlow.Json.csproj",
+      "startingProject": true,
+      "issues": 2,
+      "storyPoints": 3,
+      "properties": {
+        "appName": "CacheFlow.Json",
+        "projectKind": "ClassLibrary",
+        "frameworks": [
+          "netcoreapp3.1",
+          "net5.0",
+          "net6.0",
+          "net7.0",
+          "net8.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "numberOfFiles": 2,
+        "numberOfCodeFiles": 2,
+        "linesTotal": 69,
+        "linesOfCode": 69,
+        "totalApiScanned": 55,
+        "minLinesOfCodeToChange": 0,
+        "maxLinesOfCodeToChange": 0
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "d5731939-6653-4861-9b4b-94a255cb97a5",
+          "ruleId": "NuGet.0002",
+          "projectPath": "CacheFlow.Json\\CacheFlow.Json.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Newtonsoft.Json, 13.0.3\n\nRecommendation:\n\nRemove Newtonsoft.Json, and replace with new package Newtonsoft.Json 13.0.4",
+              "protected": "Newtonsoft.Json, 13.0.3\n\nRecommendation:\n\nRemove Newtonsoft.Json, and replace with new package Newtonsoft.Json 13.0.4"
+            },
+            "kind": "File",
+            "path": "CacheFlow.Json\\CacheFlow.Json.csproj",
+            "snippet": "Newtonsoft.Json, 13.0.3\n\nRecommendation:\n\nRemove Newtonsoft.Json, and replace with new package Newtonsoft.Json 13.0.4",
+            "protectedSnippet": "Newtonsoft.Json, 13.0.3\n\nRecommendation:\n\nRemove Newtonsoft.Json, and replace with new package Newtonsoft.Json 13.0.4",
+            "label": "Newtonsoft.Json 13.0.3",
+            "properties": {
+              "PackageId": "Newtonsoft.Json",
+              "PackageVersion": "13.0.3",
+              "PackageNewVersion": "13.0.4",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "6f2b7612-3823-4bb8-a391-ff5df7dbed17",
+          "ruleId": "NuGet.0002",
+          "projectPath": "CacheFlow.Json\\CacheFlow.Json.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "System.Text.Json, 8.0.5\n\nRecommendation:\n\nRemove System.Text.Json, and replace with new package System.Text.Json 10.0.7",
+              "protected": "System.Text.Json, 8.0.5\n\nRecommendation:\n\nRemove System.Text.Json, and replace with new package System.Text.Json 10.0.7"
+            },
+            "kind": "File",
+            "path": "CacheFlow.Json\\CacheFlow.Json.csproj",
+            "snippet": "System.Text.Json, 8.0.5\n\nRecommendation:\n\nRemove System.Text.Json, and replace with new package System.Text.Json 10.0.7",
+            "protectedSnippet": "System.Text.Json, 8.0.5\n\nRecommendation:\n\nRemove System.Text.Json, and replace with new package System.Text.Json 10.0.7",
+            "label": "System.Text.Json 8.0.5",
+            "properties": {
+              "PackageId": "System.Text.Json",
+              "PackageVersion": "8.0.5",
+              "PackageNewVersion": "10.0.7",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "a0abe10e-cba1-48b3-8f2b-6e7049fc6931",
+          "ruleId": "Project.0002",
+          "projectPath": "CacheFlow.Json\\CacheFlow.Json.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0\nRecommended target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0",
+              "protected": "Current target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0\nRecommended target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0"
+            },
+            "kind": "File",
+            "path": "CacheFlow.Json\\CacheFlow.Json.csproj",
+            "snippet": "Current target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0\nRecommended target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0",
+            "protectedSnippet": "Current target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0\nRecommended target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0",
+            "properties": {
+              "CurrentTargetFramework": "netcoreapp3.1;net5.0;net6.0;net7.0;net8.0",
+              "RecommendedTargetFramework": "netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0"
+            }
+          }
+        }
+      ],
+      "features": []
+    },
+    {
+      "path": "CacheFlow.MessagePack\\CacheFlow.MessagePack.csproj",
+      "startingProject": true,
+      "issues": 2,
+      "storyPoints": 2,
+      "properties": {
+        "appName": "CacheFlow.MessagePack",
+        "projectKind": "ClassLibrary",
+        "frameworks": [
+          "netcoreapp3.1",
+          "net5.0",
+          "net6.0",
+          "net7.0",
+          "net8.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "numberOfFiles": 2,
+        "numberOfCodeFiles": 2,
+        "linesTotal": 57,
+        "linesOfCode": 57,
+        "totalApiScanned": 57,
+        "minLinesOfCodeToChange": 0,
+        "maxLinesOfCodeToChange": 0
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "181aab7b-683d-42e1-b9d2-52e436b17761",
+          "ruleId": "NuGet.0002",
+          "projectPath": "CacheFlow.MessagePack\\CacheFlow.MessagePack.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "System.Text.Json, 8.0.5\n\nRecommendation:\n\nRemove System.Text.Json, and replace with new package System.Text.Json 10.0.7",
+              "protected": "System.Text.Json, 8.0.5\n\nRecommendation:\n\nRemove System.Text.Json, and replace with new package System.Text.Json 10.0.7"
+            },
+            "kind": "File",
+            "path": "CacheFlow.MessagePack\\CacheFlow.MessagePack.csproj",
+            "snippet": "System.Text.Json, 8.0.5\n\nRecommendation:\n\nRemove System.Text.Json, and replace with new package System.Text.Json 10.0.7",
+            "protectedSnippet": "System.Text.Json, 8.0.5\n\nRecommendation:\n\nRemove System.Text.Json, and replace with new package System.Text.Json 10.0.7",
+            "label": "System.Text.Json 8.0.5",
+            "properties": {
+              "PackageId": "System.Text.Json",
+              "PackageVersion": "8.0.5",
+              "PackageNewVersion": "10.0.7",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "f4340fd7-7730-4509-9643-7efa71ee287e",
+          "ruleId": "Project.0002",
+          "projectPath": "CacheFlow.MessagePack\\CacheFlow.MessagePack.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0\nRecommended target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0",
+              "protected": "Current target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0\nRecommended target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0"
+            },
+            "kind": "File",
+            "path": "CacheFlow.MessagePack\\CacheFlow.MessagePack.csproj",
+            "snippet": "Current target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0\nRecommended target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0",
+            "protectedSnippet": "Current target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0\nRecommended target framework: netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0",
+            "properties": {
+              "CurrentTargetFramework": "netcoreapp3.1;net5.0;net6.0;net7.0;net8.0",
+              "RecommendedTargetFramework": "netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net10.0"
+            }
+          }
+        }
+      ],
+      "features": []
+    },
+    {
+      "path": "CacheFlowTests\\CacheFlowTests.csproj",
+      "startingProject": true,
+      "issues": 5,
+      "storyPoints": 24,
+      "properties": {
+        "appName": "CacheFlowTests",
+        "projectKind": "ClassLibrary",
+        "frameworks": [
+          "net6.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "numberOfFiles": 9,
+        "numberOfCodeFiles": 9,
+        "linesTotal": 1630,
+        "linesOfCode": 1630,
+        "totalApiScanned": 3448,
+        "minLinesOfCodeToChange": 20,
+        "maxLinesOfCodeToChange": 20
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "753553ef-10f1-45c8-92a0-2fc0d5f33623",
+          "ruleId": "NuGet.0002",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.Extensions.Caching.Memory, 6.0.0\n\nRecommendation:\n\nRemove Microsoft.Extensions.Caching.Memory, and replace with new package Microsoft.Extensions.Caching.Memory 10.0.7",
+              "protected": "Microsoft.Extensions.Caching.Memory, 6.0.0\n\nRecommendation:\n\nRemove Microsoft.Extensions.Caching.Memory, and replace with new package Microsoft.Extensions.Caching.Memory 10.0.7"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\CacheFlowTests.csproj",
+            "snippet": "Microsoft.Extensions.Caching.Memory, 6.0.0\n\nRecommendation:\n\nRemove Microsoft.Extensions.Caching.Memory, and replace with new package Microsoft.Extensions.Caching.Memory 10.0.7",
+            "protectedSnippet": "Microsoft.Extensions.Caching.Memory, 6.0.0\n\nRecommendation:\n\nRemove Microsoft.Extensions.Caching.Memory, and replace with new package Microsoft.Extensions.Caching.Memory 10.0.7",
+            "label": "Microsoft.Extensions.Caching.Memory 6.0.0",
+            "properties": {
+              "PackageId": "Microsoft.Extensions.Caching.Memory",
+              "PackageVersion": "6.0.0",
+              "PackageNewVersion": "10.0.7",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "9692f404-350a-46b9-91b5-f3c659666ce8",
+          "ruleId": "NuGet.0004",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.Extensions.Caching.Memory, 6.0.0\n\nRecommendation:\n\nMicrosoft.Extensions.Caching.Memory, 10.0.7",
+              "protected": "Microsoft.Extensions.Caching.Memory, 6.0.0\n\nRecommendation:\n\nMicrosoft.Extensions.Caching.Memory, 10.0.7"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\CacheFlowTests.csproj",
+            "snippet": "Microsoft.Extensions.Caching.Memory, 6.0.0\n\nRecommendation:\n\nMicrosoft.Extensions.Caching.Memory, 10.0.7",
+            "protectedSnippet": "Microsoft.Extensions.Caching.Memory, 6.0.0\n\nRecommendation:\n\nMicrosoft.Extensions.Caching.Memory, 10.0.7",
+            "label": "Microsoft.Extensions.Caching.Memory 6.0.0",
+            "properties": {
+              "PackageId": "Microsoft.Extensions.Caching.Memory",
+              "PackageVersion": "6.0.0",
+              "PackageNewVersion": "10.0.7",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "5bf64d0a-26d5-414e-a9c3-7a399022a8b5",
+          "ruleId": "NuGet.0005",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "xunit, 2.9.2\n\nRecommendation:\n\nThis package will only be updated for security issues. All future feature work has moved onto v3.\n\nGuide for migrating from xUnit.net v2 to v3: https://xunit.net/docs/getting-started/v3/migration\nRemove xunit, and replace with new package xunit, 2.9.3",
+              "protected": "xunit, 2.9.2\n\nRecommendation:\n\nThis package will only be updated for security issues. All future feature work has moved onto v3.\n\nGuide for migrating from xUnit.net v2 to v3: https://xunit.net/docs/getting-started/v3/migration\nRemove xunit, and replace with new package xunit, 2.9.3"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\CacheFlowTests.csproj",
+            "snippet": "xunit, 2.9.2\n\nRecommendation:\n\nThis package will only be updated for security issues. All future feature work has moved onto v3.\n\nGuide for migrating from xUnit.net v2 to v3: https://xunit.net/docs/getting-started/v3/migration\nRemove xunit, and replace with new package xunit, 2.9.3",
+            "protectedSnippet": "xunit, 2.9.2\n\nRecommendation:\n\nThis package will only be updated for security issues. All future feature work has moved onto v3.\n\nGuide for migrating from xUnit.net v2 to v3: https://xunit.net/docs/getting-started/v3/migration\nRemove xunit, and replace with new package xunit, 2.9.3",
+            "label": "xunit 2.9.2",
+            "properties": {
+              "PackageId": "xunit",
+              "PackageVersion": "2.9.2",
+              "PackageNewVersion": null,
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "f74d9a61-962e-4b0c-bb00-691b73b8eb62",
+          "ruleId": "Project.0002",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: net6.0\nRecommended target framework: net10.0",
+              "protected": "Current target framework: net6.0\nRecommended target framework: net10.0"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\CacheFlowTests.csproj",
+            "snippet": "Current target framework: net6.0\nRecommended target framework: net10.0",
+            "protectedSnippet": "Current target framework: net6.0\nRecommended target framework: net10.0",
+            "properties": {
+              "CurrentTargetFramework": "net6.0",
+              "RecommendedTargetFramework": "net10.0"
+            }
+          }
+        },
+        {
+          "incidentId": "9a06c7b2-aa2c-4981-b094-9fc37d8cedec",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var second = cache.GetOrSet(\u0022key\u0022, Factory, TimeSpan.FromMinutes(1));",
+              "protected": "M:System.TimeSpan.FromMinutes(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\MemoryFlowThunderingHerdTests.cs",
+            "snippet": "var second = cache.GetOrSet(\u0022key\u0022, Factory, TimeSpan.FromMinutes(1));",
+            "protectedSnippet": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "label": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 87,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "b29fdfdb-041c-427c-8199-304175a41314",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var first = cache.GetOrSet(\u0022key\u0022, Factory, TimeSpan.FromMinutes(1));",
+              "protected": "M:System.TimeSpan.FromMinutes(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\MemoryFlowThunderingHerdTests.cs",
+            "snippet": "var first = cache.GetOrSet(\u0022key\u0022, Factory, TimeSpan.FromMinutes(1));",
+            "protectedSnippet": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "label": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 83,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "4393d5c0-3e29-4018-8720-f9667ba445b5",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var result = cache.GetOrSet(\u0022key\u0022, Factory, TimeSpan.FromMinutes(1));",
+              "protected": "M:System.TimeSpan.FromMinutes(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\MemoryFlowThunderingHerdTests.cs",
+            "snippet": "var result = cache.GetOrSet(\u0022key\u0022, Factory, TimeSpan.FromMinutes(1));",
+            "protectedSnippet": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "label": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 64,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "b2982054-d8a6-4c69-b353-a1ff0f2d241b",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "return cache.GetOrSet(\u0022key\u0022, Factory, TimeSpan.FromMinutes(1));",
+              "protected": "M:System.TimeSpan.FromMinutes(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\MemoryFlowThunderingHerdTests.cs",
+            "snippet": "return cache.GetOrSet(\u0022key\u0022, Factory, TimeSpan.FromMinutes(1));",
+            "protectedSnippet": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "label": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 37,
+            "column": 16
+          }
+        },
+        {
+          "incidentId": "bc568f0a-0fb5-493e-a127-40d169919726",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var result = await cache.GetOrSetAsync(\u0022key\u0022, async () =\u003E await Task.FromResult(returnedValue),\r\n            TimeSpan.FromMilliseconds(1));",
+              "protected": "M:System.TimeSpan.FromMilliseconds(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\DistributedFlowTests.cs",
+            "snippet": "var result = await cache.GetOrSetAsync(\u0022key\u0022, async () =\u003E await Task.FromResult(returnedValue),\r\n            TimeSpan.FromMilliseconds(1));",
+            "protectedSnippet": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "label": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 382,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "bf5a9433-0d4b-464f-a928-d714a427dbf9",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var result = await cache.GetOrSetAsync(\u0022key\u0022, async () =\u003E await Task.FromResult(returnedValue),\r\n            TimeSpan.FromMilliseconds(1));",
+              "protected": "M:System.TimeSpan.FromMilliseconds(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\DistributedFlowTests.cs",
+            "snippet": "var result = await cache.GetOrSetAsync(\u0022key\u0022, async () =\u003E await Task.FromResult(returnedValue),\r\n            TimeSpan.FromMilliseconds(1));",
+            "protectedSnippet": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "label": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 358,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "3f3bb3f6-4b2b-45e7-a833-b552ab3bb9cc",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Thread.Sleep(TimeSpan.FromMilliseconds(1000));",
+              "protected": "M:System.TimeSpan.FromMilliseconds(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\DistributedFlowTests.cs",
+            "snippet": "Thread.Sleep(TimeSpan.FromMilliseconds(1000));",
+            "protectedSnippet": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "label": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 118,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "463beb67-a666-4aed-b1d8-8b8fab60072e",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var options = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMilliseconds(500) };",
+              "protected": "M:System.TimeSpan.FromMilliseconds(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\DistributedFlowTests.cs",
+            "snippet": "var options = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMilliseconds(500) };",
+            "protectedSnippet": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "label": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 115,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "e4db2443-7b07-437e-91f8-086ea844f0cf",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "tasks[i] = cache.GetOrSetAsync(\u0022test-key\u0022, FactoryMethod, TimeSpan.FromMinutes(5));",
+              "protected": "M:System.TimeSpan.FromMinutes(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\DistributedFlowThunderingHerdTests.cs",
+            "snippet": "tasks[i] = cache.GetOrSetAsync(\u0022test-key\u0022, FactoryMethod, TimeSpan.FromMinutes(5));",
+            "protectedSnippet": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "label": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 211,
+            "column": 12
+          }
+        },
+        {
+          "incidentId": "35354ca3-101a-4c54-b2fa-4510f6711cf5",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var options = new FlowOptions\r\n        {\r\n            CacheKeyPrefix = \u0022myapp\u0022,\r\n            ThunderingHerdProtectionTimeout = TimeSpan.FromSeconds(5)\r\n        };",
+              "protected": "M:System.TimeSpan.FromSeconds(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\DistributedFlowThunderingHerdTests.cs",
+            "snippet": "var options = new FlowOptions\r\n        {\r\n            CacheKeyPrefix = \u0022myapp\u0022,\r\n            ThunderingHerdProtectionTimeout = TimeSpan.FromSeconds(5)\r\n        };",
+            "protectedSnippet": "M:System.TimeSpan.FromSeconds(System.Double)",
+            "label": "M:System.TimeSpan.FromSeconds(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 186,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "26a24ea9-5d08-45d0-a94d-b60ba912a86c",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var secondTask = cache.GetOrSetAsync(\u0022test-key\u0022, FactoryMethod, TimeSpan.FromMinutes(5));",
+              "protected": "M:System.TimeSpan.FromMinutes(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\DistributedFlowThunderingHerdTests.cs",
+            "snippet": "var secondTask = cache.GetOrSetAsync(\u0022test-key\u0022, FactoryMethod, TimeSpan.FromMinutes(5));",
+            "protectedSnippet": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "label": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 149,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "f6b112c9-4dc0-4a56-b282-df871d9ac8ea",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var firstTask = cache.GetOrSetAsync(\u0022test-key\u0022, FactoryMethod, TimeSpan.FromMinutes(5));",
+              "protected": "M:System.TimeSpan.FromMinutes(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\DistributedFlowThunderingHerdTests.cs",
+            "snippet": "var firstTask = cache.GetOrSetAsync(\u0022test-key\u0022, FactoryMethod, TimeSpan.FromMinutes(5));",
+            "protectedSnippet": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "label": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 143,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "475392f7-518d-4f8e-9165-8c4c39772ab9",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var options = new FlowOptions { \r\n            ThunderingHerdProtectionTimeout = TimeSpan.FromMilliseconds(50),\r\n            SuppressCacheExceptions = true \r\n        };",
+              "protected": "M:System.TimeSpan.FromMilliseconds(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\DistributedFlowThunderingHerdTests.cs",
+            "snippet": "var options = new FlowOptions { \r\n            ThunderingHerdProtectionTimeout = TimeSpan.FromMilliseconds(50),\r\n            SuppressCacheExceptions = true \r\n        };",
+            "protectedSnippet": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "label": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 109,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "d224b009-fdd0-4445-afc6-abcc2549f63b",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "tasks[i] = cache.GetOrSetAsync(\r\n                \u0022test-key\u0022, \r\n                FactoryMethod, \r\n                TimeSpan.FromMinutes(5)\r\n            );",
+              "protected": "M:System.TimeSpan.FromMinutes(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\DistributedFlowThunderingHerdTests.cs",
+            "snippet": "tasks[i] = cache.GetOrSetAsync(\r\n                \u0022test-key\u0022, \r\n                FactoryMethod, \r\n                TimeSpan.FromMinutes(5)\r\n            );",
+            "protectedSnippet": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "label": "M:System.TimeSpan.FromMinutes(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 67,
+            "column": 12
+          }
+        },
+        {
+          "incidentId": "827c3c00-335a-4cca-a79a-512df2ab4371",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var options = new FlowOptions { ThunderingHerdProtectionTimeout = TimeSpan.FromSeconds(5) };",
+              "protected": "M:System.TimeSpan.FromSeconds(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\DistributedFlowThunderingHerdTests.cs",
+            "snippet": "var options = new FlowOptions { ThunderingHerdProtectionTimeout = TimeSpan.FromSeconds(5) };",
+            "protectedSnippet": "M:System.TimeSpan.FromSeconds(System.Double)",
+            "label": "M:System.TimeSpan.FromSeconds(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 40,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "2918a885-c8a0-4416-816e-094dd9352b22",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var options = new FlowOptions { ThunderingHerdProtectionTimeout = TimeSpan.FromMilliseconds(500) };",
+              "protected": "M:System.TimeSpan.FromMilliseconds(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\ExecutorThunderingHerdTests.cs",
+            "snippet": "var options = new FlowOptions { ThunderingHerdProtectionTimeout = TimeSpan.FromMilliseconds(500) };",
+            "protectedSnippet": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "label": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 157,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "090c8bf0-347c-4fb7-9fec-e9ed774ed918",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var options = new FlowOptions { ThunderingHerdProtectionTimeout = TimeSpan.FromMilliseconds(100) };",
+              "protected": "M:System.TimeSpan.FromMilliseconds(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\ExecutorThunderingHerdTests.cs",
+            "snippet": "var options = new FlowOptions { ThunderingHerdProtectionTimeout = TimeSpan.FromMilliseconds(100) };",
+            "protectedSnippet": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "label": "M:System.TimeSpan.FromMilliseconds(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 113,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "56be5474-d99f-4fff-b7bf-dc1eec262851",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var options = new FlowOptions { \r\n            ThunderingHerdProtectionTimeout = TimeSpan.FromSeconds(10),\r\n            SuppressCacheExceptions = false\r\n        };",
+              "protected": "M:System.TimeSpan.FromSeconds(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\ExecutorThunderingHerdTests.cs",
+            "snippet": "var options = new FlowOptions { \r\n            ThunderingHerdProtectionTimeout = TimeSpan.FromSeconds(10),\r\n            SuppressCacheExceptions = false\r\n        };",
+            "protectedSnippet": "M:System.TimeSpan.FromSeconds(System.Double)",
+            "label": "M:System.TimeSpan.FromSeconds(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 81,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "cdc09d33-4488-4c9b-9fe5-5e8037eeea29",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var options = new FlowOptions { ThunderingHerdProtectionTimeout = TimeSpan.FromSeconds(10) };",
+              "protected": "M:System.TimeSpan.FromSeconds(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\ExecutorThunderingHerdTests.cs",
+            "snippet": "var options = new FlowOptions { ThunderingHerdProtectionTimeout = TimeSpan.FromSeconds(10) };",
+            "protectedSnippet": "M:System.TimeSpan.FromSeconds(System.Double)",
+            "label": "M:System.TimeSpan.FromSeconds(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 50,
+            "column": 8
+          }
+        },
+        {
+          "incidentId": "9e29c6a9-f437-4841-871f-72a49b1bf202",
+          "ruleId": "Api.0002",
+          "description": "Breaking change: New TimeSpan.From*() overloads that take integers ",
+          "projectPath": "CacheFlowTests\\CacheFlowTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var options = new FlowOptions { ThunderingHerdProtectionTimeout = TimeSpan.FromSeconds(10) };",
+              "protected": "M:System.TimeSpan.FromSeconds(System.Double)"
+            },
+            "kind": "File",
+            "path": "CacheFlowTests\\ExecutorThunderingHerdTests.cs",
+            "snippet": "var options = new FlowOptions { ThunderingHerdProtectionTimeout = TimeSpan.FromSeconds(10) };",
+            "protectedSnippet": "M:System.TimeSpan.FromSeconds(System.Double)",
+            "label": "M:System.TimeSpan.FromSeconds(System.Double)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/timespan-from-overloads.md",
+                "isCustom": false
+              }
+            ],
+            "line": 19,
+            "column": 8
+          }
+        }
+      ],
+      "features": []
+    },
+    {
+      "path": "PerformanceTests\\PerformanceTests.csproj",
+      "startingProject": true,
+      "issues": 1,
+      "storyPoints": 1,
+      "properties": {
+        "appName": "PerformanceTests",
+        "projectKind": "DotNetCoreApp",
+        "frameworks": [
+          "net8.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "numberOfFiles": 7,
+        "numberOfCodeFiles": 7,
+        "linesTotal": 489,
+        "linesOfCode": 489,
+        "totalApiScanned": 643,
+        "minLinesOfCodeToChange": 0,
+        "maxLinesOfCodeToChange": 0
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "09346d80-3ebe-41e4-b024-c364bc6beb55",
+          "ruleId": "Project.0002",
+          "projectPath": "PerformanceTests\\PerformanceTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: net8.0\nRecommended target framework: net10.0",
+              "protected": "Current target framework: net8.0\nRecommended target framework: net10.0"
+            },
+            "kind": "File",
+            "path": "PerformanceTests\\PerformanceTests.csproj",
+            "snippet": "Current target framework: net8.0\nRecommended target framework: net10.0",
+            "protectedSnippet": "Current target framework: net8.0\nRecommended target framework: net10.0",
+            "properties": {
+              "CurrentTargetFramework": "net8.0",
+              "RecommendedTargetFramework": "net10.0"
+            }
+          }
+        }
+      ],
+      "features": []
+    }
+  ],
+  "rules": {
+    "NuGet.0002": {
+      "id": "NuGet.0002",
+      "isFeature": false,
+      "description": "NuGet package upgrade is recommended for selected target framework.\n\nStandard .NET packages are recommended to have versions matching version of .NET that project targets.\n\nSome other packages also are known to work better for selected target frameworks.",
+      "label": "NuGet package upgrade is recommended",
+      "severity": "Potential",
+      "effort": 1,
+      "links": [
+        {
+          "url": "https://go.microsoft.com/fwlink/?linkid=2262530",
+          "isCustom": false
+        }
+      ]
+    },
+    "Project.0002": {
+      "id": "Project.0002",
+      "isFeature": false,
+      "description": "Project\u0027s target framework(s) needs to be changed to the new target framework that you selected for this upgrade.\n\nDuring upgrade target framework will be adjusted to corresponding platform when applicable. In some cases project would result in multiple target frameworks after the upgrade if it was using features that now have their own platforms in modern .NET frameworks (windows, iOS, Android etc).",
+      "label": "Project\u0027s target framework(s) needs to be changed",
+      "severity": "Mandatory",
+      "effort": 1,
+      "links": [
+        {
+          "title": "Overview of porting from .NET Framework to .NET",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2265227",
+          "isCustom": false
+        },
+        {
+          "title": ".NET project SDKs",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2265226",
+          "isCustom": false
+        }
+      ]
+    },
+    "Api.0003": {
+      "id": "Api.0003",
+      "isFeature": false,
+      "description": "API has a behavioral change in selected .NET version: code and binaries may behave differently at runtime without needing recompilation, but the new behavior might be undesirable and require updates.",
+      "label": "Behavioral change in selected .NET version",
+      "severity": "Potential",
+      "effort": 1
+    },
+    "NuGet.0004": {
+      "id": "NuGet.0004",
+      "isFeature": false,
+      "description": "NuGet package contains security vulnerabilities.\n\nPackage needs to be upgraded to a newer version that addresses known security vulnerabilities.",
+      "label": "NuGet package contains security vulnerability",
+      "severity": "Optional",
+      "effort": 1
+    },
+    "NuGet.0005": {
+      "id": "NuGet.0005",
+      "isFeature": false,
+      "description": "NuGet package is deprecated.\n\nGo to its documentation and if there is a guidance for replacement of functionality provided by this package.",
+      "label": "NuGet package is deprecated",
+      "severity": "Optional",
+      "effort": 1,
+      "links": [
+        {
+          "url": "https://go.microsoft.com/fwlink/?linkid=2262531",
+          "isCustom": false
+        }
+      ]
+    },
+    "Api.0002": {
+      "id": "Api.0002",
+      "isFeature": false,
+      "description": "API is source incompatible for selected .NET version: requires code changes to compile successfully when targeting a new version, such as removing obsolete APIs or changing method signatures.",
+      "label": "Source incompatible for selected .NET version",
+      "severity": "Potential",
+      "effort": 1,
+      "links": [
+        {
+          "title": "Breaking changes in .NET",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2262679",
+          "isCustom": false
+        }
+      ]
+    }
+  }
+}
