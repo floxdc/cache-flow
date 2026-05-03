@@ -1,4 +1,6 @@
-﻿namespace FloxDc.CacheFlow;
+﻿using System;
+
+namespace FloxDc.CacheFlow;
 
 /// <summary>
 /// Represents CacheFlow options.
@@ -24,4 +26,9 @@ public class FlowOptions
     /// Enables suppression of exceptions caused by the caching service itself. Default: true.
     /// </summary>
     public bool SuppressCacheExceptions { get; set; } = true;
+
+    /// <summary>
+    /// Sets the timeout for thundering herd protection. Default: 10 seconds.
+    /// </summary>
+    public TimeSpan ThunderingHerdProtectionTimeout { get; set; } = TimeSpan.FromSeconds(10);
 }

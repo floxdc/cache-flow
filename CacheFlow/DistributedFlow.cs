@@ -38,7 +38,7 @@ public class DistributedFlow : FlowBase, IDistributedFlow
         if (Options.DataLoggingLevel is DataLogLevel.Disabled)
             _logger = new NullLogger<DistributedFlow>();
 
-        _executor = new Executor(_logger, Options.SuppressCacheExceptions, Options.DataLoggingLevel);
+        _executor = new Executor(_logger, Options);
         _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(Options.CacheKeyPrefix, Options.CacheKeyDelimiter);
 
         _logSensitive = Options.DataLoggingLevel is DataLogLevel.Sensitive;
@@ -50,7 +50,7 @@ public class DistributedFlow : FlowBase, IDistributedFlow
         var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
         using var activity = _activitySource.CreateStartedActivity(nameof(GetAsync), BuildTags(CacheEvent.Miss, fullKey));
 
-        var cached = await _executor.TryExecuteAsync(async () => (await Instance.GetAsync(fullKey, cancellationToken)).AsMemory());
+        var cached = await _executor.TryExecuteAsync(fullKey, async () => (await Instance.GetAsync(fullKey, cancellationToken)).AsMemory());
         if (cached.IsEmpty)
         {
             _logger.LogMissed(BuildTarget(nameof(GetAsync)), fullKey, _logSensitive);
@@ -97,7 +97,7 @@ public class DistributedFlow : FlowBase, IDistributedFlow
             return result;
 
         using (var _ = _activitySource.CreateStartedActivity("Async value calculations"))
-            result = await getFunction();
+            result = await _executor.TryExecuteAsync(key, () => new ValueTask<T?>(getFunction()!));
 
         await SetAsync(key, result, options, cancellationToken);
         return result;
@@ -118,7 +118,7 @@ public class DistributedFlow : FlowBase, IDistributedFlow
         var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
         using var activity = _activitySource.CreateStartedActivity(nameof(RefreshAsync), BuildTags(CacheEvent.Set, fullKey));
         
-        await TryExecuteAsync(async () => await Instance.RefreshAsync(fullKey, cancellationToken));
+        await TryExecuteAsync(fullKey, async () => await Instance.RefreshAsync(fullKey, cancellationToken));
     }
 
 
@@ -138,7 +138,7 @@ public class DistributedFlow : FlowBase, IDistributedFlow
         var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
         using var activity = _activitySource.CreateStartedActivity(nameof(RemoveAsync), BuildTags(CacheEvent.Remove, fullKey));
         
-        await TryExecuteAsync(async () => await Instance.RemoveAsync(fullKey, cancellationToken));
+        await TryExecuteAsync(fullKey, async () => await Instance.RemoveAsync(fullKey, cancellationToken));
 
         _logger.LogRemoved(BuildTarget(nameof(RemoveAsync)), fullKey, _logSensitive);
     }
@@ -231,7 +231,7 @@ public class DistributedFlow : FlowBase, IDistributedFlow
         if (!CanSet(fullKey, value, activity))
             return;
 
-        await TryExecuteAsync(async () =>
+        await TryExecuteAsync(fullKey, async () =>
         {
             var encoded = _serializer.Serialize(value);
             await Instance.SetAsync(fullKey, encoded, options, cancellationToken);
@@ -245,8 +245,8 @@ public class DistributedFlow : FlowBase, IDistributedFlow
         => _executor.TryExecute(action);
 
 
-    private ValueTask<bool> TryExecuteAsync(Func<ValueTask> func) 
-        => _executor.TryExecuteAsync(func);
+    private ValueTask<bool> TryExecuteAsync(string key, Func<ValueTask> func) 
+        => _executor.TryExecuteAsync(key, func);
 
 
     public IDistributedCache Instance { get; }

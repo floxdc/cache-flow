@@ -35,7 +35,7 @@ public class MemoryFlow : FlowBase, IMemoryFlow
         if (Options.DataLoggingLevel is DataLogLevel.Disabled)
             _logger = new NullLogger<MemoryFlow>();
 
-        _executor = new Executor(_logger, Options.SuppressCacheExceptions, Options.DataLoggingLevel);
+        _executor = new Executor(_logger, Options);
         _prefix = CacheKeyHelper.GetFullCacheKeyPrefix(Options.CacheKeyPrefix, Options.CacheKeyDelimiter);
 
         _logSensitive = Options.DataLoggingLevel is DataLogLevel.Sensitive;
