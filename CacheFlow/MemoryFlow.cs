@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,8 +53,21 @@ public class MemoryFlow : FlowBase, IMemoryFlow
         if (TryGetValue(key, out T result))
             return result;
 
-        using (var _ = _activitySource.CreateStartedActivity("Value calculations"))
-            result = getValueFunction();
+        var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
+        var lazy = _syncPending.GetOrAdd(fullKey, _ => new Lazy<object?>(() =>
+        {
+            T value;
+            using (var __ = _activitySource.CreateStartedActivity("Value calculations"))
+                value = getValueFunction();
+
+            return value;
+        }));
+
+        result = _executor.TryExecute(() => (T)lazy.Value!);
+        ((ICollection<KeyValuePair<string, Lazy<object?>>>)_syncPending).Remove(new KeyValuePair<string, Lazy<object?>>(fullKey, lazy));
+
+        if (!lazy.IsValueCreated)
+            return default!;
 
         Set(key, result, options);
         return result;
@@ -110,11 +125,11 @@ public class MemoryFlow : FlowBase, IMemoryFlow
     public void Remove(string key)
     {
         var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-        using var activity = _activitySource.CreateStartedActivity(nameof(Remove), BuildTags(CacheEvent.Remove, fullKey));
+        using var activity = _activitySource.CreateStartedActivity(nameof(Remove), CacheEvent.Remove, fullKey);
         
         _executor.TryExecute(() => Instance.Remove(fullKey));
 
-        _logger.LogRemoved(BuildTarget(nameof(Remove)), key, _logSensitive);
+        _logger.LogRemoved(_targetRemove, key, _logSensitive);
     }
 
 
@@ -125,10 +140,10 @@ public class MemoryFlow : FlowBase, IMemoryFlow
     public void Set<T>(string key, T value, MemoryCacheEntryOptions options)
     {
         var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-        using var activity = _activitySource.CreateStartedActivity(nameof(Set), BuildTags(CacheEvent.Skipped, fullKey));
+        using var activity = _activitySource.CreateStartedActivity(nameof(Set), CacheEvent.Skipped, fullKey);
         if (Utils.IsDefaultStruct(value))
         {
-            _logger.LogNotSet(BuildTarget(nameof(Set)), fullKey, value!, _logSensitive);
+            _logger.LogNotSet(_targetSet, fullKey, value!, _logSensitive);
             return;
         }
 
@@ -139,7 +154,7 @@ public class MemoryFlow : FlowBase, IMemoryFlow
             entry.Value = value;
         });
 
-        _logger.LogSet(BuildTarget(nameof(Set)), fullKey, value!, _logSensitive);
+        _logger.LogSet(_targetSet, fullKey, value!, _logSensitive);
         activity.SetEvent(CacheEvent.Set);
     }
 
@@ -147,7 +162,7 @@ public class MemoryFlow : FlowBase, IMemoryFlow
     public bool TryGetValue<T>(string key, out T value)
     {
         var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
-        using var activity = _activitySource.CreateStartedActivity(nameof(TryGetValue), BuildTags(CacheEvent.Miss, fullKey));
+        using var activity = _activitySource.CreateStartedActivity(nameof(TryGetValue), CacheEvent.Miss, fullKey);
 
         var (isCached, returnedValue) = _executor.TryExecute(() =>
         {
@@ -158,28 +173,29 @@ public class MemoryFlow : FlowBase, IMemoryFlow
         value = returnedValue ?? default!;
         if (!isCached)
         {
-            _logger.LogMissed(BuildTarget(nameof(TryGetValue)), fullKey, _logSensitive);
+            _logger.LogMissed(_targetTryGetValue, fullKey, _logSensitive);
             return false;
         }
 
-        _logger.LogHit(BuildTarget(nameof(TryGetValue)), fullKey, value, _logSensitive);
+        _logger.LogHit(_targetTryGetValue, fullKey, value, _logSensitive);
         activity.SetEvent(CacheEvent.Hit);
 
         return true;
     }
 
 
-    private static string BuildTarget(string methodName) 
-        => BuildTarget(nameof(DistributedFlow), methodName);
+    private const string _classPrefix = nameof(MemoryFlow) + "::";
+    private static readonly string _targetRemove      = _classPrefix + nameof(Remove);
+    private static readonly string _targetSet         = _classPrefix + nameof(Set);
+    private static readonly string _targetTryGetValue = _classPrefix + nameof(TryGetValue);
 
 
     public IMemoryCache Instance { get; }
     public FlowOptions Options { get; }
-
-
     private readonly ActivitySource _activitySource;
     private readonly Executor _executor;
     private readonly ILogger<MemoryFlow> _logger;
     private readonly bool _logSensitive;
     private readonly string _prefix;
+    private readonly ConcurrentDictionary<string, Lazy<object?>> _syncPending = new();
 }

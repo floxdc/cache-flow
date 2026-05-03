@@ -1,28 +1,36 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using FloxDc.CacheFlow.Logging;
 
 namespace FloxDc.CacheFlow.Telemetry;
 
 public static class ActivitySourceHelper
 {
-    internal static Activity? CreateStartedActivity(this ActivitySource source, string activityName, Dictionary<string, string>? tags = null)
+    internal static Activity? CreateStartedActivity(this ActivitySource source, string activityName)
     {
         if (!source.HasListeners())
             return default;
 
-        var activity = Activity.Current is null 
-            ? source.StartActivity(BuildName(activityName)) 
+        return Activity.Current is null
+            ? source.StartActivity(BuildName(activityName))
+            : source.StartActivity(BuildName(activityName), ActivityKind.Internal, Activity.Current.Context);
+    }
+
+
+    internal static Activity? CreateStartedActivity(this ActivitySource source, string activityName, CacheEvent @event, string key)
+    {
+        if (!source.HasListeners())
+            return default;
+
+        var activity = Activity.Current is null
+            ? source.StartActivity(BuildName(activityName))
             : source.StartActivity(BuildName(activityName), ActivityKind.Internal, Activity.Current.Context);
 
         if (activity is null)
             return activity;
 
-        if (tags is null)
-            return activity;
-
-        foreach (var (key, value) in tags)
-            activity.SetTag(key, value);
+        activity.SetTag(EventToken, @event.ToString());
+        activity.SetTag("key", key);
+        activity.SetTag("service-type", nameof(DistributedFlow));
 
         return activity;
     }

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
-using System.Threading;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FloxDc.CacheFlow.Infrastructure;
@@ -30,7 +30,7 @@ internal sealed class Executor
         }
         catch (Exception ex)
         {
-            _logger.LogCacheError(GetExceptionTarget(nameof(TryExecute)), ex, _logSensitiveData);
+            _logger.LogCacheError(_targetTryExecute, ex, _logSensitiveData);
             if (!_options.SuppressCacheExceptions)
                 throw;
         }
@@ -51,7 +51,7 @@ internal sealed class Executor
         }
         catch (Exception ex)
         {
-            _logger.LogCacheError(GetExceptionTarget(nameof(TryExecute)), ex, _logSensitiveData);
+            _logger.LogCacheError(_targetTryExecute, ex, _logSensitiveData);
             if (!_options.SuppressCacheExceptions)
                 throw;
         }
@@ -75,7 +75,7 @@ internal sealed class Executor
         }
         catch (Exception ex)
         {
-            _logger.LogCacheError(GetExceptionTarget(nameof(TryExecuteAsync)), ex, _logSensitiveData);
+            _logger.LogCacheError(_targetTryExecuteAsync, ex, _logSensitiveData);
             if (!_options.SuppressCacheExceptions)
                 throw;
         }
@@ -96,7 +96,7 @@ internal sealed class Executor
         }
         catch (Exception ex)
         {
-            _logger.LogCacheError(GetExceptionTarget(nameof(TryExecuteAsync)), ex, _logSensitiveData);
+            _logger.LogCacheError(_targetTryExecuteAsync, ex, _logSensitiveData);
             if (!_options.SuppressCacheExceptions)
                 throw;
         }
@@ -108,7 +108,7 @@ internal sealed class Executor
     private async ValueTask<T> GetOrCreateTaskAsync<T>(string key, Func<ValueTask<T>> func)
     {
         var taskSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var newEntry = new TaskEntry<T>(taskSource, new CancellationTokenSource());
+        var newEntry = new TaskEntry<T>(taskSource);
 
         if (_pendingTasks.TryAdd(key, newEntry))
         {
@@ -125,16 +125,10 @@ internal sealed class Executor
             }
             finally
             {
-                // Only remove if it's still our entry (identity check prevents removing a newer entry).
-                _pendingTasks.TryRemove(key, out var current);
-                if (!ReferenceEquals(current, newEntry))
-                    _pendingTasks.TryAdd(key, current!);
-
-                newEntry.CancellationSource.Dispose();
+                // Only remove if it's still our entry.
+                ((ICollection<KeyValuePair<string, ITaskEntry>>)_pendingTasks).Remove(new KeyValuePair<string, ITaskEntry>(key, newEntry));
             }
         }
-
-        newEntry.CancellationSource.Dispose();
 
         _pendingTasks.TryGetValue(key, out var existing);
         if (existing is not TaskEntry<T> taskEntry)
@@ -142,7 +136,7 @@ internal sealed class Executor
             if (existing is not null)
             {
                 var inUseException = new InvalidOperationException($"Cache key '{key}' is already in use with a different value type.");
-                _logger.LogCacheError(GetExceptionTarget(nameof(GetOrCreateTaskAsync)), inUseException, _logSensitiveData);
+                _logger.LogCacheError(_targetGetOrCreate, inUseException, _logSensitiveData);
             }
 
             return await func();
@@ -155,7 +149,7 @@ internal sealed class Executor
         if (remaining <= TimeSpan.Zero)
         {
             var timeoutException = new TimeoutException($"Waiting for cached value timed out after {_options.ThunderingHerdProtectionTimeout.TotalSeconds} seconds");
-            _logger.LogCacheError(GetExceptionTarget(nameof(GetOrCreateTaskAsync)), timeoutException, _logSensitiveData);
+            _logger.LogCacheError(_targetGetOrCreate, timeoutException, _logSensitiveData);
             return await func();
         }
 
@@ -163,19 +157,19 @@ internal sealed class Executor
             return await joinedTask;
 
         var exception = new TimeoutException($"Waiting for cached value timed out after {_options.ThunderingHerdProtectionTimeout.TotalSeconds} seconds");
-        _logger.LogCacheError(GetExceptionTarget(nameof(GetOrCreateTaskAsync)), exception, _logSensitiveData);
+        _logger.LogCacheError(_targetGetOrCreate, exception, _logSensitiveData);
 
         return await func();
     }
 
 
-    private static string GetExceptionTarget(string methodName) 
-        => nameof(Executor) + "::" + methodName;
+    private const string _classPrefix = nameof(Executor) + "::";
+    private static readonly string _targetTryExecute      = _classPrefix + nameof(TryExecute);
+    private static readonly string _targetTryExecuteAsync = _classPrefix + nameof(TryExecuteAsync);
+    private static readonly string _targetGetOrCreate     = _classPrefix + nameof(GetOrCreateTaskAsync);
 
 
     private readonly ConcurrentDictionary<string, ITaskEntry> _pendingTasks = new();
-
-
     private readonly ILogger _logger;
     private readonly bool _logSensitiveData;
     private readonly FlowOptions _options;

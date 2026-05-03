@@ -162,4 +162,60 @@ public class DistributedFlowThunderingHerdTests
         Assert.Equal("first-result", firstResult);
         Assert.Equal("subsequent-result", secondResult);
     }
+
+
+    [Fact]
+    public async Task GetOrSetAsync_WithPrefixAndConcurrentRequests_ShouldOnlyCallFactoryOnce()
+    {
+        // Arrange
+        var distributedCacheMock = new Mock<IDistributedCache>();
+        var serializer = new TextJsonSerializer(Options.Create(new JsonSerializerOptions()));
+
+        distributedCacheMock
+            .Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((byte[])null);
+
+        distributedCacheMock
+            .Setup(c => c.SetAsync(
+                It.IsAny<string>(),
+                It.IsAny<byte[]>(),
+                It.IsAny<DistributedCacheEntryOptions>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Use a non-empty prefix — this is what triggers the key mismatch bug
+        var options = new FlowOptions
+        {
+            CacheKeyPrefix = "myapp",
+            ThunderingHerdProtectionTimeout = TimeSpan.FromSeconds(5)
+        };
+        var cache = new DistributedFlow(
+            distributedCacheMock.Object,
+            serializer,
+            new Mock<ILogger<DistributedFlow>>().Object,
+            Options.Create(options)
+        );
+
+        var factoryCalls = 0;
+
+        async Task<string> FactoryMethod()
+        {
+            Interlocked.Increment(ref factoryCalls);
+            await Task.Delay(200);
+            return "cached-value";
+        }
+
+        // Act
+        const int concurrentRequests = 10;
+        var tasks = new Task<string>[concurrentRequests];
+        for (var i = 0; i < concurrentRequests; i++)
+            tasks[i] = cache.GetOrSetAsync("test-key", FactoryMethod, TimeSpan.FromMinutes(5));
+
+        var results = await Task.WhenAll(tasks);
+
+        // Assert — factory must be called exactly once regardless of prefix
+        Assert.Equal(1, factoryCalls);
+        foreach (var result in results)
+            Assert.Equal("cached-value", result);
+    }
 }
