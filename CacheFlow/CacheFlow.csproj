@@ -10,17 +10,18 @@
     <PackageId>FloxDc.CacheFlow</PackageId>
 	  <Title>FloxDc's Cache Flow</Title>
     <Description>
-      FloxDc's Cache Flow is a comprehensive .NET library designed for efficient distributed cache management. 
-      It leverages the IDistributedCache and IMemoryCache interfaces to provide robust caching solutions, 
-      ensuring high performance and scalability for your applications. This library supports multiple .NET 
-      versions, including .NET Core 3.1, .NET 5, .NET 6, .NET 7, .NET 8, and .NET 9.
+      FloxDc's Cache Flow is a comprehensive .NET library designed for efficient distributed cache management.
+      It leverages the IDistributedCache and IMemoryCache interfaces to provide robust caching solutions,
+      ensuring high performance and scalability for your applications. This library supports multiple .NET
+      versions, including .NET Core 3.1, .NET 5, .NET 6, .NET 7, .NET 8, .NET 9, and .NET 10.
     </Description>
     <Version>1.14.0</Version>
     <RootNamespace>FloxDc.CacheFlow</RootNamespace>
     <AssemblyName>FloxDc.CacheFlow</AssemblyName>
     <PackageReleaseNotes>
-      * .Net 9 support
+      * .Net 10 support
       * Better ValueTask support
+      * Performance improvments
   </PackageReleaseNotes>
   </PropertyGroup>
 

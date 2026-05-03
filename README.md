@@ -47,7 +47,7 @@ This is the simplest example. The library also includes safety checks, serializa
 
 Install the package via [NuGet](https://www.nuget.org/packages/FloxDc.CacheFlow/)
 ```
-PM> Install-Package FloxDc.CacheFlow -Version 1.13.0
+PM> Install-Package FloxDc.CacheFlow -Version 1.14.0
 ``` 
 
 Add the following lines to your `Startup.cs` file:
@@ -187,7 +187,7 @@ A `Newtonsoft.Json` serializer.
 
 Install the package via NuGet
 ```
-PM> Install-Package FloxDc.CacheFlow.Json -Version 1.13.1
+PM> Install-Package FloxDc.CacheFlow.Json -Version 1.14.0
 ``` 
 
 Add the following lines to your configuration:
@@ -203,7 +203,7 @@ A neuecc's `MessagePack` serializer.
 
 Install the package via NuGet
 ```
-PM> Install-Package FloxDc.CacheFlow.MessagePack -Version 1.13.1
+PM> Install-Package FloxDc.CacheFlow.MessagePack -Version 1.14.0
 ``` 
 
 Add the following lines to `Startup.cs`:
@@ -270,3 +270,24 @@ BenchmarkDotNet v0.14.0, Windows 11 (10.0.22631.4317/23H2/2023Update/SunValley3)
 | Remove        |    89.43 ns |  1.404 ns |  1.245 ns | 0.0362 |     456 B |
 | Set           |   148.76 ns |  2.934 ns |  2.744 ns | 0.0579 |     728 B |
 | TryGetValue   |    96.02 ns |  1.026 ns |  0.960 ns | 0.0370 |     464 B |
+
+
+**1.14.0**
+```
+BenchmarkDotNet v0.15.8, Windows 11 (10.0.26200.8328/25H2/2025Update/HudsonValley2)
+12th Gen Intel Core i7-12700H 2.30GHz, 1 CPU, 20 logical and 14 physical cores
+.NET SDK 10.0.203
+  [Host]     : .NET 10.0.7 (10.0.7, 10.0.726.21808), X64 RyuJIT x86-64-v3
+  Job-KWCULS : .NET 8.0.26 (8.0.26, 8.0.2626.16921), X64 RyuJIT x86-64-v3
+
+Runtime=.NET 8.0  IterationCount=50  
+
+```
+| Method                 | Mean      | Error    | StdDev    | Gen0   | Allocated |
+|----------------------- |----------:|---------:|----------:|-------:|----------:|
+| GetOrSet               | 288.33 ns | 7.548 ns | 15.075 ns | 0.0777 |     976 B |
+| GetOrSetAsync          | 232.93 ns | 9.740 ns | 19.452 ns | 0.0567 |     712 B |
+| GetOrSetValueTaskAsync | 204.58 ns | 3.533 ns |  6.722 ns | 0.0448 |     568 B |
+| Remove                 |  27.29 ns | 0.485 ns |  0.957 ns | 0.0114 |     144 B |
+| Set                    | 112.21 ns | 7.288 ns | 14.555 ns | 0.0337 |     424 B |
+| TryGetValue            |  40.30 ns | 2.958 ns |  5.976 ns | 0.0114 |     144 B |
