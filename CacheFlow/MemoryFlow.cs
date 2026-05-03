@@ -185,8 +185,8 @@ public class MemoryFlow : FlowBase, IMemoryFlow
 
 
     private const string _classPrefix = nameof(MemoryFlow) + "::";
-    private static readonly string _targetRemove      = _classPrefix + nameof(Remove);
-    private static readonly string _targetSet         = _classPrefix + nameof(Set);
+    private static readonly string _targetRemove = _classPrefix + nameof(Remove);
+    private static readonly string _targetSet = _classPrefix + nameof(Set);
     private static readonly string _targetTryGetValue = _classPrefix + nameof(TryGetValue);
 
 

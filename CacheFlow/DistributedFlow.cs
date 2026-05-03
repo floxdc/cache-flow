@@ -98,9 +98,20 @@ public class DistributedFlow : FlowBase, IDistributedFlow
 
         var fullKey = CacheKeyHelper.GetFullKey(_prefix, key);
         using (var _ = _activitySource.CreateStartedActivity("Async value calculations"))
-            result = await _executor.TryExecuteAsync(fullKey, () => new ValueTask<T?>(getFunction()!));
+            result = await _executor.TryExecuteAsync(fullKey, async () =>
+            {
+                var value = await getFunction()!;
+                using var setActivity = _activitySource.CreateStartedActivity(nameof(SetAsync), CacheEvent.Set, fullKey);
+                if (CanSet(fullKey, value, setActivity))
+                {
+                    var encoded = _serializer.Serialize(value);
+                    await Instance.SetAsync(fullKey, encoded, options, cancellationToken);
+                    _logger.LogSet(_targetSetInternalAsync, fullKey, value!, _logSensitive);
+                }
 
-        await SetAsync(key, result, options, cancellationToken);
+                return value;
+            });
+
         return result;
     }
 
@@ -247,12 +258,12 @@ public class DistributedFlow : FlowBase, IDistributedFlow
 
 
     private const string _classPrefix = nameof(DistributedFlow) + "::";
-    private static readonly string _targetGetAsync        = _classPrefix + nameof(GetAsync);
-    private static readonly string _targetRemove          = _classPrefix + nameof(Remove);
-    private static readonly string _targetRemoveAsync     = _classPrefix + nameof(RemoveAsync);
-    private static readonly string _targetTryGetValue     = _classPrefix + nameof(TryGetValue);
-    private static readonly string _targetCanSet          = _classPrefix + nameof(CanSet);
-    private static readonly string _targetSetInternal     = _classPrefix + nameof(SetInternal);
+    private static readonly string _targetGetAsync = _classPrefix + nameof(GetAsync);
+    private static readonly string _targetRemove = _classPrefix + nameof(Remove);
+    private static readonly string _targetRemoveAsync = _classPrefix + nameof(RemoveAsync);
+    private static readonly string _targetTryGetValue = _classPrefix + nameof(TryGetValue);
+    private static readonly string _targetCanSet = _classPrefix + nameof(CanSet);
+    private static readonly string _targetSetInternal = _classPrefix + nameof(SetInternal);
     private static readonly string _targetSetInternalAsync = _classPrefix + nameof(SetInternalAsync);
 
 

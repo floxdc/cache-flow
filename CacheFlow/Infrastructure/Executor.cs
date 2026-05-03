@@ -164,9 +164,9 @@ internal sealed class Executor
 
 
     private const string _classPrefix = nameof(Executor) + "::";
-    private static readonly string _targetTryExecute      = _classPrefix + nameof(TryExecute);
+    private static readonly string _targetTryExecute = _classPrefix + nameof(TryExecute);
     private static readonly string _targetTryExecuteAsync = _classPrefix + nameof(TryExecuteAsync);
-    private static readonly string _targetGetOrCreate     = _classPrefix + nameof(GetOrCreateTaskAsync);
+    private static readonly string _targetGetOrCreate = _classPrefix + nameof(GetOrCreateTaskAsync);
 
 
     private readonly ConcurrentDictionary<string, ITaskEntry> _pendingTasks = new();
